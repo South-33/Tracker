@@ -10,7 +10,7 @@ import torch
 
 from .data import load_sequences
 from .detector import load_detector
-from .geometry import preprocess
+from .features import FrozenFeatures
 from .loss import assign, supervised_loss
 from .model import RecurrentTracker, expire_memory, fill_slot
 
@@ -30,15 +30,27 @@ def train(args):
     directory.mkdir(parents=True, exist_ok=True)
     manifest_hash = hashlib.sha256(Path(args.manifest).read_bytes()).hexdigest()
     metadata = {**vars(args), "manifest_sha256": manifest_hash, "torch": torch.__version__,
+                "source_sha256": hashlib.sha256(b"".join(path.read_bytes() for path in sorted(Path(__file__).parent.glob("*.py")))).hexdigest(),
                 "device_name": torch.cuda.get_device_name() if args.device.startswith("cuda") else "CPU",
                 "upstream": "55fefaaed7efe2a5f72d0a18fd4e05965e35c292",
                 "loss_scope": "person varifocal + L1/GIoU + resident continuity + IoU quality; no FDR local/auxiliary losses in this pilot",
                 "teacher": "none; pretrained detector retains its authors' DINOv3 training benefit"}
     iteration = 0
     elapsed_previous = 0
+    if args.initialize:
+        checkpoint = torch.load(args.initialize, map_location=args.device, weights_only=False)
+        for key in ("slots", "size"):
+            if checkpoint["metadata"][key] != metadata[key]:
+                raise ValueError(f"Initialization configuration mismatch: {key}")
+        model.load_state_dict(checkpoint["model"], strict=True)
+        with Path(args.initialize).open("rb") as stream:
+            metadata["initial_checkpoint_sha256"] = hashlib.file_digest(stream, "sha256").hexdigest()
     if args.resume:
         checkpoint = torch.load(args.resume, map_location=args.device, weights_only=False)
-        for key in ("manifest_sha256", "slots", "size", "seed"):
+        with Path(args.resume).open("rb") as stream:
+            metadata["parent_checkpoint_sha256"] = hashlib.file_digest(stream, "sha256").hexdigest()
+        metadata["parent_settings"] = {key: checkpoint["metadata"][key] for key in ("unroll", "lr", "debug", "manifest_sha256")}
+        for key in ("manifest_sha256", "slots", "size", "seed", "lr", "debug"):
             if checkpoint["metadata"][key] != metadata[key]:
                 raise ValueError(f"Resume configuration mismatch: {key}")
         model.load_state_dict(checkpoint["model"], strict=True)
@@ -53,6 +65,7 @@ def train(args):
         elapsed_previous = checkpoint["elapsed_seconds"]
     (directory / "config.json").write_text(json.dumps(metadata, indent=2) + "\n")
     start = time.monotonic()
+    feature_source = FrozenFeatures(model, args.size, args.device, args.feature_cache, args.cache_mib)
 
     def save():
         payload = {"model": model.state_dict(), "optimizer": optimizer.state_dict(), "scaler": scaler.state_dict(),
@@ -74,19 +87,19 @@ def train(args):
             frame_numbers = sequence.frames[offset:offset + stride * length:stride]
             memory = model.empty_memory()
             slot_to_gt = {}
+            last_seen = {}
             optimizer.zero_grad(set_to_none=True)
             losses, reports = [], []
             last_number = frame_numbers[0] - stride
             for number in frame_numbers:
-                rgb, ids, boxes = sequence.read(number)
-                image, transform = preprocess(rgb, args.size, args.device)
-                target = torch.as_tensor(transform.normalize_xywh(boxes), device=args.device)
-                dt = torch.tensor([(number - last_number) / sequence.fps], device=args.device)
+                pyramid, ids, target = feature_source.get(sequence, number)
+                elapsed = (number - last_number) / sequence.fps
+                dt = torch.tensor([elapsed], device=args.device)
                 last_number = number
-                memory = expire_memory(memory, 10)
-                slot_to_gt = {slot: identity for slot, identity in slot_to_gt.items() if memory.valid[0, slot, 0].item() > 0.5}
+                memory = expire_memory(memory, 10 - elapsed)
+                slot_to_gt = {slot: identity for slot, identity in slot_to_gt.items() if (number - last_seen[slot]) / sequence.fps <= 10}
                 with torch.autocast(device_type="cuda", dtype=torch.float16, enabled=args.device.startswith("cuda")):
-                    prediction = model(image, *memory, dt)
+                    prediction = model.decode(pyramid, memory, dt)
                     assignments, births = assign(prediction, ids, target, slot_to_gt, args.slots)
                     loss, parts = supervised_loss(prediction, assignments, target, memory, args.slots)
                     losses.append(loss)
@@ -95,6 +108,7 @@ def train(args):
                     for query, _ in assignments:
                         if query < args.slots:
                             observed[query] = 1
+                            last_seen[query] = number
                     memory = model.update_memory(memory, prediction, observed, dt)
                     for query, gt_index in births:
                         available = [slot for slot in range(args.slots) if slot not in slot_to_gt]
@@ -102,6 +116,7 @@ def train(args):
                             raise RuntimeError("Training clip exceeds configured resident capacity")
                         slot = available[0]
                         slot_to_gt[slot] = int(ids[gt_index])
+                        last_seen[slot] = number
                         memory = fill_slot(memory, slot, prediction.features[0, query], prediction.boxes[0, query])
             combined = torch.stack(losses).mean()
             if not torch.isfinite(combined):
@@ -115,12 +130,14 @@ def train(args):
             scaler.update()
             iteration += 1
             record = {"iteration": iteration, "loss": float(combined.detach()), "gradient_norm": float(gradient_norm),
+                "peak_allocated_mib": torch.cuda.max_memory_allocated() / 2**20 if args.device.startswith("cuda") else None,
+                "feature_cache": feature_source.stats(),
                 "sequence": sequence.name, "first_frame": frame_numbers[0], "last_frame": frame_numbers[-1],
                 "elapsed_seconds": elapsed_previous + time.monotonic() - start,
                 **{name: float(torch.stack([p[name].detach() for p in reports]).mean()) for name in reports[0]}}
             with (directory / "loss.jsonl").open("a", encoding="utf-8") as stream:
                 stream.write(json.dumps(record) + "\n")
-            if iteration % 10 == 0 or iteration == 1:
+            if iteration % 25 == 0 or iteration == 1:
                 print(json.dumps(record), flush=True)
             if iteration % args.save_every == 0:
                 save()

@@ -1,5 +1,6 @@
 """Setup verification, training, and uncut sequence replay."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import time
@@ -129,12 +130,16 @@ def replay(args):
     (directory / f"{sequence.name}.txt").write_text("\n".join(rows) + "\n")
     warm = latencies[min(10, len(latencies) - 1):]
     result = {"run_id": runtime.run_id, "sequence": sequence.name, "checkpoint": args.checkpoint,
+              "manifest_sha256": hashlib.sha256(Path(args.manifest).read_bytes()).hexdigest(),
               "frames": len(latencies), "source_loop_fps": len(latencies) / (time.monotonic() - start),
               "frame_processing_ms": dict(zip(["p50", "p95", "p99"], np.percentile(warm, [50, 95, 99]).tolist())),
               "allocated_ids": runtime.next_identity - 1, "capacity_rejections": runtime.capacity_rejections,
               "device": args.device, "threshold": args.threshold, "birth_threshold": args.birth_threshold,
               "continuity_threshold": args.continuity_threshold,
               "limit": "Laptop development replay; sequence subset; not a Nano benchmark. Untrained if checkpoint is null."}
+    if args.checkpoint:
+        with Path(args.checkpoint).open("rb") as stream:
+            result["checkpoint_sha256"] = hashlib.file_digest(stream, "sha256").hexdigest()
     (directory / "run.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, indent=2))
 
@@ -181,7 +186,12 @@ def main():
             sub.add_argument("--lr", type=float, default=2e-4)
             sub.add_argument("--seed", type=int, default=42)
             sub.add_argument("--save-every", type=int, default=50)
-            sub.add_argument("--resume")
+            sub.add_argument("--feature-cache", default=str(ROOT / "data/features"))
+            sub.add_argument("--no-feature-cache", action="store_const", const=None, dest="feature_cache")
+            sub.add_argument("--cache-mib", type=int, default=0, help="Optional bounded GPU working set; default disk cache leaves VRAM for longer sequences")
+            checkpoint_group = sub.add_mutually_exclusive_group()
+            checkpoint_group.add_argument("--resume")
+            checkpoint_group.add_argument("--initialize", help="Load candidate weights only; start a new optimizer and dataset experiment")
         elif name == "replay":
             sub.add_argument("--sequence", required=True)
             sub.add_argument("--split", default="holdout", choices=["train", "dev", "holdout"])

@@ -110,6 +110,11 @@ def prepare(archive_name, frame_limit, remote):
             info = config["Sequence"]
             gt = directory / "gt" / "gt.txt"
             frames = sorted(int(p.stem) for p in (directory / "img1").glob("*.jpg"))
+            if frame_limit:
+                frames = [frame for frame in frames if frame <= frame_limit]
+            expected = list(range(1, min(frame_limit or int(info["seqLength"]), int(info["seqLength"])) + 1))
+            if frames != expected:
+                raise RuntimeError(f"Incomplete sequence extraction: {sequence}")
             records.append({"sequence": sequence, "split": split, "archive": archive_name,
                 "fps": int(info["frameRate"]), "width": int(info["imWidth"]), "height": int(info["imHeight"]),
                 "source_frames": int(info["seqLength"]), "available_frames": frames,

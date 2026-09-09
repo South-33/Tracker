@@ -20,7 +20,21 @@ Use an eight-hour work window as a planning assumption if no duration is supplie
 
 Use the ordered phases below. Their time allowances guide prioritization, not a reason to abandon a promising experiment. Finish early if the stated deliverables are complete. If time runs out, preserve resumable work and identify exactly what remains unproved. Never mark the full tracking objective achieved because the work window ended.
 
-Make routine implementation decisions autonomously. Continue independent work if a dataset, weight download, export, or device connection is unavailable. Record an actual blocker and its failed command instead of inventing results. Do not buy compute, use paid inference APIs, deploy to SmartCampus, or publish results as part of this run.
+Make routine implementation decisions autonomously. Continue independent work if a dataset, weight download, export, or device connection is unavailable. Record an actual blocker and its failed command instead of inventing results. Do not buy compute, use paid inference APIs, deploy to SmartCampus, or claim unverified results as part of this run. The user authorized committing and pushing this project and its handoff to `https://github.com/South-33/Tracker.git`; keep datasets, environments and large model artifacts out of ordinary Git history.
+
+### Make substantial progress; avoid rabbit holes
+
+The user wants an ambitious researcher and builder. Aim for the tracking capability described above. The current implementation is a starting point, not an architecture to defend at any cost.
+
+- Read RESULTS.md and inspect actual failure clips first. Reassess the leading hypothesis after each substantial experiment. Be willing to change the memory representation, training objective, temporal curriculum, pretrained foundation, or entire model when evidence warrants it.
+- Revisit primary literature and released implementations when the current approach stalls. Ask what the strongest relevant work does about this specific failure. Turn that reading into one concrete experiment; do not keep collecting papers without training and evaluating a candidate.
+- Choose the biggest plausible improvement that the laptop can test meaningfully. Examples include a real long-sequence identity curriculum, learned global re-entry, a strong pretrained temporal representation, or teacher distillation. Do not spend the night making many tiny threshold tweaks or architectural probes that never reach a real training run.
+- Use a brief correctness and memory check to protect a substantial experiment, then run it on enough varied sequences and difficult events to learn something. A two-clip overfit or tiny probe is a debugging gate, not the deliverable or an endlessly repeated research stage.
+- Keep one main candidate and at most one serious challenger. State the predicted benefit, the evidence that would reject it, and the compute allowance before a large run. Preserve the previous checkpoint so a bold change is reversible.
+- If two iterations of the same minor fix do not address the observed failure, stop polishing it. Reconsider the cause, consult relevant literature, and make a more consequential change. Do not blindly increase the retry count or add unrelated complexity.
+- Spend most GPU time on meaningful training and evaluation. Cache frozen representations, use mixed precision and bounded memory where valid, and measure speed without weakening the identity tests. Reuse verified setup and datasets rather than rebuilding the environment.
+- Novelty alone is not success. Compare to a strong baseline, inspect failures, preserve honest held-out splits, and keep the 15 FPS Nano constraint in view. Conversely, do not reject a promising large step just because the current scaffold does not support it yet.
+- Maintain a short decision table: hypothesis, substantial change, result, keep/reject/next. Reserve a clear handoff with checkpoint hashes, exact commands and unresolved limitations. Do not consume the remaining account allowance merely to keep working; the user needs headroom to continue with Sol.
 
 ## What the research supports
 

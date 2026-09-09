@@ -17,6 +17,9 @@ dependencies = [
 [project.scripts]
 remember = "tracker.cli:main"
 
+[project.optional-dependencies]
+baseline = ["lap==0.5.12", "cython-bbox==0.1.5"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

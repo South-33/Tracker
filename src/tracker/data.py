@@ -1,5 +1,6 @@
 """DanceTrack sequence access with explicit frame availability and source timestamps."""
 import json
+import hashlib
 from pathlib import Path
 import cv2
 import numpy as np
@@ -14,7 +15,10 @@ class Sequence:
         self.directory = ROOT / "data" / "dancetrack" / self.name
         self.fps = record["fps"]
         self.frames = record["available_frames"]
-        rows = np.loadtxt(self.directory / "gt" / "gt.txt", delimiter=",", ndmin=2)
+        annotations = self.directory / "gt" / "gt.txt"
+        if hashlib.sha256(annotations.read_bytes()).hexdigest() != record["gt_sha256"]:
+            raise ValueError(f"Ground truth changed since the split was frozen: {self.name}")
+        rows = np.loadtxt(annotations, delimiter=",", ndmin=2)
         self.truth = {}
         for number in self.frames:
             selected = rows[rows[:, 0] == number]

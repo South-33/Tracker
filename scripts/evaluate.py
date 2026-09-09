@@ -1,5 +1,6 @@
 """Official TrackEval metrics for an explicitly labelled, contiguous DanceTrack subset."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -16,6 +17,9 @@ def main():
     args = parser.parse_args()
     directory = Path(args.run).resolve()
     metadata = json.loads((directory / "run.json").read_text())
+    manifest_hash = hashlib.sha256(Path(args.manifest).read_bytes()).hexdigest()
+    if metadata.get("manifest_sha256", manifest_hash) != manifest_hash:
+        raise ValueError("Evaluation manifest differs from the prediction run")
     record = next(record for record in json.loads(Path(args.manifest).read_text())["records"] if record["sequence"] == metadata["sequence"])
     frames = record["available_frames"]
     if frames != list(range(1, len(frames) + 1)):
@@ -42,6 +46,7 @@ def main():
     result, messages = evaluator.evaluate([dataset], [trackeval.metrics.HOTA(), trackeval.metrics.CLEAR(), trackeval.metrics.Identity()])
     combined = result[dataset.get_name()][directory.name]["COMBINED_SEQ"]["pedestrian"]
     summary = {"scope": "DanceTrack contiguous sequence prefix subset; not official full-benchmark scores",
+               "manifest_sha256": manifest_hash, "checkpoint_sha256": metadata.get("checkpoint_sha256"),
                "split": record["split"], "sequence": sequence, "frames": len(frames), "source_frames": record["source_frames"],
                "HOTA": float(np.mean(combined["HOTA"]["HOTA"])) * 100,
                "DetA": float(np.mean(combined["HOTA"]["DetA"])) * 100,
