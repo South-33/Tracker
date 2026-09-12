@@ -408,6 +408,9 @@ def context_issues(ledger: dict, root: Path = ROOT) -> list[str]:
     issues = []
     if not (root / "AGENTS.md").is_file():
         issues.append("missing AGENTS.md project working rules")
+    for path in root.glob("*.md"):
+        if path.name not in {"tracker.md", "AGENTS.md"}:
+            issues.append(f"extra project document {path.name}; consolidate into tracker.md")
 
     tracker = root / "tracker.md"
     if not tracker.is_file():

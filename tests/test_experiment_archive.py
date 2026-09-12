@@ -65,3 +65,16 @@ def test_preexisting_result_cannot_make_a_noop_run_successful(tmp_path):
     (tmp_path / "result.json").write_text('{"old":true}')
     record = start_experiment(tmp_path, "stale", script, [], {}, "result.json")
     assert finish_experiment(tmp_path, record, 0)["status"] == "stale_result"
+
+
+def test_context_is_saved_as_json_without_duplicate_markdown(tmp_path):
+    import hashlib
+    script = setup_source(tmp_path)
+    original = "# Tracker\r\n\r\nCafé\n".encode("utf-8")
+    (tmp_path / "tracker.md").write_bytes(original)
+    record_path = start_experiment(tmp_path, "context", script, [], {}, "result.json")
+    record = json.loads(record_path.read_text(encoding="utf-8"))
+    restored = record["context_utf8"]["tracker.md"].encode("utf-8")
+    assert restored == original
+    assert hashlib.sha256(restored).hexdigest() == record["source_sha256"]["tracker.md"]
+    assert not list(record_path.parent.rglob("*.md"))

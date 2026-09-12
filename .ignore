@@ -1,3 +1,4 @@
 # Keep ordinary rg searches on active source. Archived source is available with --no-ignore.
 evidence/attempts/**/source/
+evidence/attempts/**/record.json
 evidence/legacy/surviving-source/

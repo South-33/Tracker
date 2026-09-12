@@ -52,13 +52,19 @@ def start_experiment(root: Path, name: str, script: str | Path, command: list[st
     sources.update(path for path in script.parent.rglob("*.py") if "__pycache__" not in path.parts)
     for folder in ("src", "scripts", "experiments"):
         sources.update(path for path in (root / folder).rglob("*.py") if "__pycache__" not in path.parts)
-    for filename in ("pyproject.toml", "requirements-laptop.txt", "AGENTS.md", "GOAL.md", "tracker.md", "research-cycle.json"):
+    for filename in ("pyproject.toml", "requirements-laptop.txt", "AGENTS.md", "tracker.md", "research-cycle.json"):
         if (root / filename).is_file():
             sources.add(root / filename)
     source_hashes = {}
+    context_utf8 = {}
     for source in sorted(sources):
         source = inside(root, source)
         relative = source.relative_to(root)
+        if source.suffix.lower() == ".md":
+            raw = source.read_bytes()
+            context_utf8[relative.as_posix()] = raw.decode("utf-8")
+            source_hashes[relative.as_posix()] = hashlib.sha256(raw).hexdigest()
+            continue
         destination = directory / "source" / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
@@ -69,12 +75,12 @@ def start_experiment(root: Path, name: str, script: str | Path, command: list[st
     except (OSError, subprocess.CalledProcessError):
         revision = None
     record = {
-        "version": 1, "name": name, "cycle": ledger.get("cycle"),
+        "version": 2, "name": name, "cycle": ledger.get("cycle"),
         "started_at": now.isoformat(), "status": "running", "git_revision": revision,
         "command": command, "script": script.relative_to(root).as_posix(),
         "expected_output": output.relative_to(root).as_posix(),
-        "source_sha256": source_hashes, "ledger": ledger,
-        "reproduction": "Restore the source snapshot at repository root and supply the ledger's exact local input hashes. External dependencies/data/checkpoints are not bundled.",
+        "source_sha256": source_hashes, "context_utf8": context_utf8, "ledger": ledger,
+        "reproduction": "Restore source/ at repository root. Restore each context_utf8 entry to its original relative path using UTF-8 bytes without newline conversion; source_sha256 verifies both forms. Supply the ledger's exact local inputs. External dependencies/data/checkpoints are not bundled.",
     }
     if output.is_file():
         record["output_before"] = {"sha256": digest(output), "mtime_ns": output.stat().st_mtime_ns}

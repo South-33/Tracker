@@ -3,7 +3,7 @@
   "cycle": "coverage-and-causal-learning",
   "status": "decision_required",
   "jump_claim": "Reach the useful 80% tracking regime by choosing a substantial temporal model/state/training intervention, measured on complete causal rollouts with sustained identity coverage. Do not optimize an oracle component score as if it were the system goal.",
-  "next_action": "Restore one runnable reference and score full already-exposed dev using metric version 2. Then declare the substantial bet, with at most three exploratory experiments only for decisive unknowns. Read GOAL.md for scope and acceptance.",
+  "next_action": "Restore one runnable reference and score full already-exposed dev using metric version 2. Then declare the substantial bet, with at most three exploratory experiments only for decisive unknowns. Read tracker.md for scope and acceptance.",
   "incumbent": null,
   "exploration_budget": 3,
   "diagnostics": [],
@@ -34,7 +34,12 @@
     "target_recall": 0.8,
     "precision_floor": 0.98,
     "gate_sequence": "dancetrack0096",
-    "final_holdouts": ["dancetrack0004", "dancetrack0005", "dancetrack0007", "dancetrack0010"],
+    "final_holdouts": [
+      "dancetrack0004",
+      "dancetrack0005",
+      "dancetrack0007",
+      "dancetrack0010"
+    ],
     "continuous_births_required": true,
     "reentry_unconditional_recovery": 0.8,
     "reentry_wrong_link_rate_max": 0.01,

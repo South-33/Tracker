@@ -97,13 +97,13 @@ def test_current_context_is_clean():
     assert context_issues(load_ledger()) == []
 
 
-def test_context_rejects_status_drift_but_allows_normal_docs(tmp_path):
+def test_context_rejects_status_drift_and_extra_project_docs(tmp_path):
     ledger = copy.deepcopy(load_ledger())
     (tmp_path / "tracker.md").write_text("<!-- cycle-status: complete -->\n", encoding="utf-8")
     (tmp_path / "AGENTS.md").write_text("rules\n", encoding="utf-8")
     (tmp_path / "README.md").write_text("stale\n", encoding="utf-8")
     issues = context_issues(ledger, tmp_path)
-    assert not any("README" in issue for issue in issues)
+    assert any("extra project document README.md" in issue for issue in issues)
     assert any("cycle marker disagrees" in issue for issue in issues)
 
 
