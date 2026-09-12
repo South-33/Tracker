@@ -1,0 +1,224 @@
+{
+  "scope": "train-only leave-one-sequence-out survival-conditioned safety diagnostic; no dev/gate frames",
+  "question": "Does excluding already-corrupt state from the local safety training distribution materially improve the fixed zero-threshold first-write guard?",
+  "training": {
+    "holdout": "dancetrack0012",
+    "steps": 3000,
+    "batch": 256,
+    "lr": 0.0003,
+    "seed": 431,
+    "loss": "equal mean BCE over SAFE and HAZARD rows present in each minibatch",
+    "decision": "accept local link iff hazard logit < 0; fixed before training",
+    "architecture": "16 -> GELU(32) -> GELU(16) -> 1",
+    "rows": 39751,
+    "hazard_rows": 3903
+  },
+  "dataset": [
+    {
+      "sequence": "dancetrack0001",
+      "rows": 4503,
+      "safe_rows": 4362,
+      "hazard_rows": 141,
+      "safe_recoveries": 50,
+      "roster": 7,
+      "real_roster_slots": 7
+    },
+    {
+      "sequence": "dancetrack0002",
+      "rows": 8340,
+      "safe_rows": 7575,
+      "hazard_rows": 765,
+      "safe_recoveries": 94,
+      "roster": 8,
+      "real_roster_slots": 8
+    },
+    {
+      "sequence": "dancetrack0006",
+      "rows": 9026,
+      "safe_rows": 7303,
+      "hazard_rows": 1723,
+      "safe_recoveries": 76,
+      "roster": 10,
+      "real_roster_slots": 8
+    },
+    {
+      "sequence": "dancetrack0008",
+      "rows": 4591,
+      "safe_rows": 3673,
+      "hazard_rows": 918,
+      "safe_recoveries": 38,
+      "roster": 7,
+      "real_roster_slots": 6
+    },
+    {
+      "sequence": "dancetrack0012",
+      "rows": 11509,
+      "safe_rows": 6229,
+      "hazard_rows": 5280,
+      "safe_recoveries": 109,
+      "roster": 16,
+      "real_roster_slots": 12
+    },
+    {
+      "sequence": "dancetrack0015",
+      "rows": 10335,
+      "safe_rows": 10185,
+      "hazard_rows": 150,
+      "safe_recoveries": 37,
+      "roster": 9,
+      "real_roster_slots": 9
+    },
+    {
+      "sequence": "dancetrack0082",
+      "rows": 1667,
+      "safe_rows": 1638,
+      "hazard_rows": 29,
+      "safe_recoveries": 5,
+      "roster": 21,
+      "real_roster_slots": 21
+    },
+    {
+      "sequence": "dancetrack0083",
+      "rows": 1289,
+      "safe_rows": 1112,
+      "hazard_rows": 177,
+      "safe_recoveries": 6,
+      "roster": 23,
+      "real_roster_slots": 23
+    }
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "loss": 0.6937805414199829
+    },
+    {
+      "step": 250,
+      "loss": 0.43015047907829285
+    },
+    {
+      "step": 500,
+      "loss": 0.2863929867744446
+    },
+    {
+      "step": 750,
+      "loss": 0.16394618153572083
+    },
+    {
+      "step": 1000,
+      "loss": 0.3022005558013916
+    },
+    {
+      "step": 1250,
+      "loss": 0.1868036985397339
+    },
+    {
+      "step": 1500,
+      "loss": 0.3432973623275757
+    },
+    {
+      "step": 1750,
+      "loss": 0.201958566904068
+    },
+    {
+      "step": 2000,
+      "loss": 0.18718302249908447
+    },
+    {
+      "step": 2250,
+      "loss": 0.13709290325641632
+    },
+    {
+      "step": 2500,
+      "loss": 0.22699511051177979
+    },
+    {
+      "step": 2750,
+      "loss": 0.1739218533039093
+    },
+    {
+      "step": 3000,
+      "loss": 0.20569705963134766
+    }
+  ],
+  "heldout_clean_static": {
+    "rows": 11509,
+    "safe_rows": 6229,
+    "hazard_rows": 5280,
+    "accepted": 4972,
+    "accepted_safe": 4854,
+    "accepted_hazard": 118,
+    "accepted_precision": 0.9762670957361222,
+    "safe_acceptance": 0.779258307914593,
+    "hazard_veto_recall": 0.9776515151515152
+  },
+  "heldout_causal_with_oracle_recovery": {
+    "all": {
+      "true_positives": 10063,
+      "false_positives": 2706,
+      "missed_people": 2969,
+      "precision": 0.7880805074790508,
+      "recall": 0.7721761817065684,
+      "identity_switches": 977,
+      "public_id_reuses": 7308,
+      "visible_segments": 121,
+      "strict_visible_segment_survival": 0.09090909090909091,
+      "public_ids_used": 16,
+      "accepted_local": 12671,
+      "wrong_local": 9481,
+      "local_precision": 0.25175597821797807,
+      "oracle_recoveries": 98,
+      "first_wrong_frame": 41
+    },
+    "learned": {
+      "true_positives": 2081,
+      "false_positives": 17,
+      "missed_people": 10951,
+      "precision": 0.9918970448045757,
+      "recall": 0.15968385512584407,
+      "identity_switches": 39,
+      "public_id_reuses": 137,
+      "visible_segments": 121,
+      "strict_visible_segment_survival": 0.7768595041322314,
+      "public_ids_used": 12,
+      "accepted_local": 1917,
+      "wrong_local": 152,
+      "local_precision": 0.9207094418362024,
+      "oracle_recoveries": 181,
+      "first_wrong_frame": 47
+    },
+    "oracle": {
+      "true_positives": 6274,
+      "false_positives": 64,
+      "missed_people": 6758,
+      "precision": 0.9899021773430104,
+      "recall": 0.4814303253529773,
+      "identity_switches": 79,
+      "public_id_reuses": 15,
+      "visible_segments": 121,
+      "strict_visible_segment_survival": 0.8842975206611571,
+      "public_ids_used": 12,
+      "accepted_local": 6229,
+      "wrong_local": 0,
+      "local_precision": 1.0,
+      "oracle_recoveries": 109,
+      "first_wrong_frame": null
+    }
+  },
+  "detection_cache": {
+    "memory_hits": 3729,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 324.05543518066406,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

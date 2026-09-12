@@ -1,0 +1,169 @@
+{
+  "scope": "train-only leave-one-sequence-out one-frame quarantine retry diagnostic; no dev/gate frames",
+  "heldout": "dancetrack0012",
+  "claim": "A fresh safety veto can be treated as a one-frame quarantine rather than generic aging; ordinary reciprocal IoU may self-heal false vetoes without advancing suspicious state.",
+  "settings": {
+    "steps": 3000,
+    "decision": "fresh guard accepts iff logit >= 0; retry uses ordinary reciprocal IoU, then the same fixed guard"
+  },
+  "per_sequence": {
+    "dancetrack0001": {
+      "rows": 4587,
+      "safe": 4526,
+      "hazards": 61,
+      "roster": 7,
+      "real_roster_slots": 7
+    },
+    "dancetrack0002": {
+      "rows": 8720,
+      "safe": 8517,
+      "hazards": 203,
+      "roster": 8,
+      "real_roster_slots": 8
+    },
+    "dancetrack0006": {
+      "rows": 8809,
+      "safe": 8432,
+      "hazards": 377,
+      "roster": 10,
+      "real_roster_slots": 8
+    },
+    "dancetrack0008": {
+      "rows": 4790,
+      "safe": 4632,
+      "hazards": 158,
+      "roster": 7,
+      "real_roster_slots": 6
+    },
+    "dancetrack0012": {
+      "rows": 9945,
+      "safe": 9316,
+      "hazards": 629,
+      "roster": 16,
+      "real_roster_slots": 12
+    },
+    "dancetrack0015": {
+      "rows": 10324,
+      "safe": 10219,
+      "hazards": 105,
+      "roster": 9,
+      "real_roster_slots": 9
+    },
+    "dancetrack0082": {
+      "rows": 1667,
+      "safe": 1641,
+      "hazards": 26,
+      "roster": 21,
+      "real_roster_slots": 21
+    },
+    "dancetrack0083": {
+      "rows": 1266,
+      "safe": 1170,
+      "hazards": 96,
+      "roster": 23,
+      "real_roster_slots": 23
+    }
+  },
+  "curve": [
+    {
+      "step": 1,
+      "loss": 0.6980879902839661
+    },
+    {
+      "step": 250,
+      "loss": 0.49975815415382385
+    },
+    {
+      "step": 500,
+      "loss": 0.41728633642196655
+    },
+    {
+      "step": 750,
+      "loss": 0.37716588377952576
+    },
+    {
+      "step": 1000,
+      "loss": 0.3471824526786804
+    },
+    {
+      "step": 1250,
+      "loss": 0.37537139654159546
+    },
+    {
+      "step": 1500,
+      "loss": 0.33302754163742065
+    },
+    {
+      "step": 1750,
+      "loss": 0.27634865045547485
+    },
+    {
+      "step": 2000,
+      "loss": 0.28177621960639954
+    },
+    {
+      "step": 2250,
+      "loss": 0.36142438650131226
+    },
+    {
+      "step": 2500,
+      "loss": 0.2856888175010681
+    },
+    {
+      "step": 2750,
+      "loss": 0.34901320934295654
+    },
+    {
+      "step": 3000,
+      "loss": 0.3484860062599182
+    }
+  ],
+  "heldout_result": {
+    "rows": 9945,
+    "safe_rows": 9316,
+    "hazard_rows": 629,
+    "accepted": 4761,
+    "accepted_safe": 4727,
+    "accepted_hazard": 34,
+    "accepted_precision": 0.9928586431421971,
+    "safe_acceptance": 0.5074066122799484,
+    "hazard_veto_recall": 0.9459459459459459,
+    "false_veto_retry": {
+      "events": 4589,
+      "retry_link_rate": 0.7995205927217258,
+      "retry_correct_rate": 0.7206363042057093,
+      "retry_precision_when_linked": 0.9013355137639684
+    },
+    "true_veto_retry": {
+      "events": 595,
+      "retry_link_rate": 0.7210084033613445,
+      "retry_correct_rate": 0.25546218487394956,
+      "retry_precision_when_linked": 0.3543123543123543
+    },
+    "same_guard_retry": {
+      "linked_veto_events": 4098,
+      "accepted": 269,
+      "accepted_correct": 265,
+      "accepted_precision": 0.9851301115241635,
+      "false_veto_recovered": 264,
+      "false_veto_linked": 3669,
+      "false_veto_guarded_recovery_rate": 0.07195421095666395
+    }
+  },
+  "cache": {
+    "memory_hits": 1162,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 324.05543518066406,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "scope": "train-only causal expanding conflict-component diagnostic on heldout dancetrack0012; no dev/gate frames",
+  "claim": "Rank-based anonymous proposal competition can form a bounded protected conflict component without exact pair membership, then expand it causally while a joint one-to-one motion bank carries identity through the unresolved window.",
+  "oracle_use": "GT is used only to mine/score hard and safe rows and to initialize the two clean pre-event protected boxes. Component formation, proposal pools, expansion, and the hypothesis bank use only causal detector boxes and public protected track state.",
+  "settings": {
+    "horizon_frames": 8,
+    "hypothesis_cap": 8,
+    "candidate_rank": 2,
+    "max_tracks": 4,
+    "max_anonymous_pool": 8,
+    "initial_component": "connected tracks sharing any top-2 proposal by IoU",
+    "expansion": "add outside protected tracks whose top-2 proposal set intersects the current anonymous bundle pool",
+    "transition_cost": "sum squared constant-velocity center residual normalized by previous box width/height",
+    "publication": "none for unresolved component members during the deferred window",
+    "learning": false
+  },
+  "failure_composition": {
+    "hard_total": 533,
+    "other_person": 447,
+    "background_or_unowned": 86,
+    "other_person_fraction": 0.8386491557223265,
+    "pair_events_with_previous_competitor": 412
+  },
+  "formation": {
+    "safe_rows": 11671,
+    "safe_initially_suppressed": 3136,
+    "safe_initial_collateral": 0.26870019706965986,
+    "mean_seed_component_size_on_hard": 2.21011673151751
+  },
+  "episodes": {
+    "raw_pair_events": 412,
+    "deduplicated": 328,
+    "oracle_valid_eight_frame": 140,
+    "seeded_target_component": 87,
+    "seed_capture": 0.6214285714285714,
+    "initial_true_pair_contained": 83,
+    "initial_pair_containment": 0.5928571428571429,
+    "final_true_pair_contained": 87,
+    "final_pair_containment": 0.6214285714285714,
+    "mean_expansions": 0.8390804597701149,
+    "mean_final_component_size": 3.057471264367816
+  },
+  "heldout": {
+    "overall_target_recovery": 0.17142857142857143,
+    "conditional_target_recovery": 0.27586206896551724,
+    "both_identities_correct_overall": 0.12857142857142856,
+    "correct_target_episodes": 24,
+    "median_best_second_margin": 0.001052515028277412,
+    "oracle_bundle_reference": 0.6642857142857143,
+    "oracle_fraction_preserved": 0.25806451612903225
+  },
+  "criterion": {
+    "overall_target_recovery_min": 0.5,
+    "safe_initial_collateral_max": 0.1
+  },
+  "decision": "fail",
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

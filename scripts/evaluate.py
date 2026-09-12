@@ -53,7 +53,13 @@ def main():
                "AssA": float(np.mean(combined["HOTA"]["AssA"])) * 100,
                "IDF1": float(combined["Identity"]["IDF1"]) * 100,
                "IDSW": int(combined["CLEAR"]["IDSW"]), "Frag": int(combined["CLEAR"]["Frag"]),
-               "Recall": float(combined["CLEAR"]["CLR_Re"]) * 100, "Precision": float(combined["CLEAR"]["CLR_Pr"]) * 100}
+               "IDTP": int(combined["Identity"]["IDTP"]), "IDFN": int(combined["Identity"]["IDFN"]),
+               "IDFP": int(combined["Identity"]["IDFP"]),
+               "TruePositives": int(combined["CLEAR"]["CLR_TP"]),
+               "MissedPeople": int(combined["CLEAR"]["CLR_FN"]),
+               "FalsePositives": int(combined["CLEAR"]["CLR_FP"]),
+               "Recall": float(combined["CLEAR"]["CLR_Re"]) * 100,
+               "Precision": float(combined["CLEAR"]["CLR_Pr"]) * 100}
     (directory / "metrics.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))
 

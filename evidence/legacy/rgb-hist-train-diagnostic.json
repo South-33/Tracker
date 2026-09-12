@@ -1,0 +1,38 @@
+{
+  "scope": "train-only heldout dancetrack0012 raw-RGB descriptor diagnostic; no dev/gate frames",
+  "question": "Does a cheap pose-tolerant upper-body HSV histogram provide identity evidence missing from detector features?",
+  "selectors": {
+    "iou": {
+      "all": 11282,
+      "correct": 9046,
+      "hard": 2236,
+      "hard_correct": 0,
+      "accuracy": 0.8018081900372275,
+      "hard_recovery": 0.0
+    },
+    "hsv": {
+      "all": 11282,
+      "correct": 8180,
+      "hard": 2236,
+      "hard_correct": 453,
+      "accuracy": 0.7250487502215919,
+      "hard_recovery": 0.20259391771019677
+    }
+  },
+  "cache": {
+    "memory_hits": 1201,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

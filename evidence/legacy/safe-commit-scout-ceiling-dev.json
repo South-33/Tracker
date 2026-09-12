@@ -1,0 +1,201 @@
+{
+  "scope": "non-gate dev ceiling; 3-hit teacher-clean identity establishment; three fixed scouts; oracle safe-to-commit; disposable private shadow",
+  "settings": {
+    "candidate_count": 96,
+    "anchor_observations": 3,
+    "birth_score": 0.4,
+    "clean_iou": 0.5,
+    "feature_cache": "data/features",
+    "detection_cache": "data/detections",
+    "cache_mib": 512
+  },
+  "per_sequence": [
+    {
+      "true_positives": 11446,
+      "false_positives": 0,
+      "missed_people": 1167,
+      "precision": 1.0,
+      "recall": 0.9074764132244509,
+      "identity_switches": 0,
+      "public_id_reuses": 0,
+      "visible_segments": 65,
+      "strict_visible_segment_survival": 1.0,
+      "public_ids_used": 6,
+      "births": 6,
+      "active_visible_rows": 12595,
+      "owner_proposal_available": 12594,
+      "scout_covered_rows": 11440,
+      "trusted_scout_hits": 11519,
+      "shadow_scout_hits": 11464,
+      "appearance_scout_hits": 2524,
+      "oracle_commits": 11440,
+      "private_shadow_updates": 1520,
+      "candidate_collisions_deferred": 0,
+      "ambiguous_candidate_rejections": 290,
+      "birth_ambiguous_rejections": 0,
+      "sequence": "dancetrack0016",
+      "frames": 2163,
+      "progress": [
+        {
+          "frame": 250,
+          "active_ids": 6,
+          "outputs": 6,
+          "births": 6
+        },
+        {
+          "frame": 500,
+          "active_ids": 6,
+          "outputs": 6,
+          "births": 6
+        },
+        {
+          "frame": 750,
+          "active_ids": 6,
+          "outputs": 6,
+          "births": 6
+        },
+        {
+          "frame": 1000,
+          "active_ids": 6,
+          "outputs": 5,
+          "births": 6
+        },
+        {
+          "frame": 1250,
+          "active_ids": 6,
+          "outputs": 6,
+          "births": 6
+        },
+        {
+          "frame": 1500,
+          "active_ids": 6,
+          "outputs": 6,
+          "births": 6
+        },
+        {
+          "frame": 1750,
+          "active_ids": 6,
+          "outputs": 6,
+          "births": 6
+        },
+        {
+          "frame": 2000,
+          "active_ids": 6,
+          "outputs": 6,
+          "births": 6
+        },
+        {
+          "frame": 2163,
+          "active_ids": 6,
+          "outputs": 5,
+          "births": 6
+        }
+      ],
+      "owner_proposal_availability": 0.9999206034140532,
+      "scout_coverage": 0.9082969432314411,
+      "trusted_scout_hit_rate": 0.9145692735212386,
+      "shadow_scout_hit_rate": 0.9102024612941644,
+      "appearance_scout_hit_rate": 0.200396982929734
+    },
+    {
+      "true_positives": 12746,
+      "false_positives": 0,
+      "missed_people": 7428,
+      "precision": 1.0,
+      "recall": 0.6318033111926241,
+      "identity_switches": 0,
+      "public_id_reuses": 0,
+      "visible_segments": 169,
+      "strict_visible_segment_survival": 1.0,
+      "public_ids_used": 40,
+      "births": 40,
+      "active_visible_rows": 19552,
+      "owner_proposal_available": 18291,
+      "scout_covered_rows": 12706,
+      "trusted_scout_hits": 13843,
+      "shadow_scout_hits": 13511,
+      "appearance_scout_hits": 3320,
+      "oracle_commits": 12706,
+      "private_shadow_updates": 9695,
+      "candidate_collisions_deferred": 0,
+      "ambiguous_candidate_rejections": 1821,
+      "birth_ambiguous_rejections": 21,
+      "sequence": "dancetrack0020",
+      "frames": 583,
+      "progress": [
+        {
+          "frame": 250,
+          "active_ids": 40,
+          "outputs": 25,
+          "births": 40
+        },
+        {
+          "frame": 500,
+          "active_ids": 40,
+          "outputs": 23,
+          "births": 40
+        },
+        {
+          "frame": 583,
+          "active_ids": 40,
+          "outputs": 18,
+          "births": 40
+        }
+      ],
+      "owner_proposal_availability": 0.9355053191489362,
+      "scout_coverage": 0.6498567921440261,
+      "trusted_scout_hit_rate": 0.708009410801964,
+      "shadow_scout_hit_rate": 0.6910290507364976,
+      "appearance_scout_hit_rate": 0.1698036006546645
+    }
+  ],
+  "combined": {
+    "true_positives": 24192,
+    "false_positives": 0,
+    "missed_people": 8595,
+    "identity_switches": 0,
+    "public_id_reuses": 0,
+    "visible_segments": 234,
+    "births": 46,
+    "active_visible_rows": 32147,
+    "owner_proposal_available": 30885,
+    "scout_covered_rows": 24146,
+    "trusted_scout_hits": 25362,
+    "shadow_scout_hits": 24975,
+    "appearance_scout_hits": 5844,
+    "oracle_commits": 24146,
+    "private_shadow_updates": 11215,
+    "candidate_collisions_deferred": 0,
+    "ambiguous_candidate_rejections": 2111,
+    "birth_ambiguous_rejections": 21,
+    "precision": 1.0,
+    "recall": 0.7378534175130387,
+    "strict_visible_segment_survival": 1.0,
+    "owner_proposal_availability": 0.9607428375898217,
+    "scout_coverage": 0.75111207888761,
+    "trusted_scout_hit_rate": 0.7889383146172271,
+    "shadow_scout_hit_rate": 0.7768998662394625,
+    "appearance_scout_hit_rate": 0.18178990263477152,
+    "sequences": [
+      "dancetrack0016",
+      "dancetrack0020"
+    ],
+    "frames": 2746
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 2746,
+    "fresh_decodes": 0,
+    "resident_mib": 134.24585723876953,
+    "limit_mib": 512.0,
+    "directory": "data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

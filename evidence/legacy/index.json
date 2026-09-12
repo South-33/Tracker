@@ -1,0 +1,384 @@
+{
+  "captured": "2026-09-12",
+  "status": "Historical observations, not current acceptance evidence. Source completeness and old metric semantics are unverified. No result was rerun during archival.",
+  "results": [
+    {
+      "path": "evidence/legacy/aged-reentry-ceiling-dev.json",
+      "original": "runs/aged-reentry-ceiling-dev.json",
+      "sha256": "884d9aa0303568edde1f33c688984fe79ad65552b8c4404dd9fa42a6b9aea309",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/anchor-gap-train-diagnostic.json",
+      "original": "runs/anchor-gap-train-diagnostic.json",
+      "sha256": "c61b3359a1f318f1854b7c07974c7227b99ed8b28a4a4c84f47de51fea4c0903",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/backward-temporal-linker-train-diagnostic.json",
+      "original": "runs/backward-temporal-linker-train-diagnostic.json",
+      "sha256": "ec43c795e7830b9d8f1632300b3f733f9d31add8244bb19c54c834c847bf677d",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/bounded-fork-ceiling-dev.json",
+      "original": "runs/bounded-fork-ceiling-dev.json",
+      "sha256": "f668d58f77049a1f235660ea3390e0688d899a7cdf3741615d8e3b8840ef253a",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/clean-prefix-fuse-ceiling-dev.json",
+      "original": "runs/clean-prefix-fuse-ceiling-dev.json",
+      "sha256": "864d12dbd1997ecf5fd11ed797729c81f4f610e5ea17fabbbe7e49a5cddec6f8",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/clean-prefix-guard-train-diagnostic.json",
+      "original": "runs/clean-prefix-guard-train-diagnostic.json",
+      "sha256": "6002d823c98d61a904893f0fe8fdb59507e9c8b3aaa98fe07c7b851fb3b21a8d",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/clean-roster-safe-gate-reality-dev.json",
+      "original": "runs/clean-roster-safe-gate-reality-dev.json",
+      "sha256": "713fdc8f6744efe1da6e635c729cfd572795b3e5b14f719e2321e781184fc415",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/closed-roster-local-breakit-dev.json",
+      "original": "runs/closed-roster-local-breakit-dev.json",
+      "sha256": "97d10d75a74323f9d960130132d6c5d0bdf42fcd0f466f87549e375e57d67053",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/confidence-weighted-anchor-train-diagnostic.json",
+      "original": "runs/confidence-weighted-anchor-train-diagnostic.json",
+      "sha256": "f161a416abe6f7ce501a03cea42351e6360b6d37975fdda7ddd43c688e4cf982",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/dense-field-transport-train-diagnostic.json",
+      "original": "runs/dense-field-transport-train-diagnostic.json",
+      "sha256": "68f54b3e8cd8f52fa3db4c9f0c1bf2c77e1b4e46e6cc7c50bd48f3aaefa25cfe",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/easy-subset-train-ceiling.json",
+      "original": "runs/easy-subset-train-ceiling.json",
+      "sha256": "096d90261447b92ec0aff77deace059264bf1776ff8a94479d75640061abe512",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/expanding-bundle-train-diagnostic.json",
+      "original": "runs/expanding-bundle-train-diagnostic.json",
+      "sha256": "45079e7387ae942c1b9146c04c2cb69a2095ce404dcb0c9b890ac96e62eb22a3",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/footpoint-train-diagnostic.json",
+      "original": "runs/footpoint-train-diagnostic.json",
+      "sha256": "1f517570a6741f88c0e8e93631bed9d7a497e1a8fc50316ced7dbc7dd1861fbc",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/fresh-candidate-rank-train-diagnostic.json",
+      "original": "runs/fresh-candidate-rank-train-diagnostic.json",
+      "sha256": "2d256ec1fd9776ba7b66bbfd89085a205dde48a4f3094a5e5e9de5942f647855",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/fresh-context-train-diagnostic.json",
+      "original": "runs/fresh-context-train-diagnostic.json",
+      "sha256": "eb434fa9ebf60401e917bd9c74e96edabd1c8b692d107f1296ac27f034f03c08",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/fresh-short-beam-train-diagnostic.json",
+      "original": "runs/fresh-short-beam-train-diagnostic.json",
+      "sha256": "eaed4bbac8fa39edced8126c6aead90a1231ce56adc74f2027b811f5d39fdc44",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/hazard-onset-train-diagnostic.json",
+      "original": "runs/hazard-onset-train-diagnostic.json",
+      "sha256": "2f692688d99dde440f00d6dd3639a865955e58f06bfdf8b3df150f3fb3154d6c",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/identity-decoder-train-diagnostic.json",
+      "original": "runs/identity-decoder-train-diagnostic.json",
+      "sha256": "2b631f3676de9dc897ceaca4af4daba359d87b1bdc5f0b31c18aabda144a2bb4",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/identity-hard-train-diagnostic.json",
+      "original": "runs/identity-hard-train-diagnostic.json",
+      "sha256": "ef34c5607342603091cf7f4bfd8d911e6e273795edb230a9a3408c549191549d",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/interaction-motion-train-diagnostic.json",
+      "original": "runs/interaction-motion-train-diagnostic.json",
+      "sha256": "af88ea168aa718a97860751753bc12995da686b9654bd97ace502f8d9b52d432",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/joint-bundle-oracle-train-diagnostic.json",
+      "original": "runs/joint-bundle-oracle-train-diagnostic.json",
+      "sha256": "59c079ea3574b85e60726ff0be0b370676aab4bdfa710ae6f954e08bff4f516f",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/local-quarantine-ceiling-dev.json",
+      "original": "runs/local-quarantine-ceiling-dev.json",
+      "sha256": "b06473e7955ad1307e528096d85b99ade48070b7dbae9a342232ca624b90eff2",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/local-quarantine-dev.json",
+      "original": "runs/local-quarantine-dev.json",
+      "sha256": "013c7220470e552c87a8875642876fc28cb714ae2e29acf272f44342529e8049",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/local-recovery-ceiling-dev.json",
+      "original": "runs/local-recovery-ceiling-dev.json",
+      "sha256": "0ecaa5f2015b6209a96fab1076582d28281ae380302cbe436d03b590e576a8af",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/local-recovery-dev.json",
+      "original": "runs/local-recovery-dev.json",
+      "sha256": "06a2353207b9cd2aa5ec2bd034b08c3b4602f33a3607abbb149392b1538235fb",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/mask-teacher-train-diagnostic.json",
+      "original": "runs/mask-teacher-train-diagnostic.json",
+      "sha256": "cb43dffbc334211fc8ffa43bf909c9e0f460d7d227ea6ecc3a52aa94e86a29ce",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/opening-census-train-diagnostic.json",
+      "original": "runs/opening-census-train-diagnostic.json",
+      "sha256": "f040ce694ae33063706494467071b1af979fea9b50960d62f29404f3d23839ca",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/opening-exemplar-train-diagnostic.json",
+      "original": "runs/opening-exemplar-train-diagnostic.json",
+      "sha256": "fae04fb7125ef42f047a0c45999a105ec9d85a89cfa606d2dcd59b8ed0128330",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/pair-conditioned-identity-contrast-train-diagnostic.json",
+      "original": "runs/pair-conditioned-identity-contrast-train-diagnostic.json",
+      "sha256": "b1a7de25388472bd72c907aa3fc909fa59e295474d184742424cf57a74990858",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/pair-conditioned-parity-train-diagnostic.json",
+      "original": "runs/pair-conditioned-parity-train-diagnostic.json",
+      "sha256": "111e2d51cefd959c2618467a94a8bc1c3cbfcb7e8d7e5fb4f4d364313c341898",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/pair-conditioned-rtdetr-train-diagnostic.json",
+      "original": "runs/pair-conditioned-rtdetr-train-diagnostic.json",
+      "sha256": "1afc594d39406c96518afac863b7432236fd7f76fa212511242fe89b63f28a02",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/pairwise-crossover-train-diagnostic.json",
+      "original": "runs/pairwise-crossover-train-diagnostic.json",
+      "sha256": "e6e0bee625b5d9017f1e42140e3445612302f35760d635371e971cbc5dc4b5c8",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/point-tracking-teacher-train-diagnostic.json",
+      "original": "runs/point-tracking-teacher-train-diagnostic.json",
+      "sha256": "140646ba5777e3b0768ece3eb0322389f19b3abc0098137b7e1b971a998f0df5",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/pointer-mutual-train-diagnostic.json",
+      "original": "runs/pointer-mutual-train-diagnostic.json",
+      "sha256": "5a266ed9cd28f1dda4f4173dc2ddb1d07aefb2e19f7dc09cbc55a7a6d42e671c",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/pose-teacher-train-diagnostic.json",
+      "original": "runs/pose-teacher-train-diagnostic.json",
+      "sha256": "64b50755d448ceba707510f12fda028e18b239773e9273da985736f6e4c18028",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/protected-query-null-train-diagnostic.json",
+      "original": "runs/protected-query-null-train-diagnostic.json",
+      "sha256": "f3165f443a5b73f83ed5762a2402efd484c351727546a099ed3fe0807f7136f0",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/protected-track-query-perception-breakit.json",
+      "original": "runs/protected-track-query-perception-breakit.json",
+      "sha256": "4ce88812fa94b5e36a2bead545815e1111bbfe0d76649f75bb3385698e677ea9",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/protected-track-query-perception-reality.json",
+      "original": "runs/protected-track-query-perception-reality.json",
+      "sha256": "795dca6510eb4792f3f617f3e0f0b9e9fd766f9acec7d26662bdb69bdb271642",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/protected-track-query-perception-train-diagnostic.json",
+      "original": "runs/protected-track-query-perception-train-diagnostic.json",
+      "sha256": "7b4becc3c3a482dc02cab00d277ed0803478a8ce336e0deb40484e2098b32b0d",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/protected-track-query-train-diagnostic.json",
+      "original": "runs/protected-track-query-train-diagnostic.json",
+      "sha256": "ae38dcac48bbdc5ef97882b32c19a9eca1690a70621e888dc50164ffc4c27022",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/quarantine-retry-train-diagnostic.json",
+      "original": "runs/quarantine-retry-train-diagnostic.json",
+      "sha256": "4051f9ea58c69c570aade8015cd57814eea29f4c27843925e0a4a5c1399ba677",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/raw-pair-hazard-train-diagnostic.json",
+      "original": "runs/raw-pair-hazard-train-diagnostic.json",
+      "sha256": "839d7b0f97a9eaab9ba24bd8fe64becc967a2d1750efd60bef2d78e2a2bd4986",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/raw-pair-motion-train-diagnostic.json",
+      "original": "runs/raw-pair-motion-train-diagnostic.json",
+      "sha256": "a1a2d4067e60f75408495f61e17deb3d02f5878f14d29f28aaf641624fa8bb28",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/recent-recovery-ceiling-dev.json",
+      "original": "runs/recent-recovery-ceiling-dev.json",
+      "sha256": "1049c1d0836f72836941e6c42db0bdbdfde9fbba9d1b0d92d9a6a588d9532359",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/resident-baseline-dev-diagnostic.json",
+      "original": "runs/resident-baseline-dev-diagnostic.json",
+      "sha256": "094d629c302d9a5b8ad55e3dfd67fb9597aff3abb86f28c12404fc1cdc1caee8",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/retry-guard-train-diagnostic.json",
+      "original": "runs/retry-guard-train-diagnostic.json",
+      "sha256": "c3a5b5e7a28812bdddbad85f6ca027d4fb033eaa30cfa8bdbe90f0ad096d9bdc",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/rgb-hist-train-diagnostic.json",
+      "original": "runs/rgb-hist-train-diagnostic.json",
+      "sha256": "1f7474508cf16cc2a59711dbc354ede12d2a31e9888085d16cda625aab07bba2",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/safe-commit-dev.json",
+      "original": "runs/safe-commit-dev.json",
+      "sha256": "df5f287e373ce4b6a00ed1872d5f8624467fe41fb33a43c340c3fc5d58d92cd9",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/safe-commit-scout-ceiling-dev.invalid-owner-overlap-v1.json",
+      "original": "runs/safe-commit-scout-ceiling-dev.invalid-owner-overlap-v1.json",
+      "sha256": "ab51a722fd4c3dd7e117d25bef9fe91ecb802e134cdb99b68d0fcc68985367e5",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/safe-commit-scout-ceiling-dev.json",
+      "original": "runs/safe-commit-scout-ceiling-dev.json",
+      "sha256": "37e4989c7a8b0cc6a18691eed13d4528cc35c3c3366c0366962c8a3e23c82033",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/scout-consensus-train-diagnostic.json",
+      "original": "runs/scout-consensus-train-diagnostic.json",
+      "sha256": "f45d86e88c707ffee03bb2196f2b18047a77daa6c0aaa55620d546fb8ed6281f",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/shadow-quarantine-ceiling-dev.json",
+      "original": "runs/shadow-quarantine-ceiling-dev.json",
+      "sha256": "e183ab0d211b7e98fe9df3da557cef9ff1d79553fb8aeda9fb368253a486419b",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/sparse-flow-train-diagnostic.json",
+      "original": "runs/sparse-flow-train-diagnostic.json",
+      "sha256": "a7501926060b4ff3f6a96448170b18d6aee5e5dd2c1412a5b0e8f0dbef28a81f",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/spatial-template-train-diagnostic.json",
+      "original": "runs/spatial-template-train-diagnostic.json",
+      "sha256": "7348f71fd82850119b0086d2ae6b8eff95d9ceb21b28f5497da33c48d3894bd6",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/structural-conflict-train-diagnostic.json",
+      "original": "runs/structural-conflict-train-diagnostic.json",
+      "sha256": "3e70360fe9a8cb79032cde453856bbae0862b2bdf75863accdb3eda3cfca04cc",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/temporal-signature-selector-train-diagnostic.json",
+      "original": "runs/temporal-signature-selector-train-diagnostic.json",
+      "sha256": "639aae032eb0397bb75a78afca10690bbb55eff51f68256302abab399abe7bbb",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/temporal-signature-train-diagnostic.json",
+      "original": "runs/temporal-signature-train-diagnostic.json",
+      "sha256": "0a2538c8404339795d07be9a67c3c92158db9ab1e68f3fcc97724f28468fa6cd",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/temporal-transformer-train-diagnostic.json",
+      "original": "runs/temporal-transformer-train-diagnostic.json",
+      "sha256": "34cfdc9e89d22280a85f0972d45d54bf1fd27a2646584abd449b7f14de3866df",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/token-match-train-diagnostic.json",
+      "original": "runs/token-match-train-diagnostic.json",
+      "sha256": "ccc6b1db941fbaa56377a30270252ec1205247be56e5895f91ec4bf6093ba78b",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/tracking-pointer-train-diagnostic.json",
+      "original": "runs/tracking-pointer-train-diagnostic.json",
+      "sha256": "d28e8c0be82b5b3e73d83811357aa3e948fea1be11b263c55ec5ee68d20612ea",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/train-gap-0.5s.json",
+      "original": "runs/train-gap-0.5s.json",
+      "sha256": "c968b49038d887b9f85682ad5d01c38e6d88b3dab68c650b0fb251a74c1cddae",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/trajectory-rank-train-diagnostic.json",
+      "original": "runs/trajectory-rank-train-diagnostic.json",
+      "sha256": "1edcec1be3c6cdfe85ae54034a3ceaae544027f74fd0811bbef946cee05ec3b5",
+      "reproducibility": "historical result only; generating source not established"
+    },
+    {
+      "path": "evidence/legacy/two-frame-reanchor-train-diagnostic.json",
+      "original": "runs/two-frame-reanchor-train-diagnostic.json",
+      "sha256": "e52fc08743c858f6ad288a639d1466eea4d62f55be0a27a672efde6b4af1da7c",
+      "reproducibility": "historical result only; generating source not established"
+    }
+  ]
+}

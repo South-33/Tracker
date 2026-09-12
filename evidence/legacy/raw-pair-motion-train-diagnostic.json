@@ -1,0 +1,254 @@
+{
+  "scope": "train-only 10000-step learned raw adjacent-pair motion branch; dancetrack0012 held out; no dev/gate frames",
+  "claim": "A small raw-RGB pair-motion branch can provide safe backward identity evidence that frozen single-frame detector features could not.",
+  "settings": {
+    "steps": 10000,
+    "lr": 0.0003,
+    "candidate_count": 96,
+    "roi_expand": 2.0,
+    "base_detector": "frozen clean RT-DETR; outputs unchanged",
+    "input": "current RGB + previous RGB, same 640 letterbox",
+    "motion_branch": "6ch CNN to stride-8 map + 5x5 ROI pooling + current detector feature/box fusion",
+    "training_pairs": 5427,
+    "heldout": "dancetrack0012"
+  },
+  "parameters": 467941,
+  "criteria": {
+    "accepted_precision_min": 0.99,
+    "safe_acceptance_min": 0.65,
+    "hazard_veto_min": 0.9,
+    "hard_owner_recovery_min": 0.45,
+    "absent_false_claim_rate_max": 0.01
+  },
+  "decision": "fail",
+  "curve": [
+    {
+      "step": 1,
+      "loss": 1.1366437673568726,
+      "positive": 36,
+      "negative": 5,
+      "presence": 0.6931471824645996,
+      "l1": 0.004898502491414547,
+      "giou": 0.7904979586601257
+    },
+    {
+      "step": 500,
+      "loss": 0.3887331485748291,
+      "positive": 12,
+      "negative": 1,
+      "presence": 0.06158727407455444,
+      "l1": 0.008270022459328175,
+      "giou": 0.8571021556854248
+    },
+    {
+      "step": 1000,
+      "loss": 0.28982654213905334,
+      "positive": 10,
+      "negative": 0,
+      "presence": 0.031959619373083115,
+      "l1": 0.005555546376854181,
+      "giou": 0.8849554061889648
+    },
+    {
+      "step": 1500,
+      "loss": 0.6330553293228149,
+      "positive": 12,
+      "negative": 0,
+      "presence": 0.13463763892650604,
+      "l1": 0.0049176691100001335,
+      "giou": 0.7630853652954102
+    },
+    {
+      "step": 2000,
+      "loss": 0.9122868776321411,
+      "positive": 35,
+      "negative": 4,
+      "presence": 0.4187963306903839,
+      "l1": 0.006018649786710739,
+      "giou": 0.7683013677597046
+    },
+    {
+      "step": 2500,
+      "loss": 0.8827423453330994,
+      "positive": 22,
+      "negative": 0,
+      "presence": 0.269369900226593,
+      "l1": 0.009253524243831635,
+      "giou": 0.7164475917816162
+    },
+    {
+      "step": 3000,
+      "loss": 0.9198706150054932,
+      "positive": 24,
+      "negative": 13,
+      "presence": 0.33088067173957825,
+      "l1": 0.01577247492969036,
+      "giou": 0.7449362277984619
+    },
+    {
+      "step": 3500,
+      "loss": 0.4382716417312622,
+      "positive": 8,
+      "negative": 1,
+      "presence": 0.02670241892337799,
+      "l1": 0.006281479261815548,
+      "giou": 0.8099191188812256
+    },
+    {
+      "step": 4000,
+      "loss": 0.3641871213912964,
+      "positive": 20,
+      "negative": 3,
+      "presence": 0.05056459456682205,
+      "l1": 0.0059806271456182,
+      "giou": 0.8581402897834778
+    },
+    {
+      "step": 4500,
+      "loss": 0.7651002407073975,
+      "positive": 16,
+      "negative": 5,
+      "presence": 0.22134090960025787,
+      "l1": 0.007937246933579445,
+      "giou": 0.7479634284973145
+    },
+    {
+      "step": 5000,
+      "loss": 0.3930215835571289,
+      "positive": 9,
+      "negative": 2,
+      "presence": 0.05440061539411545,
+      "l1": 0.003658901434391737,
+      "giou": 0.8398367762565613
+    },
+    {
+      "step": 5500,
+      "loss": 0.5912777781486511,
+      "positive": 12,
+      "negative": 8,
+      "presence": 0.19454027712345123,
+      "l1": 0.0071022845804691315,
+      "giou": 0.8193869590759277
+    },
+    {
+      "step": 6000,
+      "loss": 0.6626095771789551,
+      "positive": 21,
+      "negative": 10,
+      "presence": 0.21102970838546753,
+      "l1": 0.006945612840354443,
+      "giou": 0.791574239730835
+    },
+    {
+      "step": 6500,
+      "loss": 0.8914154767990112,
+      "positive": 15,
+      "negative": 3,
+      "presence": 0.3373069763183594,
+      "l1": 0.007196310441941023,
+      "giou": 0.7409365773200989
+    },
+    {
+      "step": 7000,
+      "loss": 0.47619694471359253,
+      "positive": 17,
+      "negative": 3,
+      "presence": 0.136180579662323,
+      "l1": 0.006377931218594313,
+      "giou": 0.8459365963935852
+    },
+    {
+      "step": 7500,
+      "loss": 1.00478196144104,
+      "positive": 15,
+      "negative": 4,
+      "presence": 0.4578327536582947,
+      "l1": 0.006835085805505514,
+      "giou": 0.743613064289093
+    },
+    {
+      "step": 8000,
+      "loss": 0.7292051315307617,
+      "positive": 16,
+      "negative": 16,
+      "presence": 0.20017245411872864,
+      "l1": 0.008361908607184887,
+      "giou": 0.7563884258270264
+    },
+    {
+      "step": 8500,
+      "loss": 0.5430558919906616,
+      "positive": 12,
+      "negative": 3,
+      "presence": 0.06688255071640015,
+      "l1": 0.008397078141570091,
+      "giou": 0.7829060554504395
+    },
+    {
+      "step": 9000,
+      "loss": 0.973366379737854,
+      "positive": 21,
+      "negative": 15,
+      "presence": 0.1684281826019287,
+      "l1": 0.013871042989194393,
+      "giou": 0.632208526134491
+    },
+    {
+      "step": 9500,
+      "loss": 0.21298353374004364,
+      "positive": 11,
+      "negative": 7,
+      "presence": 0.05108218640089035,
+      "l1": 0.0023472297471016645,
+      "giou": 0.9249173998832703
+    },
+    {
+      "step": 10000,
+      "loss": 0.7045630216598511,
+      "positive": 10,
+      "negative": 7,
+      "presence": 0.2914072871208191,
+      "l1": 0.007304870989173651,
+      "giou": 0.8116843104362488
+    }
+  ],
+  "heldout": {
+    "safe_links": 11566,
+    "accepted_safe": 10662,
+    "hazards": 595,
+    "accepted_hazard": 330,
+    "hard_owner_available": 371,
+    "hard_wrong_reanchor": 210,
+    "hard_owner_recovered": 75,
+    "absent_tracks": 81,
+    "absent_false_claims": 42,
+    "accepted_precision": 0.9699781659388647,
+    "safe_acceptance": 0.9218398754971469,
+    "hazard_veto": 0.4453781512605042,
+    "hard_owner_recovery": 0.20215633423180593,
+    "hard_wrong_reanchor_rate": 0.5660377358490566,
+    "absent_false_claim_rate": 0.5185185185185185
+  },
+  "detection_cache": {
+    "memory_hits": 15905,
+    "disk_hits": 6499,
+    "fresh_decodes": 0,
+    "resident_mib": 255.95317840576172,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  },
+  "image_cache": {
+    "hits": 1744,
+    "jpeg_reads": 20594,
+    "resident_mib": 382.03125,
+    "limit_mib": 384.0
+  }
+}

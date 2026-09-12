@@ -1,0 +1,300 @@
+{
+  "scope": "train-only separate tracking decoder with native proposal-pointer/NULL semantics; dancetrack0012 held out; no dev/gate frames",
+  "claim": "Tracking identity needs a semantically separate current-frame decoder and decision space rather than detector person-score semantics or post-hoc feature matching.",
+  "settings": {
+    "steps": 10000,
+    "lr": 0.0002,
+    "memory": 4,
+    "topk": 96,
+    "detector": "frozen clean RT-DETR",
+    "track_decoder": "one copied RT-DETR decoder layer with independent trainable parameters",
+    "track_seed": "last trusted detector query feature plus bounded mean of recent trusted features",
+    "current_evidence": "full current frozen encoder pyramid through tracking-specific deformable cross-attention",
+    "decision": "fixed argmax over 96 current proposals plus one native NULL class; no threshold sweep",
+    "training_sampling": "alternating hard-containing, absent-containing, and safe-containing frames; category-balanced CE within frame"
+  },
+  "parameters": 1325857,
+  "criteria": {
+    "hard_owner_recovery_min": 0.55,
+    "safe_owner_acceptance_min": 0.9,
+    "non_null_precision_min": 0.99,
+    "absent_false_claim_rate_max": 0.05
+  },
+  "mining": {
+    "dancetrack0001": {
+      "groups": 702,
+      "safe": 4811,
+      "hard": 56,
+      "absent": 3,
+      "unavailable": 14
+    },
+    "dancetrack0002": {
+      "groups": 1202,
+      "safe": 8886,
+      "hard": 139,
+      "absent": 44,
+      "unavailable": 63
+    },
+    "dancetrack0006": {
+      "groups": 1201,
+      "safe": 9952,
+      "hard": 305,
+      "absent": 51,
+      "unavailable": 106
+    },
+    "dancetrack0008": {
+      "groups": 882,
+      "safe": 6446,
+      "hard": 188,
+      "absent": 46,
+      "unavailable": 57
+    },
+    "dancetrack0012": {
+      "groups": 1202,
+      "safe": 11682,
+      "hard": 533,
+      "absent": 81,
+      "unavailable": 241
+    },
+    "dancetrack0015": {
+      "groups": 1202,
+      "safe": 10545,
+      "hard": 57,
+      "absent": 16,
+      "unavailable": 29
+    },
+    "dancetrack0082": {
+      "groups": 119,
+      "safe": 2690,
+      "hard": 35,
+      "absent": 0,
+      "unavailable": 51
+    },
+    "dancetrack0083": {
+      "groups": 105,
+      "safe": 2196,
+      "hard": 57,
+      "absent": 0,
+      "unavailable": 119
+    }
+  },
+  "curve": [
+    {
+      "step": 1,
+      "loss": 3.1157925128936768
+    },
+    {
+      "step": 500,
+      "loss": 1.277679443359375
+    },
+    {
+      "step": 1000,
+      "loss": 0.8689041137695312
+    },
+    {
+      "step": 1500,
+      "loss": 2.50360107421875
+    },
+    {
+      "step": 2000,
+      "loss": 0.508544921875,
+      "heldout_screen": {
+        "safe": 1569,
+        "safe_correct": 1135,
+        "hard": 62,
+        "hard_correct": 6,
+        "absent": 13,
+        "absent_false": 7,
+        "unavailable": 31,
+        "unavailable_false": 17,
+        "non_null": 1487,
+        "non_null_correct": 1141,
+        "safe_owner_acceptance": 0.7233906947100064,
+        "hard_owner_recovery": 0.0967741935483871,
+        "non_null_precision": 0.7673167451244116,
+        "absent_false_claim_rate": 0.5384615384615384,
+        "unavailable_false_claim_rate": 0.5483870967741935,
+        "groups": 160
+      }
+    },
+    {
+      "step": 2500,
+      "loss": 1.479736328125
+    },
+    {
+      "step": 3000,
+      "loss": 3.3092041015625
+    },
+    {
+      "step": 3500,
+      "loss": 1.7549896240234375
+    },
+    {
+      "step": 4000,
+      "loss": 0.3978678584098816,
+      "heldout_screen": {
+        "safe": 1569,
+        "safe_correct": 1209,
+        "hard": 62,
+        "hard_correct": 5,
+        "absent": 13,
+        "absent_false": 7,
+        "unavailable": 31,
+        "unavailable_false": 20,
+        "non_null": 1526,
+        "non_null_correct": 1214,
+        "safe_owner_acceptance": 0.7705544933078394,
+        "hard_owner_recovery": 0.08064516129032258,
+        "non_null_precision": 0.7955439056356488,
+        "absent_false_claim_rate": 0.5384615384615384,
+        "unavailable_false_claim_rate": 0.6451612903225806,
+        "groups": 160
+      }
+    },
+    {
+      "step": 4500,
+      "loss": 1.0467703342437744
+    },
+    {
+      "step": 5000,
+      "loss": 0.3001360297203064
+    },
+    {
+      "step": 5500,
+      "loss": 0.2460588812828064
+    },
+    {
+      "step": 6000,
+      "loss": 1.0435066223144531,
+      "heldout_screen": {
+        "safe": 1569,
+        "safe_correct": 1228,
+        "hard": 62,
+        "hard_correct": 9,
+        "absent": 13,
+        "absent_false": 9,
+        "unavailable": 31,
+        "unavailable_false": 21,
+        "non_null": 1529,
+        "non_null_correct": 1237,
+        "safe_owner_acceptance": 0.7826641172721479,
+        "hard_owner_recovery": 0.14516129032258066,
+        "non_null_precision": 0.8090255068672335,
+        "absent_false_claim_rate": 0.6923076923076923,
+        "unavailable_false_claim_rate": 0.6774193548387096,
+        "groups": 160
+      }
+    },
+    {
+      "step": 6500,
+      "loss": 1.163547158241272
+    },
+    {
+      "step": 7000,
+      "loss": 0.4499686360359192
+    },
+    {
+      "step": 7500,
+      "loss": 0.9211643934249878
+    },
+    {
+      "step": 8000,
+      "loss": 0.44293212890625,
+      "heldout_screen": {
+        "safe": 1569,
+        "safe_correct": 1259,
+        "hard": 62,
+        "hard_correct": 9,
+        "absent": 13,
+        "absent_false": 10,
+        "unavailable": 31,
+        "unavailable_false": 22,
+        "non_null": 1547,
+        "non_null_correct": 1268,
+        "safe_owner_acceptance": 0.8024219247928617,
+        "hard_owner_recovery": 0.14516129032258066,
+        "non_null_precision": 0.8196509372979961,
+        "absent_false_claim_rate": 0.7692307692307693,
+        "unavailable_false_claim_rate": 0.7096774193548387,
+        "groups": 160
+      }
+    },
+    {
+      "step": 8500,
+      "loss": 0.0441899299621582
+    },
+    {
+      "step": 9000,
+      "loss": 0.9610072374343872
+    },
+    {
+      "step": 9500,
+      "loss": 1.0117729902267456
+    },
+    {
+      "step": 10000,
+      "loss": 0.11450005322694778,
+      "heldout_screen": {
+        "safe": 1569,
+        "safe_correct": 1247,
+        "hard": 62,
+        "hard_correct": 10,
+        "absent": 13,
+        "absent_false": 13,
+        "unavailable": 31,
+        "unavailable_false": 24,
+        "non_null": 1584,
+        "non_null_correct": 1257,
+        "safe_owner_acceptance": 0.7947737412364564,
+        "hard_owner_recovery": 0.16129032258064516,
+        "non_null_precision": 0.7935606060606061,
+        "absent_false_claim_rate": 1.0,
+        "unavailable_false_claim_rate": 0.7741935483870968,
+        "groups": 160
+      }
+    }
+  ],
+  "heldout": {
+    "safe": 11682,
+    "safe_correct": 9384,
+    "hard": 533,
+    "hard_correct": 101,
+    "absent": 81,
+    "absent_false": 62,
+    "unavailable": 241,
+    "unavailable_false": 167,
+    "non_null": 11870,
+    "non_null_correct": 9485,
+    "safe_owner_acceptance": 0.8032871083718541,
+    "hard_owner_recovery": 0.1894934333958724,
+    "non_null_precision": 0.7990732940185341,
+    "absent_false_claim_rate": 0.7654320987654321,
+    "unavailable_false_claim_rate": 0.6929460580912863,
+    "groups": 1202
+  },
+  "decision": "fail",
+  "detection_cache": {
+    "memory_hits": 12002,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 324.05543518066406,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  },
+  "feature_cache": {
+    "gpu_cache_hits": 1204,
+    "disk_cache_hits": 10798,
+    "fresh_encodes": 0,
+    "resident_mib": 508.6255187988281,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+  }
+}

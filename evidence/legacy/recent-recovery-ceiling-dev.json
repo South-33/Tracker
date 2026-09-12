@@ -1,0 +1,208 @@
+{
+  "scope": "fully causal non-gate dev ceiling; exact private enrollment; local continuity first; unresolved IDs recover from protected recent appearance; recent hint updates only after oracle-safe publication; GT only decides publication safety",
+  "settings": {
+    "candidate_count": 96,
+    "feature_cache": "data/features",
+    "detection_cache": "data/detections",
+    "cache_mib": 512,
+    "enrollment_seconds": 2.0,
+    "enrollment_score": 0.4,
+    "enrollment_minimum_iou": 0.1,
+    "enrollment_maximum_age": 0.5,
+    "enrollment_hits": 3,
+    "enrollment_duplicate_iou": 0.5,
+    "proposal_score": 0.1,
+    "minimum_iou": 0.1,
+    "clean_iou": 0.5
+  },
+  "promotion_target": {
+    "target_survival": 0.8,
+    "target_recall": 0.55,
+    "precision_floor": 0.98,
+    "gate_sequence": "dancetrack0096"
+  },
+  "passes_architecture_floor": false,
+  "per_sequence": [
+    {
+      "true_positives": 10819,
+      "false_positives": 0,
+      "missed_people": 1794,
+      "precision": 1.0,
+      "recall": 0.8577657971933719,
+      "identity_switches": 0,
+      "public_id_reuses": 0,
+      "visible_segments": 65,
+      "strict_visible_segment_survival": 1.0,
+      "public_ids_used": 6,
+      "sequence": "dancetrack0016",
+      "frames": 2163,
+      "final_roster": 8,
+      "real_roster_slots": 6,
+      "background_roster_slots": 2,
+      "unique_roster_owners": 6,
+      "duplicate_owner_slots": 0,
+      "local_links": 11954,
+      "local_publications": 10706,
+      "local_vetoes": 1248,
+      "recovery_links": 3599,
+      "recovery_publications": 113,
+      "recovery_vetoes": 3486,
+      "unresolved_public_rows": 6157,
+      "post_enrollment_gt_rows": 12367,
+      "represented_owner_gt_rows": 12367,
+      "represented_owner_coverage": 1.0,
+      "progress": [
+        {
+          "frame": 250,
+          "roster": 8,
+          "outputs": 6,
+          "recovery_publications": 11
+        },
+        {
+          "frame": 500,
+          "roster": 8,
+          "outputs": 5,
+          "recovery_publications": 30
+        },
+        {
+          "frame": 750,
+          "roster": 8,
+          "outputs": 5,
+          "recovery_publications": 47
+        },
+        {
+          "frame": 1000,
+          "roster": 8,
+          "outputs": 3,
+          "recovery_publications": 64
+        },
+        {
+          "frame": 1250,
+          "roster": 8,
+          "outputs": 6,
+          "recovery_publications": 74
+        },
+        {
+          "frame": 1500,
+          "roster": 8,
+          "outputs": 6,
+          "recovery_publications": 91
+        },
+        {
+          "frame": 1750,
+          "roster": 8,
+          "outputs": 5,
+          "recovery_publications": 103
+        },
+        {
+          "frame": 2000,
+          "roster": 8,
+          "outputs": 6,
+          "recovery_publications": 111
+        },
+        {
+          "frame": 2163,
+          "roster": 8,
+          "outputs": 6,
+          "recovery_publications": 113
+        }
+      ]
+    },
+    {
+      "true_positives": 7013,
+      "false_positives": 16,
+      "missed_people": 13161,
+      "precision": 0.9977237160335752,
+      "recall": 0.34762565678596213,
+      "identity_switches": 25,
+      "public_id_reuses": 9,
+      "visible_segments": 169,
+      "strict_visible_segment_survival": 0.9704142011834319,
+      "public_ids_used": 27,
+      "sequence": "dancetrack0020",
+      "frames": 583,
+      "final_roster": 29,
+      "real_roster_slots": 27,
+      "background_roster_slots": 2,
+      "unique_roster_owners": 26,
+      "duplicate_owner_slots": 1,
+      "local_links": 10749,
+      "local_publications": 6910,
+      "local_vetoes": 3839,
+      "recovery_links": 4055,
+      "recovery_publications": 119,
+      "recovery_vetoes": 3936,
+      "unresolved_public_rows": 8689,
+      "post_enrollment_gt_rows": 18756,
+      "represented_owner_gt_rows": 12668,
+      "represented_owner_coverage": 0.6754105352953721,
+      "progress": [
+        {
+          "frame": 250,
+          "roster": 29,
+          "outputs": 15,
+          "recovery_publications": 62
+        },
+        {
+          "frame": 500,
+          "roster": 29,
+          "outputs": 15,
+          "recovery_publications": 100
+        },
+        {
+          "frame": 583,
+          "roster": 29,
+          "outputs": 11,
+          "recovery_publications": 119
+        }
+      ]
+    }
+  ],
+  "combined": {
+    "true_positives": 17832,
+    "false_positives": 16,
+    "missed_people": 14955,
+    "identity_switches": 25,
+    "public_id_reuses": 9,
+    "visible_segments": 234,
+    "final_roster": 37,
+    "real_roster_slots": 33,
+    "background_roster_slots": 4,
+    "unique_roster_owners": 32,
+    "duplicate_owner_slots": 1,
+    "local_links": 22703,
+    "local_publications": 17616,
+    "local_vetoes": 5087,
+    "recovery_links": 7654,
+    "recovery_publications": 232,
+    "recovery_vetoes": 7422,
+    "unresolved_public_rows": 14846,
+    "post_enrollment_gt_rows": 31123,
+    "represented_owner_gt_rows": 25035,
+    "precision": 0.9991035410129987,
+    "recall": 0.5438740964406624,
+    "strict_visible_segment_survival": 0.9786324786324786,
+    "represented_owner_coverage": 0.8043890370465572,
+    "sequences": [
+      "dancetrack0016",
+      "dancetrack0020"
+    ],
+    "frames": 2746
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 2746,
+    "fresh_decodes": 0,
+    "resident_mib": 134.24585723876953,
+    "limit_mib": 512.0,
+    "directory": "data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

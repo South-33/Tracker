@@ -1,0 +1,53 @@
+{
+  "scope": "train-only oracle-membership ceiling for bounded joint permutation state on heldout dancetrack0012; no dev/gate frames",
+  "claim": "Most hard failures are person-to-person permutations. If identities are represented jointly through the ambiguous window instead of attaching suspect geometry to each public ID, bounded causal smoothness hypotheses can resolve the outgoing permutation after separation.",
+  "oracle_advantage": "Conflict pair membership and the two best clean owner proposals at each frame are supplied by GT only to test the state representation ceiling. Their identities are hidden from the hypothesis bank.",
+  "settings": {
+    "horizon_frames": 8,
+    "hypothesis_cap": 8,
+    "group_size": 2,
+    "transition_cost": "sum squared constant-velocity center residual normalized by previous box width/height",
+    "publication": "none during the deferred window; score only the final outgoing permutation",
+    "appearance": false,
+    "learning": false
+  },
+  "hard_failure_composition": {
+    "hard_total": 533,
+    "other_person": 447,
+    "background_or_unowned": 86,
+    "other_person_fraction": 0.8386491557223265,
+    "pair_events_with_previous_competitor": 412
+  },
+  "episodes": {
+    "raw_pair_events": 412,
+    "deduplicated": 328,
+    "continuous_eight_frame": 140
+  },
+  "heldout": {
+    "target_recovery": 0.6642857142857143,
+    "both_identities_correct": 0.6642857142857143,
+    "correct_episodes": 93,
+    "median_best_second_margin": 0.0772379373338481,
+    "mean_best_cost": 0.5487376622730137
+  },
+  "criterion": {
+    "target_recovery_min": 0.6
+  },
+  "decision": "promising",
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

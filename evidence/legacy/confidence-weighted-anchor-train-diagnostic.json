@@ -1,0 +1,63 @@
+{
+  "scope": "train-only fully causal state-update diagnostic; heldout dancetrack0012 only; no dev/gate frames; no new training",
+  "question": "Can a confidence-weighted private motion anchor prevent false-veto staleness without letting suspect geometry overwrite protected identity authority?",
+  "guard": {
+    "checkpoint": "runs/clean-prefix-guard-train-diagnostic.pt",
+    "decision": "hazard logit < 0 publishes and fully updates; logit >= 0 vetoes publication"
+  },
+  "policies": {
+    "hard_freeze": "veto increments spatial age and leaves private anchor unchanged",
+    "confidence_weighted_private_anchor": "veto privately moves anchor by sigmoid(-hazard_logit), always <0.5; canonical identity is immutable"
+  },
+  "promotion_target": {
+    "strict_survival": 0.8,
+    "recall": 0.55,
+    "precision": 0.98
+  },
+  "hard_freeze": {
+    "true_positives": 60,
+    "false_positives": 0,
+    "missed_people": 12972,
+    "precision": 1.0,
+    "recall": 0.004604051565377533,
+    "identity_switches": 0,
+    "public_id_reuses": 3,
+    "visible_segments": 121,
+    "strict_visible_segment_survival": 0.9834710743801653,
+    "public_ids_used": 7,
+    "roster": 16,
+    "proposed_local_links": 9871,
+    "accepted_local_links": 60,
+    "vetoed_local_links": 9811,
+    "soft_private_updates": 0,
+    "mean_soft_gain": 0.0
+  },
+  "soft_anchor": {
+    "true_positives": 5632,
+    "false_positives": 191,
+    "missed_people": 7400,
+    "precision": 0.9671990382964107,
+    "recall": 0.4321669736034377,
+    "identity_switches": 264,
+    "public_id_reuses": 5097,
+    "visible_segments": 121,
+    "strict_visible_segment_survival": 0.3140495867768595,
+    "public_ids_used": 15,
+    "roster": 16,
+    "proposed_local_links": 11588,
+    "accepted_local_links": 5823,
+    "vetoed_local_links": 5765,
+    "soft_private_updates": 5765,
+    "mean_soft_gain": 0.20819135604067898
+  },
+  "decision": "fail",
+  "cache": {
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "reads": 2406,
+    "size": 640,
+    "candidate_count": 96,
+    "torch": "2.8.0+cu128",
+    "precision": "cuda_amp_fp16",
+    "decoder": "clean-rtdetr-topk-v1"
+  }
+}

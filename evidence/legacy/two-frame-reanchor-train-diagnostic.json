@@ -1,0 +1,58 @@
+{
+  "scope": "train-only oracle-clean hazard-event diagnostic; no dev/gate frames",
+  "question": "After vetoing an actually unsafe local write, does one unpublished current frame plus the next frame provide a materially better geometric re-anchor than a stale trusted box?",
+  "methods": {
+    "stale": "best next-frame IoU from the pre-hazard trusted box",
+    "greedy_chain": "best current IoU from trusted box, then best next-frame IoU from that unpublished current proposal",
+    "bottleneck_path": "joint current/next proposal pair maximizing the weaker of trusted-to-current and current-to-next IoU"
+  },
+  "per_sequence": [
+    {
+      "sequence": "dancetrack0012",
+      "frames": 1203,
+      "roster": 16,
+      "real_roster_slots": 12,
+      "safe_local_links": 6229,
+      "unsafe_local_links": 5280,
+      "safe_canonical_recoveries": 109,
+      "delayed_reanchor": {
+        "events": 3306,
+        "owner_present_next": 2487,
+        "stale_correct": 307,
+        "greedy_chain_correct": 220,
+        "bottleneck_path_correct": 248,
+        "stale_accuracy_owner_present": 0.12344189786891838,
+        "greedy_chain_accuracy_owner_present": 0.08845999195818255,
+        "bottleneck_path_accuracy_owner_present": 0.09971853638922397,
+        "owner_present_rate": 0.7522686025408348
+      }
+    }
+  ],
+  "combined": {
+    "events": 3306,
+    "owner_present_next": 2487,
+    "stale_correct": 307,
+    "greedy_chain_correct": 220,
+    "bottleneck_path_correct": 248,
+    "stale_accuracy_owner_present": 0.12344189786891838,
+    "greedy_chain_accuracy_owner_present": 0.08845999195818255,
+    "bottleneck_path_accuracy_owner_present": 0.09971853638922397,
+    "owner_present_rate": 0.7522686025408348
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

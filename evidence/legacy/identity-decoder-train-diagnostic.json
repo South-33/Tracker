@@ -1,0 +1,371 @@
+{
+  "scope": "train-only decoder representation adaptation; heldout dancetrack0012; no dev/gate frames",
+  "hypothesis": "Instance-level cross-frame supervision can make RT-DETR decoder object embeddings association-discriminative while frozen query selection and detection heads preserve detection behavior.",
+  "trainable": "RT-DETR transformer decoder layers only; 3,380,832 params; backbone, encoder, query selection, bbox and score heads frozen",
+  "training": {
+    "steps_requested": 3000,
+    "optimizer_steps": 2991,
+    "skipped_pairs": 9,
+    "lr": 3e-05,
+    "temperature": 0.07,
+    "loss": "symmetric cross-frame ID CE + 10*box distillation + 0.1*person-logit distillation"
+  },
+  "curve": [
+    {
+      "step": 1,
+      "used": 1,
+      "skipped": 0,
+      "loss": 1.533203125,
+      "identity_loss": 1.533203125,
+      "box_loss": 3.010207194620307e-09,
+      "logit_loss": 0.0,
+      "common_ids": 9
+    },
+    {
+      "step": 100,
+      "used": 100,
+      "skipped": 0,
+      "loss": 1.1385530233383179,
+      "identity_loss": 1.0815953016281128,
+      "box_loss": 4.479464223550167e-06,
+      "logit_loss": 0.5691293478012085,
+      "common_ids": 7
+    },
+    {
+      "step": 200,
+      "used": 200,
+      "skipped": 0,
+      "loss": 0.12308919429779053,
+      "identity_loss": 0.03937111794948578,
+      "box_loss": 3.025744626938831e-05,
+      "logit_loss": 0.8341549634933472,
+      "common_ids": 9
+    },
+    {
+      "step": 300,
+      "used": 300,
+      "skipped": 0,
+      "loss": 0.6851972937583923,
+      "identity_loss": 0.6495916843414307,
+      "box_loss": 5.97548341829679e-06,
+      "logit_loss": 0.3554583489894867,
+      "common_ids": 9
+    },
+    {
+      "step": 400,
+      "used": 398,
+      "skipped": 2,
+      "loss": 0.6869829893112183,
+      "identity_loss": 0.6111518144607544,
+      "box_loss": 1.2956994396517985e-05,
+      "logit_loss": 0.7570160627365112,
+      "common_ids": 9
+    },
+    {
+      "step": 500,
+      "used": 498,
+      "skipped": 2,
+      "loss": 0.2331375628709793,
+      "identity_loss": 0.2004634141921997,
+      "box_loss": 1.5821271517779678e-05,
+      "logit_loss": 0.3251594305038452,
+      "common_ids": 7
+    },
+    {
+      "step": 600,
+      "used": 598,
+      "skipped": 2,
+      "loss": 0.6535773277282715,
+      "identity_loss": 0.6058673858642578,
+      "box_loss": 2.9665574402315542e-05,
+      "logit_loss": 0.4741331934928894,
+      "common_ids": 8
+    },
+    {
+      "step": 700,
+      "used": 698,
+      "skipped": 2,
+      "loss": 0.07920229434967041,
+      "identity_loss": 0.03290993720293045,
+      "box_loss": 4.51625237474218e-05,
+      "logit_loss": 0.45840734243392944,
+      "common_ids": 7
+    },
+    {
+      "step": 800,
+      "used": 798,
+      "skipped": 2,
+      "loss": 0.07403048127889633,
+      "identity_loss": 0.050712041556835175,
+      "box_loss": 8.921759217628278e-06,
+      "logit_loss": 0.23229220509529114,
+      "common_ids": 7
+    },
+    {
+      "step": 900,
+      "used": 898,
+      "skipped": 2,
+      "loss": 0.19999279081821442,
+      "identity_loss": 0.155350923538208,
+      "box_loss": 4.509387508733198e-05,
+      "logit_loss": 0.4419092833995819,
+      "common_ids": 8
+    },
+    {
+      "step": 1000,
+      "used": 998,
+      "skipped": 2,
+      "loss": 0.07901996374130249,
+      "identity_loss": 0.033489782363176346,
+      "box_loss": 3.20604485750664e-05,
+      "logit_loss": 0.45209574699401855,
+      "common_ids": 6
+    },
+    {
+      "step": 1100,
+      "used": 1098,
+      "skipped": 2,
+      "loss": 1.5544604063034058,
+      "identity_loss": 1.5264064073562622,
+      "box_loss": 1.7506201402284205e-05,
+      "logit_loss": 0.27878832817077637,
+      "common_ids": 7
+    },
+    {
+      "step": 1200,
+      "used": 1197,
+      "skipped": 3,
+      "loss": 0.08871444314718246,
+      "identity_loss": 0.051016125828027725,
+      "box_loss": 4.0288919990416616e-05,
+      "logit_loss": 0.37295427918434143,
+      "common_ids": 7
+    },
+    {
+      "step": 1300,
+      "used": 1297,
+      "skipped": 3,
+      "loss": 0.05979902297258377,
+      "identity_loss": 0.017702646553516388,
+      "box_loss": 2.7343558031134307e-05,
+      "logit_loss": 0.4182294011116028,
+      "common_ids": 7
+    },
+    {
+      "step": 1400,
+      "used": 1397,
+      "skipped": 3,
+      "loss": 0.6249071359634399,
+      "identity_loss": 0.5825426578521729,
+      "box_loss": 3.7665544368792325e-05,
+      "logit_loss": 0.4198782742023468,
+      "common_ids": 7
+    },
+    {
+      "step": 1500,
+      "used": 1497,
+      "skipped": 3,
+      "loss": 0.470863938331604,
+      "identity_loss": 0.4472660422325134,
+      "box_loss": 4.101144440937787e-05,
+      "logit_loss": 0.23187777400016785,
+      "common_ids": 7
+    },
+    {
+      "step": 1600,
+      "used": 1597,
+      "skipped": 3,
+      "loss": 0.08887182176113129,
+      "identity_loss": 0.04586394876241684,
+      "box_loss": 0.00012273233733139932,
+      "logit_loss": 0.4178054630756378,
+      "common_ids": 9
+    },
+    {
+      "step": 1700,
+      "used": 1696,
+      "skipped": 4,
+      "loss": 0.06274458020925522,
+      "identity_loss": 0.026485783979296684,
+      "box_loss": 7.966379052959383e-05,
+      "logit_loss": 0.3546215891838074,
+      "common_ids": 7
+    },
+    {
+      "step": 1800,
+      "used": 1796,
+      "skipped": 4,
+      "loss": 0.06961958855390549,
+      "identity_loss": 0.029161162674427032,
+      "box_loss": 0.00011718332825694233,
+      "logit_loss": 0.3928658962249756,
+      "common_ids": 9
+    },
+    {
+      "step": 1900,
+      "used": 1895,
+      "skipped": 5,
+      "loss": 0.07057293504476547,
+      "identity_loss": 0.03554185479879379,
+      "box_loss": 1.7732199921738356e-05,
+      "logit_loss": 0.3485375642776489,
+      "common_ids": 9
+    },
+    {
+      "step": 2000,
+      "used": 1995,
+      "skipped": 5,
+      "loss": 0.09387754648923874,
+      "identity_loss": 0.0559459924697876,
+      "box_loss": 3.0514056561514735e-05,
+      "logit_loss": 0.3762640953063965,
+      "common_ids": 8
+    },
+    {
+      "step": 2100,
+      "used": 2094,
+      "skipped": 6,
+      "loss": 0.04019087553024292,
+      "identity_loss": 0.00706897210329771,
+      "box_loss": 6.116352597018704e-05,
+      "logit_loss": 0.32510268688201904,
+      "common_ids": 6
+    },
+    {
+      "step": 2200,
+      "used": 2193,
+      "skipped": 7,
+      "loss": 0.05540413409471512,
+      "identity_loss": 0.017631322145462036,
+      "box_loss": 3.2708288927096874e-05,
+      "logit_loss": 0.37445729970932007,
+      "common_ids": 8
+    },
+    {
+      "step": 2300,
+      "used": 2293,
+      "skipped": 7,
+      "loss": 0.12821152806282043,
+      "identity_loss": 0.10572198033332825,
+      "box_loss": 2.6845402317121625e-05,
+      "logit_loss": 0.22221097350120544,
+      "common_ids": 7
+    },
+    {
+      "step": 2400,
+      "used": 2392,
+      "skipped": 8,
+      "loss": 0.03922877460718155,
+      "identity_loss": 0.0193820521235466,
+      "box_loss": 0.0001443734363419935,
+      "logit_loss": 0.18402989208698273,
+      "common_ids": 9
+    },
+    {
+      "step": 2500,
+      "used": 2492,
+      "skipped": 8,
+      "loss": 0.1174321323633194,
+      "identity_loss": 0.06343453377485275,
+      "box_loss": 7.297327101696283e-05,
+      "logit_loss": 0.5326786041259766,
+      "common_ids": 9
+    },
+    {
+      "step": 2600,
+      "used": 2592,
+      "skipped": 8,
+      "loss": 0.08488050103187561,
+      "identity_loss": 0.04414105415344238,
+      "box_loss": 3.553631904651411e-05,
+      "logit_loss": 0.4038407802581787,
+      "common_ids": 8
+    },
+    {
+      "step": 2700,
+      "used": 2692,
+      "skipped": 8,
+      "loss": 0.04622570425271988,
+      "identity_loss": 0.0143052339553833,
+      "box_loss": 3.623630982474424e-05,
+      "logit_loss": 0.3155810832977295,
+      "common_ids": 8
+    },
+    {
+      "step": 2800,
+      "used": 2792,
+      "skipped": 8,
+      "loss": 0.08655964583158493,
+      "identity_loss": 0.061135873198509216,
+      "box_loss": 0.00012920607696287334,
+      "logit_loss": 0.24131713807582855,
+      "common_ids": 9
+    },
+    {
+      "step": 2900,
+      "used": 2891,
+      "skipped": 9,
+      "loss": 0.04140632227063179,
+      "identity_loss": 0.004059698898345232,
+      "box_loss": 0.00014619287685491145,
+      "logit_loss": 0.3588469326496124,
+      "common_ids": 9
+    },
+    {
+      "step": 3000,
+      "used": 2991,
+      "skipped": 9,
+      "loss": 0.044525351375341415,
+      "identity_loss": 0.01947808265686035,
+      "box_loss": 7.308620843105018e-05,
+      "logit_loss": 0.2431640625,
+      "common_ids": 8
+    }
+  ],
+  "heldout": {
+    "transitions": 1202,
+    "owners": 12891,
+    "owner_available_top8": 12369,
+    "geometry_safe": 11569,
+    "raw_recent_safe": 10789,
+    "adapted_recent_safe": 11336,
+    "hard_alternate": 800,
+    "raw_hard_recovered": 137,
+    "adapted_hard_recovered": 159,
+    "teacher_owner_queries": 12903,
+    "student_owner_queries_retained": 12497,
+    "geometry_precision": 0.89744783182065,
+    "raw_recent_precision": 0.8369405011248158,
+    "adapted_recent_precision": 0.8793732061127919,
+    "owner_available_top8_rate": 0.9595066325343262,
+    "raw_hard_recovery": 0.17125,
+    "adapted_hard_recovery": 0.19875,
+    "student_owner_query_retention": 0.9685344493528637,
+    "mean_box_l1_to_teacher": 0.004902395140689334,
+    "mean_logit_l1_to_teacher": 0.4272400871080254
+  },
+  "teacher_cache": {
+    "memory_hits": 1229,
+    "disk_hits": 5974,
+    "fresh_decodes": 0,
+    "resident_mib": 63.95576477050781,
+    "limit_mib": 64.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  },
+  "feature_cache": {
+    "gpu_cache_hits": 0,
+    "disk_cache_hits": 7185,
+    "fresh_encodes": 0,
+    "resident_mib": 0.0,
+    "limit_mib": 0.0,
+    "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+  }
+}

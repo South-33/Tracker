@@ -1,0 +1,194 @@
+{
+  "scope": "train-only learned protected track query inside the existing RT-DETR decoder; one heldout train sequence; no dev/gate frames",
+  "claim": "Identity-conditioned current cross-attention can beat frozen-output temporal matching on hard crossings without changing ordinary detector queries.",
+  "settings": {
+    "heldout": "dancetrack0012",
+    "steps": 5000,
+    "lr": 0.0002,
+    "candidate_cloud": 8,
+    "owner_iou": 0.5,
+    "safe_margin": 0.1,
+    "sampling": "50% hard frame / 50% low-margin safe frame",
+    "trainable": "zero-init residual query-content adapter only; detector and decoder weights frozen",
+    "decoder_mode": "normal detector queries and protected track queries share one decoder pass; normal rows are masked from track columns"
+  },
+  "parameters": 263424,
+  "per_sequence_rows": {
+    "dancetrack0001": {
+      "hard": 56,
+      "safe": 563,
+      "missing_owner": 14
+    },
+    "dancetrack0002": {
+      "hard": 139,
+      "safe": 1717,
+      "missing_owner": 63
+    },
+    "dancetrack0006": {
+      "hard": 304,
+      "safe": 2305,
+      "missing_owner": 107
+    },
+    "dancetrack0008": {
+      "hard": 186,
+      "safe": 1364,
+      "missing_owner": 59
+    },
+    "dancetrack0012": {
+      "hard": 524,
+      "safe": 3315,
+      "missing_owner": 250
+    },
+    "dancetrack0015": {
+      "hard": 57,
+      "safe": 1196,
+      "missing_owner": 29
+    },
+    "dancetrack0082": {
+      "hard": 35,
+      "safe": 360,
+      "missing_owner": 51
+    },
+    "dancetrack0083": {
+      "hard": 57,
+      "safe": 409,
+      "missing_owner": 116
+    }
+  },
+  "training_rows": 8748,
+  "training_hard": 834,
+  "training_safe": 7914,
+  "curve": [
+    {
+      "step": 1,
+      "loss": 0.07474765181541443,
+      "batch_owner_iou": 0.9782041907310486,
+      "l1": 0.000918850302696228,
+      "giou": 0.9781662821769714,
+      "cls": 0.10594387352466583
+    },
+    {
+      "step": 500,
+      "loss": 0.47228461503982544,
+      "batch_owner_iou": 0.809109628200531,
+      "l1": 0.00491689657792449,
+      "giou": 0.7980982661247253,
+      "cls": 0.1755867451429367
+    },
+    {
+      "step": 1000,
+      "loss": 0.6063597202301025,
+      "batch_owner_iou": 0.7346049547195435,
+      "l1": 0.0049875155091285706,
+      "giou": 0.7311777472496033,
+      "cls": 0.1751100867986679
+    },
+    {
+      "step": 1500,
+      "loss": 0.19953413307666779,
+      "batch_owner_iou": 0.9236906170845032,
+      "l1": 0.0015451014041900635,
+      "giou": 0.9231176972389221,
+      "cls": 0.15217609703540802
+    },
+    {
+      "step": 2000,
+      "loss": 1.6029152870178223,
+      "batch_owner_iou": 0.3970211148262024,
+      "l1": 0.04259486496448517,
+      "giou": 0.3559688329696655,
+      "cls": 0.40751445293426514
+    },
+    {
+      "step": 2500,
+      "loss": 0.3107684254646301,
+      "batch_owner_iou": 0.870062530040741,
+      "l1": 0.006181811913847923,
+      "giou": 0.8671455383300781,
+      "cls": 0.056601572781801224
+    },
+    {
+      "step": 3000,
+      "loss": 0.6198915839195251,
+      "batch_owner_iou": 0.7365425825119019,
+      "l1": 0.008645989000797272,
+      "giou": 0.724912166595459,
+      "cls": 0.10594387352466583
+    },
+    {
+      "step": 3500,
+      "loss": 0.41996699571609497,
+      "batch_owner_iou": 0.822098970413208,
+      "l1": 0.005515560507774353,
+      "giou": 0.820173442363739,
+      "cls": 0.13094428181648254
+    },
+    {
+      "step": 4000,
+      "loss": 1.2365734577178955,
+      "batch_owner_iou": 0.4925842881202698,
+      "l1": 0.030061960220336914,
+      "giou": 0.49258437752723694,
+      "cls": 0.2857295572757721
+    },
+    {
+      "step": 4500,
+      "loss": 0.44875434041023254,
+      "batch_owner_iou": 0.8299406170845032,
+      "l1": 0.005965076386928558,
+      "giou": 0.8221355676651001,
+      "cls": 0.252800315618515
+    },
+    {
+      "step": 5000,
+      "loss": 0.3327350318431854,
+      "batch_owner_iou": 0.868189811706543,
+      "l1": 0.0050997063517570496,
+      "giou": 0.8635777831077576,
+      "cls": 0.13756825029850006
+    }
+  ],
+  "ordinary_query_parity_initial": {
+    "max_box_abs_diff": 0.00017902255058288574,
+    "max_person_logit_abs_diff": 0.14453125
+  },
+  "ordinary_query_parity_final": {
+    "max_box_abs_diff": 0.00048083066940307617,
+    "max_person_logit_abs_diff": 0.11328125
+  },
+  "heldout": {
+    "hard": 524,
+    "hard_correct": 280,
+    "safe": 3315,
+    "safe_correct": 3050,
+    "all": 3839,
+    "all_correct": 3330,
+    "hard_recovery": 0.5343511450381679,
+    "safe_accuracy": 0.9200603318250377,
+    "accuracy": 0.8674133889033603,
+    "score_pass_rate": 0.9997395154988278,
+    "mean_owner_iou_or_zero": 0.6777717972149542
+  },
+  "comparison": {
+    "previous_frozen_history_hard_recovery": 0.33855098389982113,
+    "previous_frozen_history_safe_accuracy": 0.6784633998790078,
+    "predeclared_hard_recovery_bar": 0.5,
+    "predeclared_safe_accuracy_bar": 0.9
+  },
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 255.9551239013672,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 6153,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

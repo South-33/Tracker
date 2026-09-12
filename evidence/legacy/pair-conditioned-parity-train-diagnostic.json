@@ -1,0 +1,599 @@
+{
+  "scope": "train-only step-0 parity for 6-channel pair-conditioned RT-DETR; no dev frames",
+  "claim": "Zero previous-frame stem weights preserve the clean current-frame detector while exposing the same decoder feature surface for temporal fine-tuning.",
+  "settings": {
+    "samples_per_sequence": 8,
+    "topk": 96,
+    "pair_order": "current RGB then previous RGB",
+    "initialization": "copy clean RGB stem weights into channels 0:3; channels 3:6 exactly zero"
+  },
+  "samples": 64,
+  "max_box_abs_diff": 0.0,
+  "max_person_logit_abs_diff": 0.0,
+  "max_decoder_feature_abs_diff": 0.0,
+  "top96_exact_rate": 1.0,
+  "mean_top96_jaccard": 1.0,
+  "decoder_feature_shape": [
+    1,
+    300,
+    256
+  ],
+  "rows": [
+    {
+      "sequence": "dancetrack0001",
+      "frame": 2,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0001",
+      "frame": 102,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0001",
+      "frame": 202,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0001",
+      "frame": 302,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0001",
+      "frame": 403,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0001",
+      "frame": 503,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0001",
+      "frame": 603,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0001",
+      "frame": 703,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frame": 2,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frame": 174,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frame": 345,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frame": 517,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frame": 688,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frame": 860,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frame": 1031,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frame": 1203,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frame": 2,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frame": 173,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frame": 345,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frame": 516,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frame": 688,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frame": 859,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frame": 1031,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frame": 1202,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frame": 2,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frame": 128,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frame": 254,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frame": 380,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frame": 505,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frame": 631,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frame": 757,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frame": 883,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frame": 2,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frame": 174,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frame": 345,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frame": 517,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frame": 688,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frame": 860,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frame": 1031,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frame": 1203,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frame": 2,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frame": 174,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frame": 345,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frame": 517,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frame": 688,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frame": 860,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frame": 1031,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frame": 1203,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frame": 2,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frame": 19,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frame": 36,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frame": 53,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frame": 69,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frame": 86,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frame": 103,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frame": 120,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frame": 2,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frame": 19,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frame": 36,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frame": 53,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frame": 69,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frame": 86,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frame": 103,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frame": 120,
+      "box_max_abs": 0.0,
+      "person_logit_max_abs": 0.0,
+      "feature_max_abs": 0.0,
+      "top96_jaccard": 1.0,
+      "top96_exact": true
+    }
+  ]
+}

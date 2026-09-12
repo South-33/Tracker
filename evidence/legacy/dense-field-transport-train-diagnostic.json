@@ -1,0 +1,62 @@
+{
+  "scope": "train-only zero-parameter dense frozen-encoder transport diagnostic; one heldout train sequence; no non-train frames",
+  "claim": "Dense consecutive encoder correspondence may carry object motion through crossings better than last-box IoU, without learning identity appearance.",
+  "settings": {
+    "heldout": "dancetrack0012",
+    "feature_level": "highest-resolution clean RT-DETR encoder map (80x80)",
+    "sample_grid": "4x4 central box cells",
+    "search_radius": "0.75*object feature extent clamped to [4,16] cells",
+    "aggregation": "report both rigid median displacement and direct per-point transported-field proposal voting",
+    "parameters": 0
+  },
+  "heldout": {
+    "rows": 12456,
+    "owner_available": 12215,
+    "baseline_correct": 11682,
+    "transport_correct": 11632,
+    "point_vote_correct": 7682,
+    "hard": 533,
+    "hard_transport_correct": 10,
+    "hard_point_vote_correct": 77,
+    "safe": 11682,
+    "safe_transport_correct": 11622,
+    "safe_point_vote_correct": 7605,
+    "transport_changes": 151,
+    "transport_changes_to_owner": 10,
+    "transport_changes_from_owner": 60,
+    "point_vote_changes": 6319,
+    "point_vote_changes_to_owner": 77,
+    "point_vote_changes_from_owner": 4077,
+    "owner_availability": 0.9806518946692357,
+    "baseline_accuracy_when_available": 0.9563651248465002,
+    "transport_accuracy_when_available": 0.9522717969709373,
+    "point_vote_accuracy_when_available": 0.6288988948014737,
+    "hard_recovery": 0.01876172607879925,
+    "point_vote_hard_recovery": 0.14446529080675422,
+    "safe_preservation": 0.9948638931689779,
+    "point_vote_safe_preservation": 0.6510015408320493,
+    "net_change_to_owner": -50,
+    "point_vote_net_change_to_owner": -4000,
+    "mean_displacement_error_cells": 0.2559162289389103,
+    "median_displacement_error_cells": 0.16271257400512695,
+    "mean_match_similarity": 0.9536249124071806,
+    "mean_search_radius_cells": 10.643471142038477
+  },
+  "decision": "weak",
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 2404,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

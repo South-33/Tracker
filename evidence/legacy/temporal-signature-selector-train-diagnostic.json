@@ -1,0 +1,31 @@
+{
+  "scope": "train-only held-out dancetrack0012; fixed selector comparison; no thresholds swept",
+  "holdout": "dancetrack0012",
+  "selectors": {
+    "geometry": {
+      "choices": 12316,
+      "safe": 11503,
+      "precision": 0.9339883078921728
+    },
+    "center": {
+      "choices": 12316,
+      "safe": 11086,
+      "precision": 0.9001299123091913
+    },
+    "center_shape": {
+      "choices": 12316,
+      "safe": 11515,
+      "precision": 0.9349626502111075
+    },
+    "signature_local": {
+      "choices": 12316,
+      "safe": 10982,
+      "precision": 0.891685612211757
+    },
+    "equal_rank_local": {
+      "choices": 12316,
+      "safe": 11388,
+      "precision": 0.9246508606690484
+    }
+  }
+}

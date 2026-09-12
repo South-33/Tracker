@@ -1,0 +1,62 @@
+{
+  "scope": "train-only oracle-clean spatial-template diagnostic using existing frozen encoder features; no dev/gate frames",
+  "question": "Does keeping a tiny spatial RoI template preserve adjacent-frame identity evidence lost by single proposal embeddings?",
+  "settings": {
+    "feature_level": 0,
+    "pool": 5,
+    "candidate_score": 0.1,
+    "minimum_iou": 0.1
+  },
+  "result": {
+    "fresh_links": 6195,
+    "fresh_safe": 5883,
+    "top3_template_correct": 5880,
+    "top3_agreement": 5780,
+    "top3_agreement_safe": 5524,
+    "top3_hazard_veto": 56,
+    "top3_safe_veto": 359,
+    "top5_template_correct": 5879,
+    "top5_agreement": 5763,
+    "top5_agreement_safe": 5516,
+    "top5_hazard_veto": 65,
+    "top5_safe_veto": 367,
+    "top8_template_correct": 5871,
+    "top8_agreement": 5756,
+    "top8_agreement_safe": 5509,
+    "top8_hazard_veto": 65,
+    "top8_safe_veto": 374,
+    "fresh_hazards": 312,
+    "top3_agreement_precision": 0.9557093425605536,
+    "top3_safe_acceptance": 0.9389767125616182,
+    "top3_hazard_veto_recall": 0.1794871794871795,
+    "top3_template_accuracy": 0.9491525423728814,
+    "top5_agreement_precision": 0.9571403782752039,
+    "top5_safe_acceptance": 0.937616862145164,
+    "top5_hazard_veto_recall": 0.20833333333333334,
+    "top5_template_accuracy": 0.9489911218724778,
+    "top8_agreement_precision": 0.957088255733148,
+    "top8_safe_acceptance": 0.9364269930307666,
+    "top8_hazard_veto_recall": 0.20833333333333334,
+    "top8_template_accuracy": 0.9476997578692494,
+    "sequence": "dancetrack0012",
+    "roster": 16,
+    "level": 0,
+    "pool": 5
+  },
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 128.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 1179,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

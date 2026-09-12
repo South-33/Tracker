@@ -1,0 +1,182 @@
+{
+  "scope": "frozen non-gate dev Reality probe for learned protected track queries inside the existing RT-DETR decoder",
+  "settings": {
+    "steps": 5000,
+    "lr": 0.0002,
+    "candidate_cloud": 8,
+    "safe_margin": 0.1,
+    "owner_iou": 0.5,
+    "sampling": "50% hard frame / 50% low-margin safe frame over all train sequences",
+    "trainable": "263424-parameter zero-init residual protected-query adapter; detector/decoder frozen",
+    "ordinary_query_rule": "normal rows cannot attend protected rows; measured FP16 stability is part of the pass criteria"
+  },
+  "criteria": {
+    "hard_recovery_min": 0.45,
+    "safe_accuracy_min": 0.9,
+    "top96_jaccard_min": 0.99,
+    "coverage_delta_min": -0.005
+  },
+  "decision": "fail",
+  "train_counts": {
+    "dancetrack0001": {
+      "hard": 56,
+      "safe": 563,
+      "missing_owner": 14
+    },
+    "dancetrack0002": {
+      "hard": 139,
+      "safe": 1717,
+      "missing_owner": 63
+    },
+    "dancetrack0006": {
+      "hard": 304,
+      "safe": 2305,
+      "missing_owner": 107
+    },
+    "dancetrack0008": {
+      "hard": 186,
+      "safe": 1364,
+      "missing_owner": 59
+    },
+    "dancetrack0012": {
+      "hard": 524,
+      "safe": 3315,
+      "missing_owner": 250
+    },
+    "dancetrack0015": {
+      "hard": 57,
+      "safe": 1196,
+      "missing_owner": 29
+    },
+    "dancetrack0082": {
+      "hard": 35,
+      "safe": 360,
+      "missing_owner": 51
+    },
+    "dancetrack0083": {
+      "hard": 57,
+      "safe": 409,
+      "missing_owner": 116
+    }
+  },
+  "dev_counts": {
+    "dancetrack0016": {
+      "hard": 154,
+      "safe": 1837,
+      "missing_owner": 30
+    },
+    "dancetrack0020": {
+      "hard": 619,
+      "safe": 2041,
+      "missing_owner": 1034
+    }
+  },
+  "curve": [
+    {
+      "step": 1,
+      "loss": 1.0012999773025513
+    },
+    {
+      "step": 500,
+      "loss": 0.5284594893455505
+    },
+    {
+      "step": 1000,
+      "loss": 0.17875705659389496
+    },
+    {
+      "step": 1500,
+      "loss": 0.9010299444198608
+    },
+    {
+      "step": 2000,
+      "loss": 0.5684905052185059
+    },
+    {
+      "step": 2500,
+      "loss": 1.036597728729248
+    },
+    {
+      "step": 3000,
+      "loss": 1.050755500793457
+    },
+    {
+      "step": 3500,
+      "loss": 0.5997728705406189
+    },
+    {
+      "step": 4000,
+      "loss": 0.5641594529151917
+    },
+    {
+      "step": 4500,
+      "loss": 0.863305389881134
+    },
+    {
+      "step": 5000,
+      "loss": 0.418367862701416
+    }
+  ],
+  "per_sequence": {
+    "dancetrack0016": {
+      "hard": 154,
+      "hard_correct": 58,
+      "safe": 1837,
+      "safe_correct": 1624,
+      "all": 1991,
+      "all_correct": 1682,
+      "hard_recovery": 0.37662337662337664,
+      "safe_accuracy": 0.8840500816548721,
+      "accuracy": 0.8448016072325465
+    },
+    "dancetrack0020": {
+      "hard": 619,
+      "hard_correct": 293,
+      "safe": 2041,
+      "safe_correct": 1559,
+      "all": 2660,
+      "all_correct": 1852,
+      "hard_recovery": 0.47334410339256866,
+      "safe_accuracy": 0.7638412542871141,
+      "accuracy": 0.6962406015037594
+    }
+  },
+  "combined": {
+    "hard": 773,
+    "hard_correct": 351,
+    "safe": 3878,
+    "safe_correct": 3183,
+    "all": 4651,
+    "all_correct": 3534,
+    "hard_recovery": 0.4540750323415265,
+    "safe_accuracy": 0.8207839092315626,
+    "accuracy": 0.7598365942807999
+  },
+  "detector_stability": {
+    "frames": 200,
+    "track_queries": 16,
+    "mean_top96_query_set_jaccard": 0.9984536082474225,
+    "max_box_abs_diff": 0.0010861754417419434,
+    "max_person_logit_abs_diff": 0.2265625,
+    "visible_rows": 4046,
+    "baseline_top96_gt_coverage": 0.9468610973801285,
+    "mixed_top96_gt_coverage": 0.9466139396935245,
+    "coverage_delta": -0.00024715768660399373
+  },
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 9383,
+    "fresh_decodes": 0,
+    "resident_mib": 255.98430633544922,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 7060,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

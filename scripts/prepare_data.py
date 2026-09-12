@@ -10,7 +10,7 @@ import time
 import urllib.request
 import zipfile
 
-from fetch_data import ROOT, SOURCES
+from fetch_data import DEFAULT_ARCHIVES, ROOT, SOURCES
 
 
 class RemoteArchive(io.RawIOBase):
@@ -73,7 +73,7 @@ class RemoteArchive(io.RawIOBase):
         return bytes(output)
 
 
-def prepare(archive_name, frame_limit, remote):
+def prepare(archive_name, frame_limit, remote, requested_sequences=None, forced_split=None):
     path = ROOT / "data" / "archives" / archive_name
     stream = path if path.exists() else RemoteArchive(archive_name) if remote else None
     if stream is None:
@@ -81,12 +81,20 @@ def prepare(archive_name, frame_limit, remote):
     with zipfile.ZipFile(stream) as archive:
         names = archive.namelist()
         sequences = sorted({part for name in names for part in name.split("/") if part.startswith("dancetrack") and part[10:].isdigit()})
-        chosen = sequences[:8] if archive_name == "train1.zip" else sequences[:4]
-        if len(chosen) < (8 if archive_name == "train1.zip" else 4):
-            raise RuntimeError(f"Unexpected sequence layout: {sequences}")
+        if requested_sequences:
+            missing = sorted(set(requested_sequences) - set(sequences))
+            if missing:
+                raise RuntimeError(f"Requested sequences not present in {archive_name}: {missing}")
+            chosen = [sequence for sequence in requested_sequences if sequence in sequences]
+        else:
+            if archive_name == "train2.zip":
+                raise ValueError("train2.zip requires explicit --sequence selections and --split train")
+            chosen = sequences[:8] if archive_name == "train1.zip" else sequences[:4]
+            if len(chosen) < (8 if archive_name == "train1.zip" else 4):
+                raise RuntimeError(f"Unexpected sequence layout: {sequences}")
         records = []
         for index, sequence in enumerate(chosen):
-            split = "train" if archive_name == "train1.zip" and index < 6 else "dev" if archive_name == "train1.zip" else "holdout"
+            split = forced_split or ("train" if archive_name == "train1.zip" and index < 6 else "dev" if archive_name == "train1.zip" else "holdout")
             # All choices depend on source names, before any detector predictions are inspected.
             members = []
             for entry in archive.infolist():
@@ -130,13 +138,32 @@ def main():
     parser.add_argument("--remote", action="store_true")
     parser.add_argument("--frames", type=int, default=0, help="Leading frames per sequence; zero selects full sequences")
     parser.add_argument("--archive", choices=list(SOURCES), action="append")
+    parser.add_argument("--output", help="Manifest path; useful when preparing only one archive")
+    parser.add_argument("--sequence", action="append", help="Explicit sequence(s) to extract from a single archive")
+    parser.add_argument("--split", choices=["train", "dev", "holdout"], help="Force split for explicit sequences")
+    parser.add_argument("--base-manifest", help="Copy records from an existing manifest before adding prepared records")
     args = parser.parse_args()
+    archives = args.archive or DEFAULT_ARCHIVES
+    if args.sequence and len(archives) != 1:
+        raise ValueError("--sequence requires exactly one --archive")
+    if args.split and not args.sequence:
+        raise ValueError("--split is only valid with --sequence")
     records = []
-    for name in args.archive or list(SOURCES):
-        records.extend(prepare(name, args.frames, args.remote))
+    if args.base_manifest:
+        base = Path(args.base_manifest)
+        if not base.is_absolute():
+            base = ROOT / base
+        records.extend(json.loads(base.read_text())["records"])
+    for name in archives:
+        records.extend(prepare(name, args.frames, args.remote, args.sequence, args.split))
+    names = [record["sequence"] for record in records]
+    if len(names) != len(set(names)):
+        raise RuntimeError("Combined manifest contains duplicate sequence names")
     manifest = {"source": "https://huggingface.co/datasets/noahcao/dancetrack", "split_rule": "lexicographic whole-sequence split, frozen before inference",
                 "frame_limit": args.frames, "records": records}
-    path = ROOT / "data" / f"manifest-{args.frames or 'full'}.json"
+    path = Path(args.output) if args.output else ROOT / "data" / f"manifest-{args.frames or 'full'}.json"
+    if not path.is_absolute():
+        path = ROOT / path
     path.parent.mkdir(exist_ok=True)
     if path.exists() and json.loads(path.read_text()) != manifest:
         raise RuntimeError(f"Refusing to silently change existing manifest: {path}")

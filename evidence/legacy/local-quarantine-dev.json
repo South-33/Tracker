@@ -1,0 +1,155 @@
+{
+  "scope": "fully causal non-gate dev; private opening enrollment; roster frozen once; reciprocal local continuity; learned hazard veto; no recovery; no later births",
+  "checkpoint_sha256": "e9b38391be32ecac951726bfe3300e9a601d52704dcc2d024699e0cfb8392192",
+  "checkpoint_step": 3000,
+  "per_sequence": [
+    {
+      "true_positives": 929,
+      "false_positives": 54,
+      "missed_people": 11684,
+      "precision": 0.9450661241098678,
+      "recall": 0.07365416633631967,
+      "identity_switches": 6,
+      "public_id_reuses": 291,
+      "visible_segments": 65,
+      "strict_visible_segment_survival": 0.8923076923076924,
+      "public_ids_used": 7,
+      "sequence": "dancetrack0016",
+      "frames": 2163,
+      "final_roster": 8,
+      "accepted_local_links": 983,
+      "vetoed_local_links": 5545,
+      "unmatched_public_rows": 10448,
+      "progress": [
+        {
+          "frame": 250,
+          "roster": 8,
+          "outputs": 1,
+          "vetoed": 442
+        },
+        {
+          "frame": 500,
+          "roster": 8,
+          "outputs": 1,
+          "vetoed": 1093
+        },
+        {
+          "frame": 750,
+          "roster": 8,
+          "outputs": 0,
+          "vetoed": 1567
+        },
+        {
+          "frame": 1000,
+          "roster": 8,
+          "outputs": 0,
+          "vetoed": 2150
+        },
+        {
+          "frame": 1250,
+          "roster": 8,
+          "outputs": 0,
+          "vetoed": 2899
+        },
+        {
+          "frame": 1500,
+          "roster": 8,
+          "outputs": 0,
+          "vetoed": 3667
+        },
+        {
+          "frame": 1750,
+          "roster": 8,
+          "outputs": 0,
+          "vetoed": 4309
+        },
+        {
+          "frame": 2000,
+          "roster": 8,
+          "outputs": 0,
+          "vetoed": 5113
+        },
+        {
+          "frame": 2163,
+          "roster": 8,
+          "outputs": 0,
+          "vetoed": 5545
+        }
+      ]
+    },
+    {
+      "true_positives": 1948,
+      "false_positives": 35,
+      "missed_people": 18226,
+      "precision": 0.9823499747856783,
+      "recall": 0.09655992862099733,
+      "identity_switches": 3,
+      "public_id_reuses": 362,
+      "visible_segments": 169,
+      "strict_visible_segment_survival": 0.9230769230769231,
+      "public_ids_used": 20,
+      "sequence": "dancetrack0020",
+      "frames": 583,
+      "final_roster": 29,
+      "accepted_local_links": 1983,
+      "vetoed_local_links": 6960,
+      "unmatched_public_rows": 6775,
+      "progress": [
+        {
+          "frame": 250,
+          "roster": 29,
+          "outputs": 3,
+          "vetoed": 2724
+        },
+        {
+          "frame": 500,
+          "roster": 29,
+          "outputs": 2,
+          "vetoed": 5954
+        },
+        {
+          "frame": 583,
+          "roster": 29,
+          "outputs": 2,
+          "vetoed": 6960
+        }
+      ]
+    }
+  ],
+  "combined": {
+    "true_positives": 2877,
+    "false_positives": 89,
+    "missed_people": 29910,
+    "identity_switches": 9,
+    "public_id_reuses": 653,
+    "visible_segments": 234,
+    "accepted_local_links": 2966,
+    "vetoed_local_links": 12505,
+    "unmatched_public_rows": 17223,
+    "precision": 0.9699932569116655,
+    "recall": 0.08774819288132492,
+    "strict_visible_segment_survival": 0.9145299145299145,
+    "final_roster": 37,
+    "sequences": [
+      "dancetrack0016",
+      "dancetrack0020"
+    ],
+    "frames": 2746
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 2746,
+    "fresh_decodes": 0,
+    "resident_mib": 134.24585723876953,
+    "limit_mib": 512.0,
+    "directory": "data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

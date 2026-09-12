@@ -1,0 +1,203 @@
+{
+  "scope": "train-only raw 30-step trusted-history transformer; heldout dancetrack0012; no dev/gate frames",
+  "claim": "Causal self-attention over raw protected trajectory features can resolve current top-8 crossing ambiguity that scalar history summaries cannot.",
+  "settings": {
+    "history": 30,
+    "candidates": 8,
+    "steps": 10000,
+    "batch": 64,
+    "sampling": "50% geometry-hard, 50% low-margin geometry-safe",
+    "decision": "top-8 argmax"
+  },
+  "parameters": 708045,
+  "per_sequence": {
+    "dancetrack0001": {
+      "rows": 986,
+      "hard": 310,
+      "ambiguous_safe": 676,
+      "owner_missing_top8": 146
+    },
+    "dancetrack0002": {
+      "rows": 2739,
+      "hard": 916,
+      "ambiguous_safe": 1823,
+      "owner_missing_top8": 698
+    },
+    "dancetrack0006": {
+      "rows": 3785,
+      "hard": 1425,
+      "ambiguous_safe": 2360,
+      "owner_missing_top8": 835
+    },
+    "dancetrack0008": {
+      "rows": 2250,
+      "hard": 720,
+      "ambiguous_safe": 1530,
+      "owner_missing_top8": 372
+    },
+    "dancetrack0012": {
+      "rows": 5542,
+      "hard": 2236,
+      "ambiguous_safe": 3306,
+      "owner_missing_top8": 1541
+    },
+    "dancetrack0015": {
+      "rows": 1776,
+      "hard": 514,
+      "ambiguous_safe": 1262,
+      "owner_missing_top8": 1147
+    },
+    "dancetrack0082": {
+      "rows": 615,
+      "hard": 244,
+      "ambiguous_safe": 371,
+      "owner_missing_top8": 320
+    },
+    "dancetrack0083": {
+      "rows": 736,
+      "hard": 329,
+      "ambiguous_safe": 407,
+      "owner_missing_top8": 272
+    }
+  },
+  "training_rows": 12887,
+  "training_hard": 4458,
+  "curve": [
+    {
+      "step": 1,
+      "loss": 2.094757080078125,
+      "batch_accuracy": 0.078125
+    },
+    {
+      "step": 500,
+      "loss": 1.0290123224258423,
+      "batch_accuracy": 0.59375
+    },
+    {
+      "step": 1000,
+      "loss": 0.7528740763664246,
+      "batch_accuracy": 0.640625
+    },
+    {
+      "step": 1500,
+      "loss": 0.6420931816101074,
+      "batch_accuracy": 0.765625
+    },
+    {
+      "step": 2000,
+      "loss": 0.42630404233932495,
+      "batch_accuracy": 0.84375
+    },
+    {
+      "step": 2500,
+      "loss": 0.27733904123306274,
+      "batch_accuracy": 0.859375
+    },
+    {
+      "step": 3000,
+      "loss": 0.1450180858373642,
+      "batch_accuracy": 0.921875
+    },
+    {
+      "step": 3500,
+      "loss": 0.1243310198187828,
+      "batch_accuracy": 0.96875
+    },
+    {
+      "step": 4000,
+      "loss": 0.13824371993541718,
+      "batch_accuracy": 0.90625
+    },
+    {
+      "step": 4500,
+      "loss": 0.2524849772453308,
+      "batch_accuracy": 0.921875
+    },
+    {
+      "step": 5000,
+      "loss": 0.020579615607857704,
+      "batch_accuracy": 1.0
+    },
+    {
+      "step": 5500,
+      "loss": 0.07076171040534973,
+      "batch_accuracy": 0.953125
+    },
+    {
+      "step": 6000,
+      "loss": 0.059038735926151276,
+      "batch_accuracy": 0.984375
+    },
+    {
+      "step": 6500,
+      "loss": 0.0834156721830368,
+      "batch_accuracy": 0.9375
+    },
+    {
+      "step": 7000,
+      "loss": 0.0897325649857521,
+      "batch_accuracy": 0.953125
+    },
+    {
+      "step": 7500,
+      "loss": 0.06368967890739441,
+      "batch_accuracy": 0.96875
+    },
+    {
+      "step": 8000,
+      "loss": 0.06148727983236313,
+      "batch_accuracy": 0.984375
+    },
+    {
+      "step": 8500,
+      "loss": 0.08092102408409119,
+      "batch_accuracy": 0.96875
+    },
+    {
+      "step": 9000,
+      "loss": 0.03302747756242752,
+      "batch_accuracy": 0.984375
+    },
+    {
+      "step": 9500,
+      "loss": 0.02683662623167038,
+      "batch_accuracy": 0.984375
+    },
+    {
+      "step": 10000,
+      "loss": 0.005747634917497635,
+      "batch_accuracy": 1.0
+    }
+  ],
+  "heldout": {
+    "rows": 5542,
+    "correct": 3000,
+    "hard": 2236,
+    "hard_correct": 757,
+    "safe": 3306,
+    "safe_correct": 2243,
+    "recent_correct": 2852,
+    "mean_correct": 2492,
+    "accuracy": 0.5413208228076507,
+    "hard_recovery": 0.33855098389982113,
+    "safe_accuracy": 0.6784633998790078,
+    "recent_accuracy": 0.5146156622158066,
+    "mean_accuracy": 0.4496571634788885
+  },
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 255.9551239013672,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

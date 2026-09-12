@@ -1,0 +1,47 @@
+{
+  "scope": "train-only heldout dancetrack0012 zero-parameter selector check; no dev/gate frames",
+  "question": "Does bottom-center plus box-height continuity resolve IoU crossing mistakes better than center/shape geometry?",
+  "selectors": {
+    "iou": {
+      "all": 11282,
+      "correct": 9046,
+      "hard": 2236,
+      "hard_correct": 0,
+      "accuracy": 0.8018081900372275,
+      "hard_recovery": 0.0
+    },
+    "foot": {
+      "all": 11282,
+      "correct": 8031,
+      "hard": 2236,
+      "hard_correct": 372,
+      "accuracy": 0.7118418720085091,
+      "hard_recovery": 0.16636851520572452
+    },
+    "foot_height": {
+      "all": 11282,
+      "correct": 8659,
+      "hard": 2236,
+      "hard_correct": 366,
+      "accuracy": 0.7675057613898245,
+      "hard_recovery": 0.16368515205724507
+    }
+  },
+  "hard_events": 2236,
+  "cache": {
+    "memory_hits": 1201,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

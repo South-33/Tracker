@@ -1,0 +1,245 @@
+{
+  "scope": "train-only raw previous/current RGB hazard perception; dancetrack0012 held out; no dev/gate frames",
+  "claim": "Temporal perception should predict SAFE versus HAZARD for the ordinary reciprocal write rather than recover an alternate identity.",
+  "settings": {
+    "steps": 10000,
+    "lr": 0.0003,
+    "fixed_rule": "safe logit >= 0 accepts the ordinary reciprocal-IoU write; negative vetoes; no threshold sweep",
+    "temporal_input": "previous/current RGB letterbox through one 6-channel stride-8 CNN run per frame pair",
+    "per_link_input": "5x5 union RoI from temporal map + frozen previous/current RT-DETR query features + box geometry + current person logit",
+    "training_distribution": "oracle-clean adjacent reciprocal-IoU writes; alternating hazard-containing and safe-only frame pairs; class-balanced BCE within a pair",
+    "runtime_role": "auxiliary branch inside the one deployed neural model; it never selects an alternate identity"
+  },
+  "parameters": 728145,
+  "criteria": {
+    "accepted_precision_min": 0.998,
+    "safe_acceptance_min": 0.75,
+    "hazard_veto_min": 0.97
+  },
+  "train_counts": {
+    "pairs": 5412,
+    "safe": 45336,
+    "hazard": 921
+  },
+  "heldout_counts": {
+    "pairs": 1202,
+    "safe": 11566,
+    "hazard": 595
+  },
+  "curve": [
+    {
+      "step": 1,
+      "loss": 0.7798938751220703,
+      "train_accuracy": 0.0
+    },
+    {
+      "step": 500,
+      "loss": 0.39895805563032627,
+      "train_accuracy": 0.8505508059263229
+    },
+    {
+      "step": 1000,
+      "loss": 0.35507303769234566,
+      "train_accuracy": 0.8555202475786209,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 563,
+        "accepted_hazard": 23,
+        "accepted_precision": 0.9607508532423208,
+        "safe_acceptance": 0.7417654808959157,
+        "hazard_veto": 0.5660377358490566
+      }
+    },
+    {
+      "step": 1500,
+      "loss": 0.34749229995626957,
+      "train_accuracy": 0.8522480239719152
+    },
+    {
+      "step": 2000,
+      "loss": 0.3488094559311867,
+      "train_accuracy": 0.8520277886390686,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 540,
+        "accepted_hazard": 20,
+        "accepted_precision": 0.9642857142857143,
+        "safe_acceptance": 0.7114624505928854,
+        "hazard_veto": 0.6226415094339622
+      }
+    },
+    {
+      "step": 2500,
+      "loss": 0.33863467157050037,
+      "train_accuracy": 0.8546297732591629
+    },
+    {
+      "step": 3000,
+      "loss": 0.32996769137401133,
+      "train_accuracy": 0.8615837396681308,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 465,
+        "accepted_hazard": 20,
+        "accepted_precision": 0.9587628865979382,
+        "safe_acceptance": 0.6126482213438735,
+        "hazard_veto": 0.6226415094339622
+      }
+    },
+    {
+      "step": 3500,
+      "loss": 0.2988997517188545,
+      "train_accuracy": 0.8746944537162781
+    },
+    {
+      "step": 4000,
+      "loss": 0.3041820955413859,
+      "train_accuracy": 0.8653543747961521,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 527,
+        "accepted_hazard": 21,
+        "accepted_precision": 0.9616788321167883,
+        "safe_acceptance": 0.69433465085639,
+        "hazard_veto": 0.6037735849056604
+      }
+    },
+    {
+      "step": 4500,
+      "loss": 0.29593573409027885,
+      "train_accuracy": 0.8703853264451027
+    },
+    {
+      "step": 5000,
+      "loss": 0.304064508786425,
+      "train_accuracy": 0.8619762014448643,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 557,
+        "accepted_hazard": 26,
+        "accepted_precision": 0.9554030874785592,
+        "safe_acceptance": 0.7338603425559947,
+        "hazard_veto": 0.5094339622641509
+      }
+    },
+    {
+      "step": 5500,
+      "loss": 0.2699694636753993,
+      "train_accuracy": 0.8706158820092678
+    },
+    {
+      "step": 6000,
+      "loss": 0.2712302591804182,
+      "train_accuracy": 0.8848654869794845,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 514,
+        "accepted_hazard": 21,
+        "accepted_precision": 0.9607476635514018,
+        "safe_acceptance": 0.6772068511198946,
+        "hazard_veto": 0.6037735849056604
+      }
+    },
+    {
+      "step": 6500,
+      "loss": 0.2895425636698492,
+      "train_accuracy": 0.8743821517825127
+    },
+    {
+      "step": 7000,
+      "loss": 0.2703363571399823,
+      "train_accuracy": 0.8922123094797134,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 560,
+        "accepted_hazard": 27,
+        "accepted_precision": 0.9540034071550255,
+        "safe_acceptance": 0.7378129117259552,
+        "hazard_veto": 0.49056603773584906
+      }
+    },
+    {
+      "step": 7500,
+      "loss": 0.24005068365193438,
+      "train_accuracy": 0.9017551665008068
+    },
+    {
+      "step": 8000,
+      "loss": 0.240812391383457,
+      "train_accuracy": 0.9002004044055939,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 577,
+        "accepted_hazard": 26,
+        "accepted_precision": 0.956882255389718,
+        "safe_acceptance": 0.7602108036890646,
+        "hazard_veto": 0.5094339622641509
+      }
+    },
+    {
+      "step": 8500,
+      "loss": 0.252444039302587,
+      "train_accuracy": 0.8955718330144882
+    },
+    {
+      "step": 9000,
+      "loss": 0.2217331124781049,
+      "train_accuracy": 0.9023440575301647,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 625,
+        "accepted_hazard": 26,
+        "accepted_precision": 0.9600614439324117,
+        "safe_acceptance": 0.8234519104084321,
+        "hazard_veto": 0.5094339622641509
+      }
+    },
+    {
+      "step": 9500,
+      "loss": 0.22073456793373772,
+      "train_accuracy": 0.9121797701120377
+    },
+    {
+      "step": 10000,
+      "loss": 0.20552568288911424,
+      "train_accuracy": 0.9133484210968018,
+      "heldout_subset": {
+        "safe": 759,
+        "hazard": 53,
+        "accepted_safe": 640,
+        "accepted_hazard": 31,
+        "accepted_precision": 0.9538002980625931,
+        "safe_acceptance": 0.8432147562582345,
+        "hazard_veto": 0.41509433962264153
+      }
+    }
+  ],
+  "heldout": {
+    "safe": 11566,
+    "hazard": 595,
+    "accepted_safe": 10064,
+    "accepted_hazard": 298,
+    "accepted_precision": 0.9712410731519012,
+    "safe_acceptance": 0.8701366072972505,
+    "hazard_veto": 0.4991596638655462
+  },
+  "decision": "fail",
+  "cache": {
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "reads": 6637,
+    "size": 640,
+    "candidate_count": 96,
+    "torch": "2.8.0+cu128",
+    "precision": "cuda_amp_fp16",
+    "decoder": "clean-rtdetr-topk-v1"
+  }
+}

@@ -1,0 +1,856 @@
+{
+  "scope": "train-only optimistic ideal-enrollment ceiling; no dev/gate frames",
+  "question": "Can sacrificing intrinsically risky identities or retiring a visible segment at its first would-be geometry hazard still retain >55% row recall?",
+  "note": "Optimistic: uses GT identity to establish clean previous detections and to know the first would-be hazard. If this ceiling is below target, static easy-subset/retirement is dead.",
+  "per_sequence": [
+    {
+      "sequence": "dancetrack0001",
+      "owners": 7,
+      "rows": 4899,
+      "safe_links": 4399,
+      "hazards": 438,
+      "zero_hazard_owners": 0,
+      "zero_hazard_static_recall": 0.0,
+      "oracle_retire_recall": 0.026331904470300063,
+      "oracle_retire_safe": 129,
+      "oracle_retire_rows": 4899,
+      "per_owner": {
+        "0": {
+          "rows": 695,
+          "links": 694,
+          "safe": 648,
+          "hazards": 46,
+          "miss": 1
+        },
+        "1": {
+          "rows": 700,
+          "links": 695,
+          "safe": 624,
+          "hazards": 71,
+          "miss": 5
+        },
+        "2": {
+          "rows": 699,
+          "links": 691,
+          "safe": 651,
+          "hazards": 40,
+          "miss": 8
+        },
+        "3": {
+          "rows": 702,
+          "links": 700,
+          "safe": 669,
+          "hazards": 31,
+          "miss": 2
+        },
+        "4": {
+          "rows": 702,
+          "links": 700,
+          "safe": 592,
+          "hazards": 108,
+          "miss": 2
+        },
+        "5": {
+          "rows": 702,
+          "links": 687,
+          "safe": 574,
+          "hazards": 113,
+          "miss": 15
+        },
+        "6": {
+          "rows": 699,
+          "links": 670,
+          "safe": 641,
+          "hazards": 29,
+          "miss": 29
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0002",
+      "owners": 8,
+      "rows": 9184,
+      "safe_links": 7485,
+      "hazards": 1472,
+      "zero_hazard_owners": 0,
+      "zero_hazard_static_recall": 0.0,
+      "oracle_retire_recall": 0.02003484320557491,
+      "oracle_retire_safe": 184,
+      "oracle_retire_rows": 9184,
+      "per_owner": {
+        "0": {
+          "rows": 1192,
+          "links": 1173,
+          "safe": 996,
+          "hazards": 177,
+          "miss": 19
+        },
+        "1": {
+          "rows": 1174,
+          "links": 1164,
+          "safe": 1053,
+          "hazards": 111,
+          "miss": 10
+        },
+        "2": {
+          "rows": 1065,
+          "links": 1048,
+          "safe": 893,
+          "hazards": 155,
+          "miss": 17
+        },
+        "3": {
+          "rows": 1194,
+          "links": 1188,
+          "safe": 1019,
+          "hazards": 169,
+          "miss": 6
+        },
+        "4": {
+          "rows": 1197,
+          "links": 1186,
+          "safe": 998,
+          "hazards": 188,
+          "miss": 11
+        },
+        "5": {
+          "rows": 1109,
+          "links": 1052,
+          "safe": 760,
+          "hazards": 292,
+          "miss": 57
+        },
+        "6": {
+          "rows": 1125,
+          "links": 1095,
+          "safe": 903,
+          "hazards": 192,
+          "miss": 30
+        },
+        "7": {
+          "rows": 1128,
+          "links": 1051,
+          "safe": 863,
+          "hazards": 188,
+          "miss": 77
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0006",
+      "owners": 9,
+      "rows": 10495,
+      "safe_links": 8068,
+      "hazards": 2039,
+      "zero_hazard_owners": 0,
+      "zero_hazard_static_recall": 0.0,
+      "oracle_retire_recall": 0.023916150547879943,
+      "oracle_retire_safe": 251,
+      "oracle_retire_rows": 10495,
+      "per_owner": {
+        "0": {
+          "rows": 1187,
+          "links": 1162,
+          "safe": 922,
+          "hazards": 240,
+          "miss": 25
+        },
+        "1": {
+          "rows": 1181,
+          "links": 1155,
+          "safe": 994,
+          "hazards": 161,
+          "miss": 26
+        },
+        "2": {
+          "rows": 1181,
+          "links": 1162,
+          "safe": 970,
+          "hazards": 192,
+          "miss": 19
+        },
+        "3": {
+          "rows": 1191,
+          "links": 1143,
+          "safe": 856,
+          "hazards": 287,
+          "miss": 48
+        },
+        "4": {
+          "rows": 1150,
+          "links": 1101,
+          "safe": 859,
+          "hazards": 242,
+          "miss": 49
+        },
+        "5": {
+          "rows": 1135,
+          "links": 1101,
+          "safe": 872,
+          "hazards": 229,
+          "miss": 34
+        },
+        "6": {
+          "rows": 1161,
+          "links": 1090,
+          "safe": 865,
+          "hazards": 225,
+          "miss": 71
+        },
+        "7": {
+          "rows": 1185,
+          "links": 1117,
+          "safe": 867,
+          "hazards": 250,
+          "miss": 68
+        },
+        "8": {
+          "rows": 1124,
+          "links": 1076,
+          "safe": 863,
+          "hazards": 213,
+          "miss": 48
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0008",
+      "owners": 8,
+      "rows": 6783,
+      "safe_links": 5530,
+      "hazards": 992,
+      "zero_hazard_owners": 0,
+      "zero_hazard_static_recall": 0.0,
+      "oracle_retire_recall": 0.04555506413091552,
+      "oracle_retire_safe": 309,
+      "oracle_retire_rows": 6783,
+      "per_owner": {
+        "0": {
+          "rows": 830,
+          "links": 813,
+          "safe": 700,
+          "hazards": 113,
+          "miss": 17
+        },
+        "1": {
+          "rows": 860,
+          "links": 838,
+          "safe": 705,
+          "hazards": 133,
+          "miss": 22
+        },
+        "2": {
+          "rows": 834,
+          "links": 793,
+          "safe": 641,
+          "hazards": 152,
+          "miss": 41
+        },
+        "3": {
+          "rows": 863,
+          "links": 819,
+          "safe": 662,
+          "hazards": 157,
+          "miss": 44
+        },
+        "4": {
+          "rows": 878,
+          "links": 856,
+          "safe": 723,
+          "hazards": 133,
+          "miss": 22
+        },
+        "5": {
+          "rows": 817,
+          "links": 793,
+          "safe": 705,
+          "hazards": 88,
+          "miss": 24
+        },
+        "6": {
+          "rows": 840,
+          "links": 811,
+          "safe": 690,
+          "hazards": 121,
+          "miss": 29
+        },
+        "7": {
+          "rows": 861,
+          "links": 799,
+          "safe": 704,
+          "hazards": 95,
+          "miss": 62
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0012",
+      "owners": 12,
+      "rows": 12859,
+      "safe_links": 8766,
+      "hazards": 3307,
+      "zero_hazard_owners": 0,
+      "zero_hazard_static_recall": 0.0,
+      "oracle_retire_recall": 0.007076755579749592,
+      "oracle_retire_safe": 91,
+      "oracle_retire_rows": 12859,
+      "per_owner": {
+        "0": {
+          "rows": 1002,
+          "links": 951,
+          "safe": 688,
+          "hazards": 263,
+          "miss": 51
+        },
+        "1": {
+          "rows": 1093,
+          "links": 1050,
+          "safe": 728,
+          "hazards": 322,
+          "miss": 43
+        },
+        "2": {
+          "rows": 1021,
+          "links": 965,
+          "safe": 735,
+          "hazards": 230,
+          "miss": 56
+        },
+        "3": {
+          "rows": 1004,
+          "links": 924,
+          "safe": 628,
+          "hazards": 296,
+          "miss": 80
+        },
+        "4": {
+          "rows": 1087,
+          "links": 1030,
+          "safe": 722,
+          "hazards": 308,
+          "miss": 57
+        },
+        "5": {
+          "rows": 1051,
+          "links": 968,
+          "safe": 686,
+          "hazards": 282,
+          "miss": 83
+        },
+        "6": {
+          "rows": 1046,
+          "links": 977,
+          "safe": 692,
+          "hazards": 285,
+          "miss": 69
+        },
+        "7": {
+          "rows": 1119,
+          "links": 1078,
+          "safe": 818,
+          "hazards": 260,
+          "miss": 41
+        },
+        "8": {
+          "rows": 1113,
+          "links": 1074,
+          "safe": 882,
+          "hazards": 192,
+          "miss": 39
+        },
+        "9": {
+          "rows": 1144,
+          "links": 1075,
+          "safe": 756,
+          "hazards": 319,
+          "miss": 69
+        },
+        "10": {
+          "rows": 1110,
+          "links": 1008,
+          "safe": 732,
+          "hazards": 276,
+          "miss": 102
+        },
+        "11": {
+          "rows": 1069,
+          "links": 973,
+          "safe": 699,
+          "hazards": 274,
+          "miss": 96
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0015",
+      "owners": 9,
+      "rows": 10685,
+      "safe_links": 9009,
+      "hazards": 1573,
+      "zero_hazard_owners": 0,
+      "zero_hazard_static_recall": 0.0,
+      "oracle_retire_recall": 0.012915301824988302,
+      "oracle_retire_safe": 138,
+      "oracle_retire_rows": 10685,
+      "per_owner": {
+        "0": {
+          "rows": 1192,
+          "links": 1172,
+          "safe": 976,
+          "hazards": 196,
+          "miss": 20
+        },
+        "1": {
+          "rows": 1191,
+          "links": 1184,
+          "safe": 1042,
+          "hazards": 142,
+          "miss": 7
+        },
+        "2": {
+          "rows": 1183,
+          "links": 1172,
+          "safe": 925,
+          "hazards": 247,
+          "miss": 11
+        },
+        "3": {
+          "rows": 1189,
+          "links": 1176,
+          "safe": 1030,
+          "hazards": 146,
+          "miss": 13
+        },
+        "4": {
+          "rows": 1182,
+          "links": 1158,
+          "safe": 948,
+          "hazards": 210,
+          "miss": 24
+        },
+        "5": {
+          "rows": 1154,
+          "links": 1140,
+          "safe": 910,
+          "hazards": 230,
+          "miss": 14
+        },
+        "6": {
+          "rows": 1199,
+          "links": 1187,
+          "safe": 1050,
+          "hazards": 137,
+          "miss": 12
+        },
+        "7": {
+          "rows": 1202,
+          "links": 1201,
+          "safe": 1078,
+          "hazards": 123,
+          "miss": 1
+        },
+        "8": {
+          "rows": 1193,
+          "links": 1192,
+          "safe": 1050,
+          "hazards": 142,
+          "miss": 1
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0082",
+      "owners": 24,
+      "rows": 2853,
+      "safe_links": 2262,
+      "hazards": 480,
+      "zero_hazard_owners": 1,
+      "zero_hazard_static_recall": 0.041710480196284615,
+      "oracle_retire_recall": 0.1486154924640729,
+      "oracle_retire_safe": 424,
+      "oracle_retire_rows": 2853,
+      "per_owner": {
+        "0": {
+          "rows": 119,
+          "links": 118,
+          "safe": 95,
+          "hazards": 23,
+          "miss": 1
+        },
+        "1": {
+          "rows": 116,
+          "links": 114,
+          "safe": 85,
+          "hazards": 29,
+          "miss": 2
+        },
+        "2": {
+          "rows": 119,
+          "links": 119,
+          "safe": 110,
+          "hazards": 9,
+          "miss": 0
+        },
+        "3": {
+          "rows": 119,
+          "links": 119,
+          "safe": 95,
+          "hazards": 24,
+          "miss": 0
+        },
+        "4": {
+          "rows": 119,
+          "links": 119,
+          "safe": 94,
+          "hazards": 25,
+          "miss": 0
+        },
+        "5": {
+          "rows": 119,
+          "links": 117,
+          "safe": 100,
+          "hazards": 17,
+          "miss": 2
+        },
+        "6": {
+          "rows": 119,
+          "links": 119,
+          "safe": 91,
+          "hazards": 28,
+          "miss": 0
+        },
+        "7": {
+          "rows": 119,
+          "links": 119,
+          "safe": 101,
+          "hazards": 18,
+          "miss": 0
+        },
+        "8": {
+          "rows": 119,
+          "links": 119,
+          "safe": 111,
+          "hazards": 8,
+          "miss": 0
+        },
+        "9": {
+          "rows": 119,
+          "links": 119,
+          "safe": 100,
+          "hazards": 19,
+          "miss": 0
+        },
+        "10": {
+          "rows": 119,
+          "links": 116,
+          "safe": 101,
+          "hazards": 15,
+          "miss": 3
+        },
+        "11": {
+          "rows": 119,
+          "links": 117,
+          "safe": 90,
+          "hazards": 27,
+          "miss": 2
+        },
+        "12": {
+          "rows": 119,
+          "links": 119,
+          "safe": 119,
+          "hazards": 0,
+          "miss": 0
+        },
+        "13": {
+          "rows": 119,
+          "links": 119,
+          "safe": 89,
+          "hazards": 30,
+          "miss": 0
+        },
+        "14": {
+          "rows": 119,
+          "links": 114,
+          "safe": 72,
+          "hazards": 42,
+          "miss": 5
+        },
+        "15": {
+          "rows": 119,
+          "links": 119,
+          "safe": 116,
+          "hazards": 3,
+          "miss": 0
+        },
+        "16": {
+          "rows": 119,
+          "links": 86,
+          "safe": 45,
+          "hazards": 41,
+          "miss": 33
+        },
+        "17": {
+          "rows": 119,
+          "links": 112,
+          "safe": 84,
+          "hazards": 28,
+          "miss": 7
+        },
+        "18": {
+          "rows": 119,
+          "links": 99,
+          "safe": 85,
+          "hazards": 14,
+          "miss": 20
+        },
+        "19": {
+          "rows": 119,
+          "links": 104,
+          "safe": 88,
+          "hazards": 16,
+          "miss": 15
+        },
+        "20": {
+          "rows": 119,
+          "links": 103,
+          "safe": 74,
+          "hazards": 29,
+          "miss": 16
+        },
+        "21": {
+          "rows": 119,
+          "links": 118,
+          "safe": 106,
+          "hazards": 12,
+          "miss": 1
+        },
+        "22": {
+          "rows": 119,
+          "links": 115,
+          "safe": 98,
+          "hazards": 17,
+          "miss": 4
+        },
+        "23": {
+          "rows": 119,
+          "links": 119,
+          "safe": 113,
+          "hazards": 6,
+          "miss": 0
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0083",
+      "owners": 25,
+      "rows": 2544,
+      "safe_links": 1840,
+      "hazards": 498,
+      "zero_hazard_owners": 0,
+      "zero_hazard_static_recall": 0.0,
+      "oracle_retire_recall": 0.1611635220125786,
+      "oracle_retire_safe": 410,
+      "oracle_retire_rows": 2544,
+      "per_owner": {
+        "0": {
+          "rows": 105,
+          "links": 103,
+          "safe": 91,
+          "hazards": 12,
+          "miss": 2
+        },
+        "1": {
+          "rows": 105,
+          "links": 96,
+          "safe": 81,
+          "hazards": 15,
+          "miss": 9
+        },
+        "2": {
+          "rows": 103,
+          "links": 93,
+          "safe": 78,
+          "hazards": 15,
+          "miss": 10
+        },
+        "3": {
+          "rows": 100,
+          "links": 78,
+          "safe": 58,
+          "hazards": 20,
+          "miss": 22
+        },
+        "4": {
+          "rows": 97,
+          "links": 92,
+          "safe": 72,
+          "hazards": 20,
+          "miss": 5
+        },
+        "5": {
+          "rows": 101,
+          "links": 94,
+          "safe": 80,
+          "hazards": 14,
+          "miss": 7
+        },
+        "6": {
+          "rows": 99,
+          "links": 89,
+          "safe": 63,
+          "hazards": 26,
+          "miss": 10
+        },
+        "7": {
+          "rows": 105,
+          "links": 100,
+          "safe": 79,
+          "hazards": 21,
+          "miss": 5
+        },
+        "8": {
+          "rows": 100,
+          "links": 87,
+          "safe": 63,
+          "hazards": 24,
+          "miss": 13
+        },
+        "9": {
+          "rows": 101,
+          "links": 92,
+          "safe": 73,
+          "hazards": 19,
+          "miss": 9
+        },
+        "10": {
+          "rows": 104,
+          "links": 93,
+          "safe": 71,
+          "hazards": 22,
+          "miss": 11
+        },
+        "11": {
+          "rows": 102,
+          "links": 98,
+          "safe": 64,
+          "hazards": 34,
+          "miss": 4
+        },
+        "12": {
+          "rows": 101,
+          "links": 95,
+          "safe": 68,
+          "hazards": 27,
+          "miss": 6
+        },
+        "13": {
+          "rows": 100,
+          "links": 92,
+          "safe": 67,
+          "hazards": 25,
+          "miss": 8
+        },
+        "14": {
+          "rows": 103,
+          "links": 97,
+          "safe": 69,
+          "hazards": 28,
+          "miss": 6
+        },
+        "15": {
+          "rows": 104,
+          "links": 93,
+          "safe": 73,
+          "hazards": 20,
+          "miss": 11
+        },
+        "16": {
+          "rows": 98,
+          "links": 89,
+          "safe": 76,
+          "hazards": 13,
+          "miss": 9
+        },
+        "17": {
+          "rows": 100,
+          "links": 91,
+          "safe": 76,
+          "hazards": 15,
+          "miss": 9
+        },
+        "18": {
+          "rows": 102,
+          "links": 91,
+          "safe": 69,
+          "hazards": 22,
+          "miss": 11
+        },
+        "19": {
+          "rows": 105,
+          "links": 98,
+          "safe": 70,
+          "hazards": 28,
+          "miss": 7
+        },
+        "20": {
+          "rows": 96,
+          "links": 92,
+          "safe": 71,
+          "hazards": 21,
+          "miss": 4
+        },
+        "21": {
+          "rows": 101,
+          "links": 93,
+          "safe": 72,
+          "hazards": 21,
+          "miss": 8
+        },
+        "22": {
+          "rows": 102,
+          "links": 96,
+          "safe": 83,
+          "hazards": 13,
+          "miss": 6
+        },
+        "23": {
+          "rows": 105,
+          "links": 98,
+          "safe": 86,
+          "hazards": 12,
+          "miss": 7
+        },
+        "24": {
+          "rows": 105,
+          "links": 98,
+          "safe": 87,
+          "hazards": 11,
+          "miss": 7
+        }
+      }
+    }
+  ],
+  "combined": {
+    "rows": 60302,
+    "zero_hazard_static_recall": 0.0019734005505621702,
+    "oracle_retire_recall": 0.03210507114191901,
+    "zero_hazard_owners": 1,
+    "owners": 102
+  },
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 255.9551239013672,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

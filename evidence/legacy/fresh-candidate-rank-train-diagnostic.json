@@ -1,0 +1,67 @@
+{
+  "scope": "train-only oracle-clean fresh-hazard candidate-rank diagnostic; no dev/gate frames",
+  "question": "Is the true owner usually inside a tiny current-frame IoU candidate set, and can a simple bounded tie-break recover it?",
+  "result": {
+    "fresh_hazards": 309,
+    "owner_available": 258,
+    "owner_in_top2": 140,
+    "owner_in_top3": 200,
+    "owner_in_top4": 226,
+    "owner_in_top5": 241,
+    "owner_in_top8": 257,
+    "top2_canonical_correct": 78,
+    "top2_recent_correct": 46,
+    "top2_detector_correct": 84,
+    "top3_canonical_correct": 102,
+    "top3_recent_correct": 55,
+    "top3_detector_correct": 105,
+    "top3_iou_recent_fusion_correct": 31,
+    "same_best_competitor": 183,
+    "owner_unavailable": 51,
+    "sequence": "dancetrack0012",
+    "roster": 16,
+    "rank_hist": {
+      "3": 60,
+      "2": 140,
+      "4": 26,
+      "5": 15,
+      "6": 10,
+      "10": 1,
+      "7": 4,
+      "8": 2
+    },
+    "local_competitor_hist": {
+      "1": 223,
+      "2": 34,
+      "3": 1
+    },
+    "owner_in_top2_rate": 0.5426356589147286,
+    "owner_in_top3_rate": 0.7751937984496124,
+    "owner_in_top4_rate": 0.875968992248062,
+    "owner_in_top5_rate": 0.9341085271317829,
+    "owner_in_top8_rate": 0.9961240310077519,
+    "top2_canonical_correct_rate": 0.3023255813953488,
+    "top2_recent_correct_rate": 0.17829457364341086,
+    "top2_detector_correct_rate": 0.32558139534883723,
+    "top3_canonical_correct_rate": 0.3953488372093023,
+    "top3_recent_correct_rate": 0.2131782945736434,
+    "top3_detector_correct_rate": 0.4069767441860465,
+    "top3_iou_recent_fusion_correct_rate": 0.12015503875968993
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

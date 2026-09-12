@@ -1,0 +1,167 @@
+{
+  "scope": "non-gate dev reality; learned frozen SAFE gate; teacher-clean 10s opening roster; no later births",
+  "checkpoint_step": 3000,
+  "settings": {
+    "hidden": 64,
+    "candidate_count": 96,
+    "feature_cache": "data/features",
+    "detection_cache": "data/detections",
+    "cache_mib": 512,
+    "enrollment_seconds": 10.0,
+    "anchor_observations": 3,
+    "clean_iou": 0.5,
+    "birth_score": 0.4
+  },
+  "per_sequence": [
+    {
+      "true_positives": 316,
+      "false_positives": 0,
+      "missed_people": 12297,
+      "precision": 1.0,
+      "recall": 0.025053516213430587,
+      "identity_switches": 0,
+      "public_id_reuses": 0,
+      "visible_segments": 65,
+      "strict_visible_segment_survival": 1.0,
+      "public_ids_used": 6,
+      "sequence": "dancetrack0016",
+      "frames": 2163,
+      "births": 6,
+      "final_roster": 6,
+      "accepted_public_writes": 310,
+      "deferred_public_rows": 12650,
+      "late_unenrolled_visible_rows": 0,
+      "progress": [
+        {
+          "frame": 250,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        },
+        {
+          "frame": 500,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        },
+        {
+          "frame": 750,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        },
+        {
+          "frame": 1000,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        },
+        {
+          "frame": 1250,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        },
+        {
+          "frame": 1500,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        },
+        {
+          "frame": 1750,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        },
+        {
+          "frame": 2000,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        },
+        {
+          "frame": 2163,
+          "roster": 6,
+          "outputs": 0,
+          "enrollment_open": false
+        }
+      ]
+    },
+    {
+      "true_positives": 1676,
+      "false_positives": 1,
+      "missed_people": 18498,
+      "precision": 0.9994036970781157,
+      "recall": 0.08307722811539606,
+      "identity_switches": 0,
+      "public_id_reuses": 0,
+      "visible_segments": 169,
+      "strict_visible_segment_survival": 1.0,
+      "public_ids_used": 40,
+      "sequence": "dancetrack0020",
+      "frames": 583,
+      "births": 40,
+      "final_roster": 40,
+      "accepted_public_writes": 1637,
+      "deferred_public_rows": 20764,
+      "late_unenrolled_visible_rows": 0,
+      "progress": [
+        {
+          "frame": 250,
+          "roster": 40,
+          "outputs": 2,
+          "enrollment_open": false
+        },
+        {
+          "frame": 500,
+          "roster": 40,
+          "outputs": 2,
+          "enrollment_open": false
+        },
+        {
+          "frame": 583,
+          "roster": 40,
+          "outputs": 0,
+          "enrollment_open": false
+        }
+      ]
+    }
+  ],
+  "combined": {
+    "true_positives": 1992,
+    "false_positives": 1,
+    "missed_people": 30795,
+    "identity_switches": 0,
+    "public_id_reuses": 0,
+    "visible_segments": 234,
+    "births": 46,
+    "accepted_public_writes": 1947,
+    "deferred_public_rows": 33414,
+    "late_unenrolled_visible_rows": 0,
+    "precision": 0.9994982438534872,
+    "recall": 0.06075578735474426,
+    "strict_visible_segment_survival": 1.0,
+    "sequences": [
+      "dancetrack0016",
+      "dancetrack0020"
+    ],
+    "frames": 2746
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 2746,
+    "fresh_decodes": 0,
+    "resident_mib": 134.24585723876953,
+    "limit_mib": 512.0,
+    "directory": "data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

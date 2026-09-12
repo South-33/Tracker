@@ -1,0 +1,224 @@
+{
+  "scope": "train-only leave-one-sequence-out trajectory-conditioned top-8 ID ranking information probe; no dev/gate frames",
+  "heldout": {
+    "model": {
+      "rows": 12395,
+      "accepted": 11146,
+      "accepted_correct_owner": 10644,
+      "accepted_precision": 0.9549614211376278,
+      "owner_available": 11916,
+      "owner_recall": 0.8932527693856999,
+      "safe_rows": 11308,
+      "safe_owner_acceptance": 0.9287230279448179,
+      "alternate_rows": 608,
+      "alternate_owner_recovery": 0.23355263157894737,
+      "none_rows": 479,
+      "none_veto_recall": 0.6764091858037579,
+      "exact_class_accuracy": 0.812263011932373
+    },
+    "iou": {
+      "rows": 12395,
+      "accepted": 12395,
+      "accepted_correct_owner": 11308,
+      "accepted_precision": 0.9123033481242436,
+      "owner_available": 11916,
+      "owner_recall": 0.9489761664988251,
+      "safe_rows": 11308,
+      "safe_owner_acceptance": 1.0,
+      "alternate_rows": 608,
+      "alternate_owner_recovery": 0.0,
+      "none_rows": 479,
+      "none_veto_recall": 0.0,
+      "exact_class_accuracy": 0.9123033285140991
+    },
+    "detector": {
+      "rows": 12395,
+      "accepted": 12395,
+      "accepted_correct_owner": 5087,
+      "accepted_precision": 0.4104074223477209,
+      "owner_available": 11916,
+      "owner_recall": 0.42690500167841555,
+      "safe_rows": 11308,
+      "safe_owner_acceptance": 0.4421648390519986,
+      "alternate_rows": 608,
+      "alternate_owner_recovery": 0.14309210526315788,
+      "none_rows": 479,
+      "none_veto_recall": 0.0,
+      "exact_class_accuracy": 0.36062929034233093
+    },
+    "recent": {
+      "rows": 12395,
+      "accepted": 12395,
+      "accepted_correct_owner": 10797,
+      "accepted_precision": 0.8710770471964502,
+      "owner_available": 11916,
+      "owner_recall": 0.9060926485397784,
+      "safe_rows": 11308,
+      "safe_owner_acceptance": 0.9426070038910506,
+      "alternate_rows": 608,
+      "alternate_owner_recovery": 0.22697368421052633,
+      "none_rows": 479,
+      "none_veto_recall": 0.0,
+      "exact_class_accuracy": 0.7942718863487244
+    },
+    "mean_history": {
+      "rows": 12395,
+      "accepted": 12395,
+      "accepted_correct_owner": 8922,
+      "accepted_precision": 0.7198063735377168,
+      "owner_available": 11916,
+      "owner_recall": 0.7487411883182276,
+      "safe_rows": 11308,
+      "safe_owner_acceptance": 0.7722851078882207,
+      "alternate_rows": 608,
+      "alternate_owner_recovery": 0.31085526315789475,
+      "none_rows": 479,
+      "none_veto_recall": 0.0,
+      "exact_class_accuracy": 0.6316256523132324
+    }
+  },
+  "claim": "Short protected trusted trajectory history can resolve the rare fresh ambiguity that single-frame geometry/appearance cannot.",
+  "settings": {
+    "history": 16,
+    "candidates": 8,
+    "steps": 3000,
+    "sampling": "equal safe / alternate-owner / none categories",
+    "decision": "argmax over eight current candidates plus NONE; no threshold"
+  },
+  "per_sequence_rows": {
+    "dancetrack0001": {
+      "rows": 4618,
+      "safe": 4538,
+      "alternate": 63,
+      "none": 17,
+      "roster": 7,
+      "real_roster_slots": 7
+    },
+    "dancetrack0002": {
+      "rows": 8896,
+      "safe": 8580,
+      "alternate": 173,
+      "none": 143,
+      "roster": 8,
+      "real_roster_slots": 8
+    },
+    "dancetrack0006": {
+      "rows": 8989,
+      "safe": 8485,
+      "alternate": 350,
+      "none": 154,
+      "roster": 10,
+      "real_roster_slots": 8
+    },
+    "dancetrack0008": {
+      "rows": 4862,
+      "safe": 4661,
+      "alternate": 122,
+      "none": 79,
+      "roster": 7,
+      "real_roster_slots": 6
+    },
+    "dancetrack0012": {
+      "rows": 12395,
+      "safe": 11308,
+      "alternate": 608,
+      "none": 479,
+      "roster": 16,
+      "real_roster_slots": 12
+    },
+    "dancetrack0015": {
+      "rows": 10363,
+      "safe": 10226,
+      "alternate": 66,
+      "none": 71,
+      "roster": 9,
+      "real_roster_slots": 9
+    },
+    "dancetrack0082": {
+      "rows": 1680,
+      "safe": 1645,
+      "alternate": 27,
+      "none": 8,
+      "roster": 21,
+      "real_roster_slots": 21
+    },
+    "dancetrack0083": {
+      "rows": 1434,
+      "safe": 1177,
+      "alternate": 65,
+      "none": 192,
+      "roster": 23,
+      "real_roster_slots": 23
+    }
+  },
+  "curve": [
+    {
+      "step": 1,
+      "loss": 2.1301345825195312
+    },
+    {
+      "step": 250,
+      "loss": 1.1680989265441895
+    },
+    {
+      "step": 500,
+      "loss": 1.0552440881729126
+    },
+    {
+      "step": 750,
+      "loss": 1.0359022617340088
+    },
+    {
+      "step": 1000,
+      "loss": 1.0272783041000366
+    },
+    {
+      "step": 1250,
+      "loss": 1.0391769409179688
+    },
+    {
+      "step": 1500,
+      "loss": 1.0325983762741089
+    },
+    {
+      "step": 1750,
+      "loss": 1.0183759927749634
+    },
+    {
+      "step": 2000,
+      "loss": 0.9748785495758057
+    },
+    {
+      "step": 2250,
+      "loss": 0.9765846729278564
+    },
+    {
+      "step": 2500,
+      "loss": 1.0393379926681519
+    },
+    {
+      "step": 2750,
+      "loss": 0.9664448499679565
+    },
+    {
+      "step": 3000,
+      "loss": 1.0081334114074707
+    }
+  ],
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 324.05543518066406,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

@@ -1,0 +1,517 @@
+{
+  "scope": "train-only paired representation diagnostic on the averaged-canonical oracle-clean recovery event distribution; no dev/gate frames",
+  "question": "Does a frozen three-view opening exemplar bank rank rare unresolved recovery proposals materially better than one averaged opening detector feature?",
+  "method": {
+    "baseline": "mean of all exact-two-second enrollment detector features per private track",
+    "exemplar": "three normalized opening features chosen by deterministic cosine k-center seeded at the opening medoid; slot-query score is max cosine over the bank",
+    "all_opening_ceiling": "all exact-two-second opening features retained; slot-query score is max cosine over the full frozen opening bank",
+    "paired_events": "both representations score the same unresolved slots and current proposals; only baseline averaged-canonical oracle-safe recovery advances the trajectory",
+    "primary_sequence": [
+      "dancetrack0012"
+    ],
+    "crowded_stress_sequences": [
+      "dancetrack0082",
+      "dancetrack0083"
+    ],
+    "candidate_count": 96,
+    "clean_iou": 0.5,
+    "proposal_score": 0.1,
+    "enrollment_seconds": 2.0
+  },
+  "per_sequence": [
+    {
+      "sequence": "dancetrack0001",
+      "frames": 703,
+      "post_enrollment_frames": 663,
+      "roster": 7,
+      "real_roster_slots": 7,
+      "unique_roster_owners": 7,
+      "duplicate_owner_slots": 0,
+      "mean_opening_hits": 35.857142857142854,
+      "mean_exemplars": 3.0,
+      "mean_opening_features": 35.857142857142854,
+      "local_links": 4503,
+      "local_oracle_publications": 4362,
+      "local_oracle_vetoes": 141,
+      "baseline_average_recovery_links": 170,
+      "baseline_average_recovery_publications": 50,
+      "representations": {
+        "average": {
+          "top1_owner_present": 250,
+          "top1_correct": 83,
+          "reciprocal_links": 170,
+          "reciprocal_correct": 50,
+          "owner_present_events": 250,
+          "real_unresolved_events": 279,
+          "top1_accuracy_owner_present": 0.332,
+          "reciprocal_precision": 0.29411764705882354,
+          "reciprocal_owner_present_recall": 0.2,
+          "reciprocal_unresolved_recall": 0.17921146953405018
+        },
+        "exemplar": {
+          "top1_owner_present": 250,
+          "top1_correct": 88,
+          "reciprocal_links": 163,
+          "reciprocal_correct": 64,
+          "owner_present_events": 250,
+          "real_unresolved_events": 279,
+          "top1_accuracy_owner_present": 0.352,
+          "reciprocal_precision": 0.39263803680981596,
+          "reciprocal_owner_present_recall": 0.256,
+          "reciprocal_unresolved_recall": 0.22939068100358423
+        },
+        "all_opening": {
+          "top1_owner_present": 250,
+          "top1_correct": 80,
+          "reciprocal_links": 174,
+          "reciprocal_correct": 52,
+          "owner_present_events": 250,
+          "real_unresolved_events": 279,
+          "top1_accuracy_owner_present": 0.32,
+          "reciprocal_precision": 0.2988505747126437,
+          "reciprocal_owner_present_recall": 0.208,
+          "reciprocal_unresolved_recall": 0.1863799283154122
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frames": 1203,
+      "post_enrollment_frames": 1163,
+      "roster": 8,
+      "real_roster_slots": 8,
+      "unique_roster_owners": 8,
+      "duplicate_owner_slots": 0,
+      "mean_opening_hits": 34.75,
+      "mean_exemplars": 3.0,
+      "mean_opening_features": 34.75,
+      "local_links": 8340,
+      "local_oracle_publications": 7575,
+      "local_oracle_vetoes": 765,
+      "baseline_average_recovery_links": 963,
+      "baseline_average_recovery_publications": 94,
+      "representations": {
+        "average": {
+          "top1_owner_present": 1245,
+          "top1_correct": 279,
+          "reciprocal_links": 963,
+          "reciprocal_correct": 94,
+          "owner_present_events": 1245,
+          "real_unresolved_events": 1729,
+          "top1_accuracy_owner_present": 0.22409638554216868,
+          "reciprocal_precision": 0.0976116303219107,
+          "reciprocal_owner_present_recall": 0.07550200803212852,
+          "reciprocal_unresolved_recall": 0.05436668594563331
+        },
+        "exemplar": {
+          "top1_owner_present": 1245,
+          "top1_correct": 269,
+          "reciprocal_links": 986,
+          "reciprocal_correct": 106,
+          "owner_present_events": 1245,
+          "real_unresolved_events": 1729,
+          "top1_accuracy_owner_present": 0.21606425702811244,
+          "reciprocal_precision": 0.1075050709939148,
+          "reciprocal_owner_present_recall": 0.08514056224899598,
+          "reciprocal_unresolved_recall": 0.061307113938692884
+        },
+        "all_opening": {
+          "top1_owner_present": 1245,
+          "top1_correct": 293,
+          "reciprocal_links": 1028,
+          "reciprocal_correct": 115,
+          "owner_present_events": 1245,
+          "real_unresolved_events": 1729,
+          "top1_accuracy_owner_present": 0.2353413654618474,
+          "reciprocal_precision": 0.11186770428015565,
+          "reciprocal_owner_present_recall": 0.09236947791164658,
+          "reciprocal_unresolved_recall": 0.06651243493348756
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frames": 1202,
+      "post_enrollment_frames": 1162,
+      "roster": 10,
+      "real_roster_slots": 8,
+      "unique_roster_owners": 8,
+      "duplicate_owner_slots": 0,
+      "mean_opening_hits": 21.3,
+      "mean_exemplars": 3.0,
+      "mean_opening_features": 21.3,
+      "local_links": 8846,
+      "local_oracle_publications": 7344,
+      "local_oracle_vetoes": 1502,
+      "baseline_average_recovery_links": 2261,
+      "baseline_average_recovery_publications": 74,
+      "representations": {
+        "average": {
+          "top1_owner_present": 1581,
+          "top1_correct": 212,
+          "reciprocal_links": 2261,
+          "reciprocal_correct": 74,
+          "owner_present_events": 1581,
+          "real_unresolved_events": 1952,
+          "top1_accuracy_owner_present": 0.13409234661606578,
+          "reciprocal_precision": 0.03272888102609465,
+          "reciprocal_owner_present_recall": 0.04680581910183428,
+          "reciprocal_unresolved_recall": 0.03790983606557377
+        },
+        "exemplar": {
+          "top1_owner_present": 1581,
+          "top1_correct": 239,
+          "reciprocal_links": 2428,
+          "reciprocal_correct": 96,
+          "owner_present_events": 1581,
+          "real_unresolved_events": 1952,
+          "top1_accuracy_owner_present": 0.15117014547754587,
+          "reciprocal_precision": 0.039538714991762765,
+          "reciprocal_owner_present_recall": 0.06072106261859583,
+          "reciprocal_unresolved_recall": 0.04918032786885246
+        },
+        "all_opening": {
+          "top1_owner_present": 1581,
+          "top1_correct": 230,
+          "reciprocal_links": 2316,
+          "reciprocal_correct": 85,
+          "owner_present_events": 1581,
+          "real_unresolved_events": 1952,
+          "top1_accuracy_owner_present": 0.1454775458570525,
+          "reciprocal_precision": 0.03670120898100173,
+          "reciprocal_owner_present_recall": 0.053763440860215055,
+          "reciprocal_unresolved_recall": 0.043545081967213115
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frames": 883,
+      "post_enrollment_frames": 843,
+      "roster": 7,
+      "real_roster_slots": 7,
+      "unique_roster_owners": 7,
+      "duplicate_owner_slots": 0,
+      "mean_opening_hits": 28.285714285714285,
+      "mean_exemplars": 3.0,
+      "mean_opening_features": 28.285714285714285,
+      "local_links": 5279,
+      "local_oracle_publications": 4722,
+      "local_oracle_vetoes": 557,
+      "baseline_average_recovery_links": 652,
+      "baseline_average_recovery_publications": 69,
+      "representations": {
+        "average": {
+          "top1_owner_present": 927,
+          "top1_correct": 180,
+          "reciprocal_links": 652,
+          "reciprocal_correct": 69,
+          "owner_present_events": 927,
+          "real_unresolved_events": 1179,
+          "top1_accuracy_owner_present": 0.1941747572815534,
+          "reciprocal_precision": 0.1058282208588957,
+          "reciprocal_owner_present_recall": 0.0744336569579288,
+          "reciprocal_unresolved_recall": 0.058524173027989825
+        },
+        "exemplar": {
+          "top1_owner_present": 927,
+          "top1_correct": 205,
+          "reciprocal_links": 708,
+          "reciprocal_correct": 87,
+          "owner_present_events": 927,
+          "real_unresolved_events": 1179,
+          "top1_accuracy_owner_present": 0.22114347357065803,
+          "reciprocal_precision": 0.1228813559322034,
+          "reciprocal_owner_present_recall": 0.09385113268608414,
+          "reciprocal_unresolved_recall": 0.0737913486005089
+        },
+        "all_opening": {
+          "top1_owner_present": 927,
+          "top1_correct": 180,
+          "reciprocal_links": 666,
+          "reciprocal_correct": 95,
+          "owner_present_events": 927,
+          "real_unresolved_events": 1179,
+          "top1_accuracy_owner_present": 0.1941747572815534,
+          "reciprocal_precision": 0.14264264264264265,
+          "reciprocal_owner_present_recall": 0.10248112189859762,
+          "reciprocal_unresolved_recall": 0.08057675996607294
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frames": 1203,
+      "post_enrollment_frames": 1163,
+      "roster": 16,
+      "real_roster_slots": 15,
+      "unique_roster_owners": 11,
+      "duplicate_owner_slots": 4,
+      "mean_opening_hits": 16.9375,
+      "mean_exemplars": 3.0,
+      "mean_opening_features": 16.9375,
+      "local_links": 11213,
+      "local_oracle_publications": 6941,
+      "local_oracle_vetoes": 4272,
+      "baseline_average_recovery_links": 3156,
+      "baseline_average_recovery_publications": 133,
+      "representations": {
+        "average": {
+          "top1_owner_present": 7330,
+          "top1_correct": 676,
+          "reciprocal_links": 3156,
+          "reciprocal_correct": 133,
+          "owner_present_events": 7330,
+          "real_unresolved_events": 10504,
+          "top1_accuracy_owner_present": 0.0922237380627558,
+          "reciprocal_precision": 0.04214195183776933,
+          "reciprocal_owner_present_recall": 0.018144611186903137,
+          "reciprocal_unresolved_recall": 0.012661843107387662
+        },
+        "exemplar": {
+          "top1_owner_present": 7330,
+          "top1_correct": 699,
+          "reciprocal_links": 3802,
+          "reciprocal_correct": 191,
+          "owner_present_events": 7330,
+          "real_unresolved_events": 10504,
+          "top1_accuracy_owner_present": 0.09536152796725784,
+          "reciprocal_precision": 0.05023671751709626,
+          "reciprocal_owner_present_recall": 0.02605729877216917,
+          "reciprocal_unresolved_recall": 0.018183549124143182
+        },
+        "all_opening": {
+          "top1_owner_present": 7330,
+          "top1_correct": 715,
+          "reciprocal_links": 3548,
+          "reciprocal_correct": 176,
+          "owner_present_events": 7330,
+          "real_unresolved_events": 10504,
+          "top1_accuracy_owner_present": 0.09754433833560709,
+          "reciprocal_precision": 0.0496054114994363,
+          "reciprocal_owner_present_recall": 0.024010914051841747,
+          "reciprocal_unresolved_recall": 0.016755521706016754
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frames": 1203,
+      "post_enrollment_frames": 1163,
+      "roster": 9,
+      "real_roster_slots": 9,
+      "unique_roster_owners": 9,
+      "duplicate_owner_slots": 0,
+      "mean_opening_hits": 30.555555555555557,
+      "mean_exemplars": 3.0,
+      "mean_opening_features": 30.555555555555557,
+      "local_links": 10335,
+      "local_oracle_publications": 10185,
+      "local_oracle_vetoes": 150,
+      "baseline_average_recovery_links": 185,
+      "baseline_average_recovery_publications": 37,
+      "representations": {
+        "average": {
+          "top1_owner_present": 128,
+          "top1_correct": 41,
+          "reciprocal_links": 185,
+          "reciprocal_correct": 37,
+          "owner_present_events": 128,
+          "real_unresolved_events": 282,
+          "top1_accuracy_owner_present": 0.3203125,
+          "reciprocal_precision": 0.2,
+          "reciprocal_owner_present_recall": 0.2890625,
+          "reciprocal_unresolved_recall": 0.13120567375886524
+        },
+        "exemplar": {
+          "top1_owner_present": 128,
+          "top1_correct": 48,
+          "reciprocal_links": 202,
+          "reciprocal_correct": 41,
+          "owner_present_events": 128,
+          "real_unresolved_events": 282,
+          "top1_accuracy_owner_present": 0.375,
+          "reciprocal_precision": 0.20297029702970298,
+          "reciprocal_owner_present_recall": 0.3203125,
+          "reciprocal_unresolved_recall": 0.1453900709219858
+        },
+        "all_opening": {
+          "top1_owner_present": 128,
+          "top1_correct": 48,
+          "reciprocal_links": 201,
+          "reciprocal_correct": 42,
+          "owner_present_events": 128,
+          "real_unresolved_events": 282,
+          "top1_accuracy_owner_present": 0.375,
+          "reciprocal_precision": 0.208955223880597,
+          "reciprocal_owner_present_recall": 0.328125,
+          "reciprocal_unresolved_recall": 0.14893617021276595
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frames": 120,
+      "post_enrollment_frames": 80,
+      "roster": 21,
+      "real_roster_slots": 21,
+      "unique_roster_owners": 20,
+      "duplicate_owner_slots": 1,
+      "mean_opening_hits": 30.761904761904763,
+      "mean_exemplars": 3.0,
+      "mean_opening_features": 30.761904761904763,
+      "local_links": 1617,
+      "local_oracle_publications": 1567,
+      "local_oracle_vetoes": 50,
+      "baseline_average_recovery_links": 101,
+      "baseline_average_recovery_publications": 3,
+      "representations": {
+        "average": {
+          "top1_owner_present": 43,
+          "top1_correct": 6,
+          "reciprocal_links": 101,
+          "reciprocal_correct": 3,
+          "owner_present_events": 43,
+          "real_unresolved_events": 113,
+          "top1_accuracy_owner_present": 0.13953488372093023,
+          "reciprocal_precision": 0.0297029702970297,
+          "reciprocal_owner_present_recall": 0.06976744186046512,
+          "reciprocal_unresolved_recall": 0.02654867256637168
+        },
+        "exemplar": {
+          "top1_owner_present": 43,
+          "top1_correct": 8,
+          "reciprocal_links": 101,
+          "reciprocal_correct": 3,
+          "owner_present_events": 43,
+          "real_unresolved_events": 113,
+          "top1_accuracy_owner_present": 0.18604651162790697,
+          "reciprocal_precision": 0.0297029702970297,
+          "reciprocal_owner_present_recall": 0.06976744186046512,
+          "reciprocal_unresolved_recall": 0.02654867256637168
+        },
+        "all_opening": {
+          "top1_owner_present": 43,
+          "top1_correct": 8,
+          "reciprocal_links": 101,
+          "reciprocal_correct": 5,
+          "owner_present_events": 43,
+          "real_unresolved_events": 113,
+          "top1_accuracy_owner_present": 0.18604651162790697,
+          "reciprocal_precision": 0.04950495049504951,
+          "reciprocal_owner_present_recall": 0.11627906976744186,
+          "reciprocal_unresolved_recall": 0.04424778761061947
+        }
+      }
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frames": 120,
+      "post_enrollment_frames": 80,
+      "roster": 23,
+      "real_roster_slots": 23,
+      "unique_roster_owners": 23,
+      "duplicate_owner_slots": 0,
+      "mean_opening_hits": 31.391304347826086,
+      "mean_exemplars": 3.0,
+      "mean_opening_features": 31.391304347826086,
+      "local_links": 1289,
+      "local_oracle_publications": 1112,
+      "local_oracle_vetoes": 177,
+      "baseline_average_recovery_links": 79,
+      "baseline_average_recovery_publications": 6,
+      "representations": {
+        "average": {
+          "top1_owner_present": 168,
+          "top1_correct": 11,
+          "reciprocal_links": 79,
+          "reciprocal_correct": 6,
+          "owner_present_events": 168,
+          "real_unresolved_events": 728,
+          "top1_accuracy_owner_present": 0.06547619047619048,
+          "reciprocal_precision": 0.0759493670886076,
+          "reciprocal_owner_present_recall": 0.03571428571428571,
+          "reciprocal_unresolved_recall": 0.008241758241758242
+        },
+        "exemplar": {
+          "top1_owner_present": 168,
+          "top1_correct": 12,
+          "reciprocal_links": 115,
+          "reciprocal_correct": 10,
+          "owner_present_events": 168,
+          "real_unresolved_events": 728,
+          "top1_accuracy_owner_present": 0.07142857142857142,
+          "reciprocal_precision": 0.08695652173913043,
+          "reciprocal_owner_present_recall": 0.05952380952380952,
+          "reciprocal_unresolved_recall": 0.013736263736263736
+        },
+        "all_opening": {
+          "top1_owner_present": 168,
+          "top1_correct": 14,
+          "reciprocal_links": 116,
+          "reciprocal_correct": 9,
+          "owner_present_events": 168,
+          "real_unresolved_events": 728,
+          "top1_accuracy_owner_present": 0.08333333333333333,
+          "reciprocal_precision": 0.07758620689655173,
+          "reciprocal_owner_present_recall": 0.05357142857142857,
+          "reciprocal_unresolved_recall": 0.012362637362637362
+        }
+      }
+    }
+  ],
+  "combined": {
+    "average": {
+      "top1_owner_present": 11672,
+      "top1_correct": 1488,
+      "reciprocal_links": 7567,
+      "reciprocal_correct": 466,
+      "owner_present_events": 11672,
+      "real_unresolved_events": 16766,
+      "top1_accuracy_owner_present": 0.12748457847840988,
+      "reciprocal_precision": 0.061583190167834014,
+      "reciprocal_owner_present_recall": 0.039924605894448253,
+      "reciprocal_unresolved_recall": 0.027794345699630203
+    },
+    "exemplar": {
+      "top1_owner_present": 11672,
+      "top1_correct": 1568,
+      "reciprocal_links": 8505,
+      "reciprocal_correct": 598,
+      "owner_present_events": 11672,
+      "real_unresolved_events": 16766,
+      "top1_accuracy_owner_present": 0.1343385880740233,
+      "reciprocal_precision": 0.07031158142269253,
+      "reciprocal_owner_present_recall": 0.05123372172721042,
+      "reciprocal_unresolved_recall": 0.03566742216390314
+    },
+    "all_opening": {
+      "top1_owner_present": 11672,
+      "top1_correct": 1568,
+      "reciprocal_links": 8150,
+      "reciprocal_correct": 579,
+      "owner_present_events": 11672,
+      "real_unresolved_events": 16766,
+      "top1_accuracy_owner_present": 0.1343385880740233,
+      "reciprocal_precision": 0.07104294478527608,
+      "reciprocal_owner_present_recall": 0.049605894448252225,
+      "reciprocal_unresolved_recall": 0.03453417630919718
+    }
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 324.05543518066406,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

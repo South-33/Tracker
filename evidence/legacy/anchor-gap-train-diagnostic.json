@@ -1,0 +1,59 @@
+{
+  "scope": "train-only frozen clean anchor across synthetic gaps",
+  "gaps": {
+    "1": {
+      "cases": 59049,
+      "iou_exact": 56875,
+      "center_exact": 55792,
+      "owner_available": 58183,
+      "iou_rate": 0.9631831191044725,
+      "center_rate": 0.9448424190079425,
+      "availability": 0.9853342139578993
+    },
+    "2": {
+      "cases": 58758,
+      "iou_exact": 55747,
+      "center_exact": 54122,
+      "owner_available": 57858,
+      "iou_rate": 0.9487559140882944,
+      "center_rate": 0.9211001055175465,
+      "availability": 0.9846829367915858
+    },
+    "3": {
+      "cases": 58500,
+      "iou_exact": 54670,
+      "center_exact": 52603,
+      "owner_available": 57573,
+      "iou_rate": 0.9345299145299145,
+      "center_rate": 0.8991965811965812,
+      "availability": 0.9841538461538462
+    },
+    "5": {
+      "cases": 58065,
+      "iou_exact": 52510,
+      "center_exact": 50121,
+      "owner_available": 57106,
+      "iou_rate": 0.9043313527942822,
+      "center_rate": 0.8631878067682769,
+      "availability": 0.9834840265220012
+    },
+    "8": {
+      "cases": 57569,
+      "iou_exact": 49645,
+      "center_exact": 47011,
+      "owner_available": 56619,
+      "iou_rate": 0.862356476575935,
+      "center_rate": 0.8166026854730845,
+      "availability": 0.9834980631937328
+    },
+    "10": {
+      "cases": 57283,
+      "iou_exact": 48112,
+      "center_exact": 45389,
+      "owner_available": 56330,
+      "iou_rate": 0.8399001448946459,
+      "center_rate": 0.792364226733935,
+      "availability": 0.9833633015030637
+    }
+  }
+}

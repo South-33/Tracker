@@ -1,0 +1,348 @@
+{
+  "scope": "train-only 10000-step backward temporal linker; dancetrack0012 held out; no dev/gate frames",
+  "claim": "Current detections can query immutable past encoder memory and point backward to their own protected predecessor, avoiding track-side hallucination and untrusted motion state.",
+  "settings": {
+    "steps": 10000,
+    "lr": 0.0002,
+    "max_gap": 5,
+    "candidate_count": 96,
+    "temporal_layer": "one copied RT-DETR deformable decoder layer plus gap embedding, previous-box head, and predecessor-present head",
+    "base": "frozen clean RT-DETR",
+    "training_pairs": 27065,
+    "heldout": "dancetrack0012",
+    "presence_loss": "balanced mean of positive and negative BCE",
+    "box_loss": "5*L1 + 2*(1-GIoU) on positive predecessors"
+  },
+  "parameters": 1129509,
+  "criteria": {
+    "accepted_precision_min": 0.99,
+    "safe_acceptance_min": 0.65,
+    "hazard_veto_min": 0.9,
+    "hard_owner_reanchor_min": 0.45,
+    "absent_false_claim_rate_max": 0.01
+  },
+  "decision": "fail",
+  "curve": [
+    {
+      "step": 1,
+      "loss": 1.5476036071777344,
+      "gap": 3,
+      "positive": 24,
+      "negative": 7,
+      "presence": 0.6931471824645996,
+      "l1": 0.02119903825223446,
+      "giou": 0.625769317150116
+    },
+    {
+      "step": 500,
+      "loss": 1.0938303470611572,
+      "gap": 1,
+      "positive": 20,
+      "negative": 6,
+      "presence": 0.5874348878860474,
+      "l1": 0.010905410163104534,
+      "giou": 0.7740657925605774
+    },
+    {
+      "step": 1000,
+      "loss": 0.8847565054893494,
+      "gap": 2,
+      "positive": 18,
+      "negative": 4,
+      "presence": 0.4312690496444702,
+      "l1": 0.006303879898041487,
+      "giou": 0.7890160083770752
+    },
+    {
+      "step": 1500,
+      "loss": 0.39761531352996826,
+      "gap": 4,
+      "positive": 17,
+      "negative": 1,
+      "presence": 0.16778263449668884,
+      "l1": 0.002428560284897685,
+      "giou": 0.8911550641059875
+    },
+    {
+      "step": 2000,
+      "loss": 0.46635937690734863,
+      "gap": 3,
+      "positive": 24,
+      "negative": 7,
+      "presence": 0.11742396652698517,
+      "l1": 0.006564538460224867,
+      "giou": 0.8419436812400818
+    },
+    {
+      "step": 2500,
+      "loss": 0.8636510372161865,
+      "gap": 1,
+      "positive": 12,
+      "negative": 4,
+      "presence": 0.40818917751312256,
+      "l1": 0.009272819384932518,
+      "giou": 0.7954511642456055
+    },
+    {
+      "step": 3000,
+      "loss": 0.3668513298034668,
+      "gap": 5,
+      "positive": 9,
+      "negative": 4,
+      "presence": 0.028663799166679382,
+      "l1": 0.006326005794107914,
+      "giou": 0.8467212319374084
+    },
+    {
+      "step": 3500,
+      "loss": 1.0560742616653442,
+      "gap": 5,
+      "positive": 20,
+      "negative": 11,
+      "presence": 0.36306247115135193,
+      "l1": 0.010437439195811749,
+      "giou": 0.679587721824646
+    },
+    {
+      "step": 4000,
+      "loss": 0.6007875204086304,
+      "gap": 3,
+      "positive": 17,
+      "negative": 4,
+      "presence": 0.23285818099975586,
+      "l1": 0.005118370987474918,
+      "giou": 0.8288312554359436
+    },
+    {
+      "step": 4500,
+      "loss": 0.6246445178985596,
+      "gap": 5,
+      "positive": 12,
+      "negative": 3,
+      "presence": 0.09377773106098175,
+      "l1": 0.014653059653937817,
+      "giou": 0.7711992263793945
+    },
+    {
+      "step": 5000,
+      "loss": 0.3848556876182556,
+      "gap": 3,
+      "positive": 8,
+      "negative": 3,
+      "presence": 0.0945606529712677,
+      "l1": 0.005854652263224125,
+      "giou": 0.8694891333580017
+    },
+    {
+      "step": 5500,
+      "loss": 0.3926140367984772,
+      "gap": 3,
+      "positive": 19,
+      "negative": 0,
+      "presence": 0.21759642660617828,
+      "l1": 0.0023348508402705193,
+      "giou": 0.9183283448219299
+    },
+    {
+      "step": 6000,
+      "loss": 0.8661161661148071,
+      "gap": 5,
+      "positive": 16,
+      "negative": 3,
+      "presence": 0.6081686615943909,
+      "l1": 0.0037900060415267944,
+      "giou": 0.8805012702941895
+    },
+    {
+      "step": 6500,
+      "loss": 0.26332229375839233,
+      "gap": 4,
+      "positive": 10,
+      "negative": 0,
+      "presence": 0.04294947162270546,
+      "l1": 0.002568974159657955,
+      "giou": 0.8962360620498657
+    },
+    {
+      "step": 7000,
+      "loss": 0.41851621866226196,
+      "gap": 1,
+      "positive": 17,
+      "negative": 2,
+      "presence": 0.17583586275577545,
+      "l1": 0.004120288882404566,
+      "giou": 0.8889605402946472
+    },
+    {
+      "step": 7500,
+      "loss": 0.6105893850326538,
+      "gap": 5,
+      "positive": 14,
+      "negative": 4,
+      "presence": 0.2303459495306015,
+      "l1": 0.005762149579823017,
+      "giou": 0.8242837190628052
+    },
+    {
+      "step": 8000,
+      "loss": 0.9460161924362183,
+      "gap": 5,
+      "positive": 19,
+      "negative": 5,
+      "presence": 0.4266563653945923,
+      "l1": 0.0068955435417592525,
+      "giou": 0.7575589418411255
+    },
+    {
+      "step": 8500,
+      "loss": 0.9110532999038696,
+      "gap": 3,
+      "positive": 9,
+      "negative": 2,
+      "presence": 0.41957521438598633,
+      "l1": 0.008875561878085136,
+      "giou": 0.7764498591423035
+    },
+    {
+      "step": 9000,
+      "loss": 0.5670077800750732,
+      "gap": 4,
+      "positive": 12,
+      "negative": 8,
+      "presence": 0.20349998772144318,
+      "l1": 0.00592225743457675,
+      "giou": 0.8330518007278442
+    },
+    {
+      "step": 9500,
+      "loss": 0.4117048382759094,
+      "gap": 5,
+      "positive": 16,
+      "negative": 1,
+      "presence": 0.11762072890996933,
+      "l1": 0.0019967863336205482,
+      "giou": 0.8579499125480652
+    },
+    {
+      "step": 10000,
+      "loss": 0.41104942560195923,
+      "gap": 5,
+      "positive": 15,
+      "negative": 6,
+      "presence": 0.0662769302725792,
+      "l1": 0.0036395066417753696,
+      "giou": 0.8367125391960144
+    }
+  ],
+  "per_gap": {
+    "1": {
+      "safe_links": 11566,
+      "accepted_safe": 9820,
+      "hazards": 595,
+      "accepted_hazard": 219,
+      "hard_owner_available": 371,
+      "hard_owner_recovered": 73,
+      "hard_wrong_reanchor": 142,
+      "absent_tracks": 81,
+      "absent_false_claims": 23,
+      "accepted_precision": 0.9781850781950393,
+      "safe_acceptance": 0.8490402905066574,
+      "hazard_veto": 0.6319327731092437,
+      "hard_owner_reanchor": 0.1967654986522911,
+      "hard_wrong_reanchor_rate": 0.38274932614555257,
+      "absent_false_claim_rate": 0.2839506172839506
+    },
+    "2": {
+      "safe_links": 11082,
+      "accepted_safe": 9403,
+      "hazards": 894,
+      "accepted_hazard": 379,
+      "hard_owner_available": 614,
+      "hard_owner_recovered": 133,
+      "hard_wrong_reanchor": 256,
+      "absent_tracks": 162,
+      "absent_false_claims": 43,
+      "accepted_precision": 0.9612553670006134,
+      "safe_acceptance": 0.8484930517957048,
+      "hazard_veto": 0.5760626398210291,
+      "hard_owner_reanchor": 0.21661237785016288,
+      "hard_wrong_reanchor_rate": 0.4169381107491857,
+      "absent_false_claim_rate": 0.2654320987654321
+    },
+    "3": {
+      "safe_links": 10588,
+      "accepted_safe": 9020,
+      "hazards": 1173,
+      "accepted_hazard": 546,
+      "hard_owner_available": 835,
+      "hard_owner_recovered": 176,
+      "hard_wrong_reanchor": 383,
+      "absent_tracks": 241,
+      "absent_false_claims": 61,
+      "accepted_precision": 0.9429228517666737,
+      "safe_acceptance": 0.8519078201737816,
+      "hazard_veto": 0.5345268542199488,
+      "hard_owner_reanchor": 0.21077844311377245,
+      "hard_wrong_reanchor_rate": 0.45868263473053894,
+      "absent_false_claim_rate": 0.25311203319502074
+    },
+    "4": {
+      "safe_links": 10125,
+      "accepted_safe": 8783,
+      "hazards": 1498,
+      "hard_owner_available": 1101,
+      "hard_owner_recovered": 228,
+      "accepted_hazard": 733,
+      "hard_wrong_reanchor": 535,
+      "absent_tracks": 313,
+      "absent_false_claims": 80,
+      "accepted_precision": 0.9229718369062632,
+      "safe_acceptance": 0.8674567901234568,
+      "hazard_veto": 0.5106809078771696,
+      "hard_owner_reanchor": 0.20708446866485014,
+      "hard_wrong_reanchor_rate": 0.485921889191644,
+      "absent_false_claim_rate": 0.25559105431309903
+    },
+    "5": {
+      "safe_links": 9768,
+      "accepted_safe": 8494,
+      "hazards": 1691,
+      "accepted_hazard": 860,
+      "hard_owner_available": 1247,
+      "hard_wrong_reanchor": 633,
+      "hard_owner_recovered": 259,
+      "absent_tracks": 373,
+      "absent_false_claims": 106,
+      "accepted_precision": 0.9080607226854821,
+      "safe_acceptance": 0.8695741195741196,
+      "hazard_veto": 0.4914251921939681,
+      "hard_owner_reanchor": 0.20769847634322375,
+      "hard_wrong_reanchor_rate": 0.5076182838813151,
+      "absent_false_claim_rate": 0.28418230563002683
+    }
+  },
+  "detection_cache": {
+    "memory_hits": 25486,
+    "disk_hits": 6514,
+    "fresh_decodes": 0,
+    "resident_mib": 255.95361328125,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  },
+  "feature_cache": {
+    "gpu_cache_hits": 233,
+    "disk_cache_hits": 15767,
+    "fresh_encodes": 0,
+    "resident_mib": 508.6255187988281,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+  }
+}

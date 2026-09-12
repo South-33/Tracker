@@ -1,0 +1,169 @@
+{
+  "scope": "fully causal non-gate dev; bounded scouts; learned asymmetric SAFE gate; probationary births; no GT bootstrap",
+  "checkpoint_sha256": "b80c5a85737826e29b57595dd4622778b05784622d655d91add9524cdbebfe79",
+  "checkpoint_step": 3000,
+  "per_sequence": [
+    {
+      "true_positives": 393,
+      "false_positives": 12,
+      "missed_people": 12220,
+      "precision": 0.9703703703703703,
+      "recall": 0.03115832870847538,
+      "identity_switches": 48,
+      "public_id_reuses": 0,
+      "visible_segments": 65,
+      "strict_visible_segment_survival": 0.5846153846153846,
+      "public_ids_used": 54,
+      "sequence": "dancetrack0016",
+      "frames": 2163,
+      "births": 62,
+      "dropped_births": 0,
+      "accepted_public_writes": 343,
+      "deferred_public_rows": 102594,
+      "final_public_ids": 62,
+      "progress": [
+        {
+          "frame": 250,
+          "births": 25,
+          "public_ids": 25,
+          "probation": 3,
+          "outputs": 0
+        },
+        {
+          "frame": 500,
+          "births": 41,
+          "public_ids": 41,
+          "probation": 0,
+          "outputs": 0
+        },
+        {
+          "frame": 750,
+          "births": 46,
+          "public_ids": 46,
+          "probation": 1,
+          "outputs": 0
+        },
+        {
+          "frame": 1000,
+          "births": 53,
+          "public_ids": 53,
+          "probation": 0,
+          "outputs": 0
+        },
+        {
+          "frame": 1250,
+          "births": 54,
+          "public_ids": 54,
+          "probation": 1,
+          "outputs": 0
+        },
+        {
+          "frame": 1500,
+          "births": 57,
+          "public_ids": 57,
+          "probation": 0,
+          "outputs": 0
+        },
+        {
+          "frame": 1750,
+          "births": 60,
+          "public_ids": 60,
+          "probation": 1,
+          "outputs": 0
+        },
+        {
+          "frame": 2000,
+          "births": 61,
+          "public_ids": 61,
+          "probation": 0,
+          "outputs": 0
+        },
+        {
+          "frame": 2163,
+          "births": 62,
+          "public_ids": 62,
+          "probation": 0,
+          "outputs": 0
+        }
+      ]
+    },
+    {
+      "true_positives": 1631,
+      "false_positives": 32,
+      "missed_people": 18543,
+      "precision": 0.9807576668671076,
+      "recall": 0.08084663428174879,
+      "identity_switches": 23,
+      "public_id_reuses": 117,
+      "visible_segments": 169,
+      "strict_visible_segment_survival": 0.8994082840236687,
+      "public_ids_used": 54,
+      "sequence": "dancetrack0020",
+      "frames": 583,
+      "births": 64,
+      "dropped_births": 333,
+      "accepted_public_writes": 1599,
+      "deferred_public_rows": 33979,
+      "final_public_ids": 64,
+      "progress": [
+        {
+          "frame": 250,
+          "births": 64,
+          "public_ids": 64,
+          "probation": 9,
+          "outputs": 2
+        },
+        {
+          "frame": 500,
+          "births": 64,
+          "public_ids": 64,
+          "probation": 5,
+          "outputs": 2
+        },
+        {
+          "frame": 583,
+          "births": 64,
+          "public_ids": 64,
+          "probation": 10,
+          "outputs": 0
+        }
+      ]
+    }
+  ],
+  "combined": {
+    "true_positives": 2024,
+    "false_positives": 44,
+    "missed_people": 30763,
+    "identity_switches": 71,
+    "public_id_reuses": 117,
+    "visible_segments": 234,
+    "births": 126,
+    "dropped_births": 333,
+    "accepted_public_writes": 1942,
+    "deferred_public_rows": 136573,
+    "precision": 0.9787234042553191,
+    "recall": 0.06173178393875622,
+    "strict_visible_segment_survival": 0.811965811965812,
+    "sequences": [
+      "dancetrack0016",
+      "dancetrack0020"
+    ],
+    "frames": 2746
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 2746,
+    "fresh_decodes": 0,
+    "resident_mib": 134.24585723876953,
+    "limit_mib": 512.0,
+    "directory": "data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

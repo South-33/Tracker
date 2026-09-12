@@ -1,0 +1,62 @@
+{
+  "scope": "train-only strong point-tracking information ceiling on heldout dancetrack0012; no dev/gate frames",
+  "claim": "A modern occlusion-robust causal point tracker should recover identity-preserving spatial correspondence through hard crossings if motion correspondence is the missing information source.",
+  "teacher": {
+    "model": "CoTracker3 scaled online",
+    "source_commit": "82e02e8029753ad4ef13cf06be7f4fc5facdda4d",
+    "weight_sha256": "205d34789f19699d64b22cf93f9b697f15f28d4025240e31532e504109837218",
+    "window": 16,
+    "query_frame": 14,
+    "future_frames": 0,
+    "backward_tracking": false
+  },
+  "settings": {
+    "screen_per_category": 96,
+    "point_grid": "4x4",
+    "seed_region": "fixed 20%-80% interior grid of previous oracle-clean owner detector box",
+    "readout": "current proposal with maximum count of visible transported points inside box; median-point center distance breaks exact support ties; no support means abstain",
+    "proposal_score": 0.1,
+    "owner_iou": 0.5,
+    "input_width": 512
+  },
+  "mined": {
+    "hard": 532,
+    "safe": 11529
+  },
+  "screen": {
+    "hard": 96,
+    "safe": 96
+  },
+  "criteria": {
+    "hard_recovery_min": 0.6,
+    "safe_preservation_min": 0.95
+  },
+  "heldout": {
+    "hard": 96,
+    "hard_correct": 21,
+    "safe": 96,
+    "safe_correct": 87,
+    "no_visible_points": 0,
+    "no_supported_proposal": 0,
+    "frames": 182,
+    "hard_recovery": 0.21875,
+    "safe_preservation": 0.90625
+  },
+  "decision": "fail",
+  "cache": {
+    "memory_hits": 182,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

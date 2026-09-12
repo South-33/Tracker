@@ -1,0 +1,195 @@
+{
+  "scope": "train-only leave-one-sequence-out specialized one-frame retry guard; no dev/gate frames",
+  "heldout": {
+    "rows": 1871,
+    "safe_rows": 1704,
+    "hazard_rows": 167,
+    "fresh_accepted": 1084,
+    "fresh_accepted_safe": 1065,
+    "fresh_accepted_hazard": 19,
+    "fresh_precision": 0.9824723247232472,
+    "fresh_safe_acceptance": 0.625,
+    "fresh_hazard_veto": 0.8862275449101796,
+    "false_vetoes": 639,
+    "true_vetoes": 148,
+    "retry": {
+      "eligible": 714,
+      "accepted": 86,
+      "accepted_correct": 76,
+      "accepted_precision": 0.8837209302325582,
+      "false_veto_linked": 580,
+      "false_veto_recovered": 74,
+      "false_veto_recovery_rate_all": 0.11580594679186229,
+      "false_veto_recovery_rate_linked": 0.12758620689655173,
+      "true_veto_linked": 134,
+      "wrong_true_veto_accepts": 7
+    },
+    "one_retry_combined": {
+      "accepted_events": 1170,
+      "correct_events": 1141,
+      "event_precision": 0.9752136752136752,
+      "safe_event_coverage": 0.6684272300469484
+    }
+  },
+  "claim": "Separate fresh-link safety from one-frame clean-stale retry safety instead of applying an age-zero guard out of distribution.",
+  "per_sequence": {
+    "dancetrack0001": {
+      "rows": 2224,
+      "safe": 2186,
+      "hazard": 38,
+      "retry_link": 2203,
+      "retry_safe": 2140,
+      "roster": 7,
+      "real_roster_slots": 7
+    },
+    "dancetrack0002": {
+      "rows": 2510,
+      "safe": 2457,
+      "hazard": 53,
+      "retry_link": 2473,
+      "retry_safe": 2376,
+      "roster": 8,
+      "real_roster_slots": 8
+    },
+    "dancetrack0006": {
+      "rows": 2363,
+      "safe": 2282,
+      "hazard": 81,
+      "retry_link": 2332,
+      "retry_safe": 2222,
+      "roster": 10,
+      "real_roster_slots": 8
+    },
+    "dancetrack0008": {
+      "rows": 2744,
+      "safe": 2664,
+      "hazard": 80,
+      "retry_link": 2719,
+      "retry_safe": 2609,
+      "roster": 7,
+      "real_roster_slots": 6
+    },
+    "dancetrack0012": {
+      "rows": 1871,
+      "safe": 1704,
+      "hazard": 167,
+      "retry_link": 1783,
+      "retry_safe": 1572,
+      "roster": 16,
+      "real_roster_slots": 12
+    },
+    "dancetrack0015": {
+      "rows": 7178,
+      "safe": 7131,
+      "hazard": 47,
+      "retry_link": 7155,
+      "retry_safe": 7088,
+      "roster": 9,
+      "real_roster_slots": 9
+    },
+    "dancetrack0082": {
+      "rows": 1603,
+      "safe": 1584,
+      "hazard": 19,
+      "retry_link": 1594,
+      "retry_safe": 1572,
+      "roster": 21,
+      "real_roster_slots": 21
+    },
+    "dancetrack0083": {
+      "rows": 1055,
+      "safe": 985,
+      "hazard": 70,
+      "retry_link": 1003,
+      "retry_safe": 909,
+      "roster": 23,
+      "real_roster_slots": 23
+    }
+  },
+  "fresh_training": {
+    "rows": 19677,
+    "safe": 19289,
+    "hazard": 388
+  },
+  "retry_training": {
+    "rows": 19479,
+    "safe": 18916,
+    "hazard": 563
+  },
+  "fresh_curve": [
+    {
+      "step": 1,
+      "loss": 0.69290691614151
+    },
+    {
+      "step": 500,
+      "loss": 0.355450838804245
+    },
+    {
+      "step": 1000,
+      "loss": 0.38903024792671204
+    },
+    {
+      "step": 1500,
+      "loss": 0.41125980019569397
+    },
+    {
+      "step": 2000,
+      "loss": 0.36226552724838257
+    },
+    {
+      "step": 2500,
+      "loss": 0.32815295457839966
+    },
+    {
+      "step": 3000,
+      "loss": 0.30744868516921997
+    }
+  ],
+  "retry_curve": [
+    {
+      "step": 1,
+      "loss": 0.7025409936904907
+    },
+    {
+      "step": 500,
+      "loss": 0.37082839012145996
+    },
+    {
+      "step": 1000,
+      "loss": 0.37427905201911926
+    },
+    {
+      "step": 1500,
+      "loss": 0.4221212863922119
+    },
+    {
+      "step": 2000,
+      "loss": 0.3528720736503601
+    },
+    {
+      "step": 2500,
+      "loss": 0.4233834147453308
+    },
+    {
+      "step": 3000,
+      "loss": 0.4247528314590454
+    }
+  ],
+  "cache": {
+    "memory_hits": 6301,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 324.05543518066406,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

@@ -1,0 +1,306 @@
+{
+  "scope": "train-only hard-confusion decoder adaptation; heldout dancetrack0012; no dev/gate frames",
+  "hypothesis": "Train the detector representation only on real top-8 cases where geometry selects the wrong dancer, while distillation preserves detection.",
+  "pool": {
+    "dancetrack0001": {
+      "available": 4880,
+      "hard": 91
+    },
+    "dancetrack0002": {
+      "available": 9076,
+      "hard": 230
+    },
+    "dancetrack0006": {
+      "available": 10346,
+      "hard": 430
+    },
+    "dancetrack0008": {
+      "available": 6680,
+      "hard": 261
+    },
+    "dancetrack0015": {
+      "available": 10606,
+      "hard": 67
+    },
+    "dancetrack0082": {
+      "available": 2763,
+      "hard": 66
+    },
+    "dancetrack0083": {
+      "available": 2265,
+      "hard": 65
+    }
+  },
+  "hard_pool": 1210,
+  "training": {
+    "steps": 3000,
+    "lr": 3e-05,
+    "loss": "top-8 hard-negative ID CE + 10*box distill + 0.1*logit distill",
+    "trainable_params": 3380832
+  },
+  "curve": [
+    {
+      "step": 1,
+      "loss": 6.6015625,
+      "rank_loss": 6.6015625,
+      "box_loss": 4.340752202125486e-09,
+      "logit_loss": 0.0
+    },
+    {
+      "step": 100,
+      "loss": 4.0782790184021,
+      "rank_loss": 3.998046875,
+      "box_loss": 1.3927447071182542e-05,
+      "logit_loss": 0.8009282946586609
+    },
+    {
+      "step": 200,
+      "loss": 2.055943012237549,
+      "rank_loss": 2.03515625,
+      "box_loss": 7.392680799966911e-06,
+      "logit_loss": 0.20712819695472717
+    },
+    {
+      "step": 300,
+      "loss": 2.8149843215942383,
+      "rank_loss": 2.75,
+      "box_loss": 4.084417741978541e-05,
+      "logit_loss": 0.6457579135894775
+    },
+    {
+      "step": 400,
+      "loss": 3.0505144596099854,
+      "rank_loss": 3.013671875,
+      "box_loss": 1.016937767417403e-05,
+      "logit_loss": 0.36740830540657043
+    },
+    {
+      "step": 500,
+      "loss": 1.9976170063018799,
+      "rank_loss": 1.9677734375,
+      "box_loss": 8.059212632360868e-06,
+      "logit_loss": 0.29762929677963257
+    },
+    {
+      "step": 600,
+      "loss": 2.04323673248291,
+      "rank_loss": 1.9931640625,
+      "box_loss": 1.2201766367070377e-05,
+      "logit_loss": 0.49950557947158813
+    },
+    {
+      "step": 700,
+      "loss": 2.4566521644592285,
+      "rank_loss": 2.400390625,
+      "box_loss": 2.4793631382635795e-05,
+      "logit_loss": 0.5601354837417603
+    },
+    {
+      "step": 800,
+      "loss": 1.421772837638855,
+      "rank_loss": 1.3662109375,
+      "box_loss": 5.7925853980123065e-06,
+      "logit_loss": 0.5550397634506226
+    },
+    {
+      "step": 900,
+      "loss": 1.1186076402664185,
+      "rank_loss": 1.0830078125,
+      "box_loss": 7.199839274107944e-06,
+      "logit_loss": 0.355278342962265
+    },
+    {
+      "step": 1000,
+      "loss": 1.7142220735549927,
+      "rank_loss": 1.6767578125,
+      "box_loss": 7.933717824926134e-06,
+      "logit_loss": 0.3738488554954529
+    },
+    {
+      "step": 1100,
+      "loss": 0.6547524929046631,
+      "rank_loss": 0.6083984375,
+      "box_loss": 1.4105244190432131e-05,
+      "logit_loss": 0.46213021874427795
+    },
+    {
+      "step": 1200,
+      "loss": 1.331504464149475,
+      "rank_loss": 1.2958984375,
+      "box_loss": 8.462577170575969e-06,
+      "logit_loss": 0.3552134335041046
+    },
+    {
+      "step": 1300,
+      "loss": 1.6969488859176636,
+      "rank_loss": 1.65234375,
+      "box_loss": 3.0144925403874367e-05,
+      "logit_loss": 0.44303613901138306
+    },
+    {
+      "step": 1400,
+      "loss": 0.4430420398712158,
+      "rank_loss": 0.40966796875,
+      "box_loss": 9.187961950374302e-06,
+      "logit_loss": 0.33282190561294556
+    },
+    {
+      "step": 1500,
+      "loss": 1.4629594087600708,
+      "rank_loss": 1.412109375,
+      "box_loss": 4.58792201243341e-05,
+      "logit_loss": 0.5039119124412537
+    },
+    {
+      "step": 1600,
+      "loss": 1.3440930843353271,
+      "rank_loss": 1.27734375,
+      "box_loss": 5.864058039151132e-05,
+      "logit_loss": 0.6616300344467163
+    },
+    {
+      "step": 1700,
+      "loss": 1.3412764072418213,
+      "rank_loss": 1.2724609375,
+      "box_loss": 1.4945206203265116e-05,
+      "logit_loss": 0.6866592168807983
+    },
+    {
+      "step": 1800,
+      "loss": 0.6559281945228577,
+      "rank_loss": 0.609375,
+      "box_loss": 2.323129228898324e-05,
+      "logit_loss": 0.4632083773612976
+    },
+    {
+      "step": 1900,
+      "loss": 1.634910225868225,
+      "rank_loss": 1.607421875,
+      "box_loss": 1.855461778177414e-05,
+      "logit_loss": 0.273028701543808
+    },
+    {
+      "step": 2000,
+      "loss": 1.9366037845611572,
+      "rank_loss": 1.896484375,
+      "box_loss": 9.018194759846665e-06,
+      "logit_loss": 0.40029165148735046
+    },
+    {
+      "step": 2100,
+      "loss": 1.7514103651046753,
+      "rank_loss": 1.71875,
+      "box_loss": 2.2000154785928316e-05,
+      "logit_loss": 0.3244031071662903
+    },
+    {
+      "step": 2200,
+      "loss": 0.11149558424949646,
+      "rank_loss": 0.0726318359375,
+      "box_loss": 1.356326447421452e-05,
+      "logit_loss": 0.3872811794281006
+    },
+    {
+      "step": 2300,
+      "loss": 1.5838261842727661,
+      "rank_loss": 1.5341796875,
+      "box_loss": 1.8127077055396512e-05,
+      "logit_loss": 0.4946513772010803
+    },
+    {
+      "step": 2400,
+      "loss": 1.2278488874435425,
+      "rank_loss": 1.17578125,
+      "box_loss": 2.282282366650179e-05,
+      "logit_loss": 0.5183930397033691
+    },
+    {
+      "step": 2500,
+      "loss": 1.8327600955963135,
+      "rank_loss": 1.775390625,
+      "box_loss": 1.5220486602629535e-05,
+      "logit_loss": 0.5721726417541504
+    },
+    {
+      "step": 2600,
+      "loss": 1.062955379486084,
+      "rank_loss": 1.033203125,
+      "box_loss": 1.8575883586890996e-05,
+      "logit_loss": 0.2956646680831909
+    },
+    {
+      "step": 2700,
+      "loss": 5.243781089782715,
+      "rank_loss": 5.18359375,
+      "box_loss": 2.5226790967280976e-05,
+      "logit_loss": 0.5993533134460449
+    },
+    {
+      "step": 2800,
+      "loss": 0.29598474502563477,
+      "rank_loss": 0.2335205078125,
+      "box_loss": 1.743272878229618e-05,
+      "logit_loss": 0.6228989362716675
+    },
+    {
+      "step": 2900,
+      "loss": 0.22043538093566895,
+      "rank_loss": 0.15478515625,
+      "box_loss": 3.105295400018804e-05,
+      "logit_loss": 0.6533970236778259
+    },
+    {
+      "step": 3000,
+      "loss": 0.8185282945632935,
+      "rank_loss": 0.78271484375,
+      "box_loss": 2.2515720047522336e-05,
+      "logit_loss": 0.3558824062347412
+    }
+  ],
+  "heldout": {
+    "transitions": 1202,
+    "owners": 12891,
+    "owner_available_top8": 12369,
+    "geometry_safe": 11569,
+    "raw_recent_safe": 10789,
+    "adapted_recent_safe": 10474,
+    "hard_alternate": 800,
+    "raw_hard_recovered": 137,
+    "adapted_hard_recovered": 153,
+    "teacher_owner_queries": 12903,
+    "student_owner_queries_retained": 12813,
+    "geometry_precision": 0.89744783182065,
+    "raw_recent_precision": 0.8369405011248158,
+    "adapted_recent_precision": 0.8125048483438058,
+    "owner_available_top8_rate": 0.9595066325343262,
+    "raw_hard_recovery": 0.17125,
+    "adapted_hard_recovery": 0.19125,
+    "student_owner_query_retention": 0.9930248779353639,
+    "mean_box_l1_to_teacher": 0.004327203185241034,
+    "mean_logit_l1_to_teacher": 0.5699291559972073
+  },
+  "teacher_cache": {
+    "memory_hits": 4789,
+    "disk_hits": 7848,
+    "fresh_decodes": 0,
+    "resident_mib": 63.95915222167969,
+    "limit_mib": 64.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  },
+  "feature_cache": {
+    "gpu_cache_hits": 0,
+    "disk_cache_hits": 7203,
+    "fresh_encodes": 0,
+    "resident_mib": 0.0,
+    "limit_mib": 0.0,
+    "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+  }
+}

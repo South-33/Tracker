@@ -1,0 +1,64 @@
+{
+  "scope": "train-only strong video-mask teacher information ceiling; heldout dancetrack0012 only; no dev/gate frames",
+  "question": "Does propagated foreground identity resolve clean adjacent box-crossing ambiguity that box/feature association could not?",
+  "teacher": {
+    "model": "SAM2.1 tiny",
+    "checkpoint": "weights/teacher/sam2.1_t.pt",
+    "runtime_role": "training-time information teacher only; not a deployment dependency",
+    "seed": "oracle-clean previous RT-DETR owner proposal box, restored to source pixels",
+    "propagation": "one causal frame",
+    "candidate_cloud": 8,
+    "proposal_score": "IoU between propagated binary foreground mask and each filled current proposal box; argmax; no threshold sweep"
+  },
+  "sampling": {
+    "hard": "last-clean-box IoU winner wrong, true owner present in top-8; evenly spaced up to 96",
+    "safe": "last-clean-box IoU winner correct with IoU margin <= 0.1; evenly spaced up to 96",
+    "mined": {
+      "rows": 12456,
+      "hard": 774,
+      "hard_owner_top8": 524,
+      "safe_low_margin": 3315
+    }
+  },
+  "criteria": {
+    "full_test_hard_recovery_min": 0.45,
+    "full_test_safe_preservation_min": 0.95,
+    "screen_rule": "weak only if a 95% Wilson upper bound is below a full-test bar; strong screen if point hard>=0.55 and safe>=0.97; otherwise inconclusive and expand before deciding"
+  },
+  "hard": {
+    "rows": 96,
+    "correct": 33,
+    "accuracy": 0.34375,
+    "accuracy_wilson_95": [
+      0.2564039323896144,
+      0.4431196888159093
+    ],
+    "empty_masks": 0,
+    "owner_top2": 0.4270833333333333,
+    "mean_owner_rank": 3.2083333333333335,
+    "mean_owner_score": 0.3798350828313133
+  },
+  "safe": {
+    "rows": 96,
+    "correct": 63,
+    "accuracy": 0.65625,
+    "accuracy_wilson_95": [
+      0.5568803111840908,
+      0.7435960676103857
+    ],
+    "empty_masks": 0,
+    "owner_top2": 0.5729166666666666,
+    "mean_owner_rank": 2.5729166666666665,
+    "mean_owner_score": 0.43973236079267924
+  },
+  "decision": "weak-screen",
+  "cache": {
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "reads": 1203,
+    "size": 640,
+    "candidate_count": 96,
+    "torch": "2.8.0+cu128",
+    "precision": "cuda_amp_fp16",
+    "decoder": "clean-rtdetr-topk-v1"
+  }
+}

@@ -11,17 +11,15 @@ dependencies = [
   "torch==2.8.0", "torchvision==0.23.0",
   "numpy<3", "scipy", "PyYAML", "Pillow", "opencv-python",
   "faster-coco-eval>=1.6.5", "tensorboard",
-  "onnx>=1.17", "onnxruntime", "gdown", "pytest"
+  "onnx>=1.17", "onnxruntime", "gdown", "pytest", "psutil>=7.0"
 ]
 
 [project.scripts]
-remember = "tracker.cli:main"
-
-[project.optional-dependencies]
-baseline = ["lap==0.5.12", "cython-bbox==0.1.5"]
+lab = "tracker.lab:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+

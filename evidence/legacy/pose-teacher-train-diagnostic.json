@@ -1,0 +1,71 @@
+{
+  "scope": "train-only strong pose-teacher information screen; heldout dancetrack0012 only; no dev/gate frames",
+  "question": "Does articulated pose/part geometry resolve adjacent RT-DETR box ambiguity that box, appearance, frozen flow, and mask cues did not?",
+  "teacher": {
+    "model": "YOLO11x-pose pretrained COCO human pose",
+    "checkpoint": "weights/teacher/yolo11x-pose.pt",
+    "runtime_role": "training-time information teacher only; not a deployment dependency",
+    "pose_detection_confidence": 0.1,
+    "pose_box_iou_min": 0.3,
+    "keypoint_confidence_min": 0.25,
+    "minimum_shared_keypoints": 5,
+    "proposal_score": "minimum median L2 change of 17 keypoints normalized independently by each pose box; fallback to baseline when pose evidence is unavailable; no threshold sweep"
+  },
+  "sampling": {
+    "hard": "last-clean-box IoU winner wrong, true owner present in top-8; evenly spaced up to 96",
+    "safe": "last-clean-box IoU winner correct with IoU margin <= 0.1; evenly spaced up to 96",
+    "mined": {
+      "rows": 12456,
+      "hard": 774,
+      "hard_owner_top8": 524,
+      "safe_low_margin": 3315
+    }
+  },
+  "criteria": {
+    "hard_recovery_min": 0.55,
+    "safe_preservation_min": 0.95
+  },
+  "hard": {
+    "rows": 96,
+    "correct": 10,
+    "accuracy": 0.10416666666666667,
+    "accuracy_wilson_95": [
+      0.057571532417443415,
+      0.18122164130321652
+    ],
+    "evidence_rows": 95,
+    "evidence_coverage": 0.9895833333333334,
+    "evidence_accuracy": 0.10526315789473684,
+    "previous_pose_coverage": 0.9895833333333334,
+    "mean_candidate_pose_count": 7.625,
+    "mean_shared_keypoints": 15.715789473684211,
+    "mean_best_distance": 0.06040234739254964
+  },
+  "safe": {
+    "rows": 96,
+    "correct": 89,
+    "accuracy": 0.9270833333333334,
+    "accuracy_wilson_95": [
+      0.8570696833485983,
+      0.9642324186896375
+    ],
+    "evidence_rows": 95,
+    "evidence_coverage": 0.9895833333333334,
+    "evidence_accuracy": 0.9263157894736842,
+    "previous_pose_coverage": 0.9895833333333334,
+    "mean_candidate_pose_count": 7.697916666666667,
+    "mean_shared_keypoints": 15.936842105263159,
+    "mean_best_distance": 0.052113262333564066
+  },
+  "decision": "weak",
+  "pose_inferences": 348,
+  "cache": {
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "reads": 1203,
+    "size": 640,
+    "candidate_count": 96,
+    "torch": "2.8.0+cu128",
+    "precision": "cuda_amp_fp16",
+    "decoder": "clean-rtdetr-topk-v1"
+  }
+}

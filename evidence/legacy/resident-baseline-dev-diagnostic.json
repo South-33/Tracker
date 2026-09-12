@@ -1,0 +1,68 @@
+{
+  "per_sequence": [
+    {
+      "true_positives": 12119,
+      "false_positives": 10696,
+      "missed_people": 494,
+      "precision": 0.5311856234933158,
+      "recall": 0.9608340600967256,
+      "identity_switches": 2338,
+      "public_id_reuses": 7137,
+      "visible_segments": 65,
+      "strict_visible_segment_survival": 0.09230769230769231,
+      "public_ids_used": 30,
+      "sequence": "dancetrack0016",
+      "frames": 2163,
+      "births": 32,
+      "continuations": 22783,
+      "capacity_rejections": 0,
+      "allocated_ids": 32
+    },
+    {
+      "true_positives": 7494,
+      "false_positives": 977,
+      "missed_people": 12680,
+      "precision": 0.8846653287687404,
+      "recall": 0.3714682264300585,
+      "identity_switches": 357,
+      "public_id_reuses": 5458,
+      "visible_segments": 169,
+      "strict_visible_segment_survival": 0.47928994082840237,
+      "public_ids_used": 17,
+      "sequence": "dancetrack0020",
+      "frames": 583,
+      "births": 17,
+      "continuations": 8454,
+      "capacity_rejections": 0,
+      "allocated_ids": 17
+    }
+  ],
+  "combined": {
+    "true_positives": 19613,
+    "false_positives": 11673,
+    "missed_people": 13174,
+    "identity_switches": 2695,
+    "public_id_reuses": 12595,
+    "visible_segments": 234,
+    "births": 49,
+    "continuations": 31237,
+    "capacity_rejections": 0,
+    "allocated_ids": 49,
+    "frames": 2746,
+    "precision": 0.6268938183212939,
+    "recall": 0.5981944063195779,
+    "strict_visible_segment_survival": 0.3717948717948718,
+    "sequences": [
+      "dancetrack0016",
+      "dancetrack0020"
+    ]
+  },
+  "feature_cache": {
+    "gpu_cache_hits": 0,
+    "disk_cache_hits": 2746,
+    "fresh_encodes": 0,
+    "resident_mib": 0.0,
+    "limit_mib": 0.0,
+    "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "scope": "train-only zero-new-training joint-exclusivity screen on completed separate-pointer logits; dancetrack0012 held out; no dev/gate frames",
+  "claim": "If independent pointer errors are mainly conflicting claims, requiring track/proposal mutual best should create a large safety jump without learned changes.",
+  "settings": {
+    "pointer_checkpoint": "runs\\tracking-pointer-train.pt",
+    "raw_rule": "row argmax over 96 proposals plus NULL",
+    "mutual_rule": "keep a non-NULL row argmax only when that proposal also ranks the row highest across all protected tracks in the frame; otherwise NULL",
+    "thresholds": "none"
+  },
+  "parameters": 1325857,
+  "criteria": {
+    "hard_owner_recovery_min": 0.15,
+    "non_null_precision_min": 0.95,
+    "absent_false_claim_rate_max": 0.2
+  },
+  "mining": {
+    "dancetrack0001": {
+      "groups": 702,
+      "safe": 4811,
+      "hard": 56,
+      "absent": 3,
+      "unavailable": 14
+    },
+    "dancetrack0002": {
+      "groups": 1202,
+      "safe": 8886,
+      "hard": 139,
+      "absent": 44,
+      "unavailable": 63
+    },
+    "dancetrack0006": {
+      "groups": 1201,
+      "safe": 9952,
+      "hard": 305,
+      "absent": 51,
+      "unavailable": 106
+    },
+    "dancetrack0008": {
+      "groups": 882,
+      "safe": 6446,
+      "hard": 188,
+      "absent": 46,
+      "unavailable": 57
+    },
+    "dancetrack0012": {
+      "groups": 1202,
+      "safe": 11682,
+      "hard": 533,
+      "absent": 81,
+      "unavailable": 241
+    },
+    "dancetrack0015": {
+      "groups": 1202,
+      "safe": 10545,
+      "hard": 57,
+      "absent": 16,
+      "unavailable": 29
+    },
+    "dancetrack0082": {
+      "groups": 119,
+      "safe": 2690,
+      "hard": 35,
+      "absent": 0,
+      "unavailable": 51
+    },
+    "dancetrack0083": {
+      "groups": 105,
+      "safe": 2196,
+      "hard": 57,
+      "absent": 0,
+      "unavailable": 119
+    }
+  },
+  "raw": {
+    "safe": 11682,
+    "safe_correct": 9384,
+    "hard": 533,
+    "hard_correct": 101,
+    "absent": 81,
+    "absent_false": 62,
+    "unavailable": 241,
+    "unavailable_false": 167,
+    "non_null": 11870,
+    "non_null_correct": 9485,
+    "safe_owner_acceptance": 0.8032871083718541,
+    "hard_owner_recovery": 0.1894934333958724,
+    "non_null_precision": 0.7990732940185341,
+    "absent_false_claim_rate": 0.7654320987654321,
+    "unavailable_false_claim_rate": 0.6929460580912863,
+    "groups": 1202,
+    "policy": "raw"
+  },
+  "mutual": {
+    "safe": 11682,
+    "safe_correct": 8722,
+    "hard": 533,
+    "hard_correct": 82,
+    "absent": 81,
+    "absent_false": 29,
+    "unavailable": 241,
+    "unavailable_false": 78,
+    "non_null": 9642,
+    "non_null_correct": 8804,
+    "safe_owner_acceptance": 0.7466187296695771,
+    "hard_owner_recovery": 0.15384615384615385,
+    "non_null_precision": 0.9130885708359262,
+    "absent_false_claim_rate": 0.35802469135802467,
+    "unavailable_false_claim_rate": 0.3236514522821577,
+    "groups": 1202,
+    "policy": "mutual"
+  },
+  "decision": "fail",
+  "detection_cache": {
+    "memory_hits": 2404,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 324.05543518066406,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  },
+  "feature_cache": {
+    "gpu_cache_hits": 0,
+    "disk_cache_hits": 2404,
+    "fresh_encodes": 0,
+    "resident_mib": 508.6255187988281,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+  }
+}

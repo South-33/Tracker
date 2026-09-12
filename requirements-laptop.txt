@@ -3,8 +3,6 @@ beautifulsoup4==4.15.0
 certifi==2026.7.22
 charset-normalizer==3.5.1
 colorama==0.4.6
-Cython==3.3.0
-cython_bbox==0.1.5
 faster-coco-eval==1.8.0
 filelock==3.32.6
 flatbuffers==25.12.19
@@ -14,7 +12,6 @@ grpcio==1.83.1
 idna==3.19
 iniconfig==2.3.0
 Jinja2==3.1.6
-lap==0.5.12
 Markdown==3.10.3
 MarkupSafe==3.0.3
 ml_dtypes==0.6.0
@@ -29,6 +26,7 @@ pillow==12.3.0
 pip==25.0.1
 pluggy==1.6.0
 protobuf==7.36.1
+psutil==7.2.2
 Pygments==2.21.0
 PySocks==1.7.1
 pytest==9.1.1

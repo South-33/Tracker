@@ -1,0 +1,90 @@
+{
+  "scope": "train-only oracle-clean local-link diagnostic; no dev/gate frames",
+  "question": "Are reciprocal-IoU hazards mostly small two-person identity permutations, and can a bounded mutual pairwise appearance exchange repair them without global assignment?",
+  "rule": "Start from reciprocal IoU links. A pair is eligible only when each trusted box overlaps the other link proposal. Each link nominates the partner with largest positive two-way appearance swap gain; swap only mutual nominations. No learned threshold or global assignment.",
+  "per_sequence": [
+    {
+      "sequence": "dancetrack0012",
+      "frames": 1203,
+      "roster": 16,
+      "baseline": {
+        "links": 11509,
+        "correct": 6229,
+        "hazards": 5280,
+        "accuracy": 0.541228603701451,
+        "two_cycle_pairs": 85,
+        "two_cycle_hazard_links": 170,
+        "hazard_fraction_in_two_cycles": 0.032196969696969696,
+        "safe_recoveries": 109
+      },
+      "rules": {
+        "recent_exchange": {
+          "links": 11509,
+          "correct": 6076,
+          "swaps": 877,
+          "fixed_hazards": 140,
+          "introduced_hazards": 293,
+          "accuracy": 0.5279346598314363,
+          "net_correct_gain": -153
+        },
+        "canonical_exchange": {
+          "links": 11509,
+          "correct": 4386,
+          "swaps": 2048,
+          "fixed_hazards": 103,
+          "introduced_hazards": 1946,
+          "accuracy": 0.3810930576070901,
+          "net_correct_gain": -1843
+        }
+      }
+    }
+  ],
+  "combined": {
+    "baseline": {
+      "links": 11509,
+      "correct": 6229,
+      "hazards": 5280,
+      "two_cycle_pairs": 85,
+      "two_cycle_hazard_links": 170,
+      "safe_recoveries": 109,
+      "accuracy": 0.541228603701451,
+      "hazard_fraction_in_two_cycles": 0.032196969696969696
+    },
+    "rules": {
+      "recent_exchange": {
+        "links": 11509,
+        "correct": 6076,
+        "swaps": 877,
+        "fixed_hazards": 140,
+        "introduced_hazards": 293,
+        "net_correct_gain": -153,
+        "accuracy": 0.5279346598314363
+      },
+      "canonical_exchange": {
+        "links": 11509,
+        "correct": 4386,
+        "swaps": 2048,
+        "fixed_hazards": 103,
+        "introduced_hazards": 1946,
+        "net_correct_gain": -1843,
+        "accuracy": 0.3810930576070901
+      }
+    }
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 1203,
+    "fresh_decodes": 0,
+    "resident_mib": 58.781524658203125,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

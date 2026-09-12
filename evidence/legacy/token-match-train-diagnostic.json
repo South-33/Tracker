@@ -1,0 +1,171 @@
+{
+  "scope": "train-only learned encoder-token matcher; heldout dancetrack0012; no dev/gate frames",
+  "claim": "A tiny learned spatial matcher over one trusted 5x5 encoder RoI and current top-8 RoIs can recover identity information lost by pooled proposal embeddings.",
+  "settings": {
+    "pool": 5,
+    "projection_dim": 64,
+    "steps": 3000,
+    "lr": 0.0003,
+    "decision": "argmax within geometry top-8"
+  },
+  "per_sequence": {
+    "dancetrack0001": {
+      "rows": 4752,
+      "hard": 310,
+      "ambiguous": 927
+    },
+    "dancetrack0002": {
+      "rows": 8477,
+      "hard": 916,
+      "ambiguous": 2588
+    },
+    "dancetrack0006": {
+      "rows": 9659,
+      "hard": 1425,
+      "ambiguous": 3534
+    },
+    "dancetrack0008": {
+      "rows": 6408,
+      "hard": 720,
+      "ambiguous": 2104
+    },
+    "dancetrack0012": {
+      "rows": 11282,
+      "hard": 2236,
+      "ambiguous": 5125
+    },
+    "dancetrack0015": {
+      "rows": 9533,
+      "hard": 514,
+      "ambiguous": 1709
+    },
+    "dancetrack0082": {
+      "rows": 2531,
+      "hard": 244,
+      "ambiguous": 546
+    },
+    "dancetrack0083": {
+      "rows": 2174,
+      "hard": 329,
+      "ambiguous": 664
+    }
+  },
+  "train_records": 8916,
+  "train_hard": 4458,
+  "parameters": 24537,
+  "curve": [
+    {
+      "step": 1,
+      "loss": 2.0658721923828125,
+      "hard": true,
+      "candidates": 8
+    },
+    {
+      "step": 250,
+      "loss": 1.355072259902954,
+      "hard": true,
+      "candidates": 8
+    },
+    {
+      "step": 500,
+      "loss": 0.7150605916976929,
+      "hard": false,
+      "candidates": 8
+    },
+    {
+      "step": 750,
+      "loss": 0.547264575958252,
+      "hard": false,
+      "candidates": 8
+    },
+    {
+      "step": 1000,
+      "loss": 1.0849714279174805,
+      "hard": true,
+      "candidates": 8
+    },
+    {
+      "step": 1250,
+      "loss": 4.8423590660095215,
+      "hard": true,
+      "candidates": 8
+    },
+    {
+      "step": 1500,
+      "loss": 0.03888465464115143,
+      "hard": false,
+      "candidates": 8
+    },
+    {
+      "step": 1750,
+      "loss": 0.10786464810371399,
+      "hard": false,
+      "candidates": 8
+    },
+    {
+      "step": 2000,
+      "loss": 0.6272028684616089,
+      "hard": false,
+      "candidates": 8
+    },
+    {
+      "step": 2250,
+      "loss": 0.5018937587738037,
+      "hard": true,
+      "candidates": 8
+    },
+    {
+      "step": 2500,
+      "loss": 1.373113751411438,
+      "hard": false,
+      "candidates": 8
+    },
+    {
+      "step": 2750,
+      "loss": 0.11831091344356537,
+      "hard": false,
+      "candidates": 8
+    },
+    {
+      "step": 3000,
+      "loss": 0.11386754363775253,
+      "hard": true,
+      "candidates": 8
+    }
+  ],
+  "heldout": {
+    "rows": 11282,
+    "correct": 8928,
+    "hard": 2236,
+    "hard_correct": 467,
+    "ambiguous": 5125,
+    "ambiguous_correct": 3237,
+    "accuracy": 0.7913490515865981,
+    "hard_recovery": 0.20885509838998212,
+    "ambiguous_accuracy": 0.631609756097561
+  },
+  "detection_cache": {
+    "memory_hits": 31480,
+    "disk_hits": 10342,
+    "fresh_decodes": 0,
+    "resident_mib": 127.98216247558594,
+    "limit_mib": 128.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  },
+  "feature_cache": {
+    "gpu_cache_hits": 21492,
+    "disk_cache_hits": 7072,
+    "fresh_encodes": 0,
+    "resident_mib": 254.31271362304688,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+  }
+}

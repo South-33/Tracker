@@ -1,0 +1,465 @@
+{
+  "scope": "train-only exact-two-second opening census diagnostic; no dev/gate frames",
+  "question": "Does temporal coexistence prevent current final-box duplicate suppression from deleting distinct crowded people?",
+  "method": {
+    "current": "drop a mature tracklet when its final box overlaps any already-selected final box at IoU >= 0.5",
+    "coexistence_aware": "same rule, except simultaneous opening observations prove two tracklets are distinct and forbid that collapse",
+    "no_suppression": "keep every mature private tracklet up to 64 slots; measures the cost/coverage bound of freeze suppression",
+    "oracle_owner_dedupe": "GT-only ceiling: one mature tracklet per real owner, backgrounds removed"
+  },
+  "per_sequence": [
+    {
+      "sequence": "dancetrack0001",
+      "frames": 703,
+      "mature_tracklets": 7,
+      "rules": {
+        "current_final_overlap": {
+          "roster": 7,
+          "real_slots": 7,
+          "background_slots": 0,
+          "unique_owners": 7,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 7,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "coexistence_aware_overlap": {
+          "roster": 7,
+          "real_slots": 7,
+          "background_slots": 0,
+          "unique_owners": 7,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 7,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "no_duplicate_suppression": {
+          "roster": 7,
+          "real_slots": 7,
+          "background_slots": 0,
+          "unique_owners": 7,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 7,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "oracle_owner_dedupe_ceiling": {
+          "roster": 7,
+          "real_slots": 7,
+          "background_slots": 0,
+          "unique_owners": 7,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 7,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        }
+      },
+      "coexistence_aware_rescued_unique_owners": 0,
+      "rescued_owner_ids": []
+    },
+    {
+      "sequence": "dancetrack0002",
+      "frames": 1203,
+      "mature_tracklets": 12,
+      "rules": {
+        "current_final_overlap": {
+          "roster": 8,
+          "real_slots": 8,
+          "background_slots": 0,
+          "unique_owners": 8,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 8,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "coexistence_aware_overlap": {
+          "roster": 12,
+          "real_slots": 12,
+          "background_slots": 0,
+          "unique_owners": 8,
+          "duplicate_owner_slots": 4,
+          "shown_owners": 8,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "no_duplicate_suppression": {
+          "roster": 12,
+          "real_slots": 12,
+          "background_slots": 0,
+          "unique_owners": 8,
+          "duplicate_owner_slots": 4,
+          "shown_owners": 8,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "oracle_owner_dedupe_ceiling": {
+          "roster": 8,
+          "real_slots": 8,
+          "background_slots": 0,
+          "unique_owners": 8,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 8,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        }
+      },
+      "coexistence_aware_rescued_unique_owners": 0,
+      "rescued_owner_ids": []
+    },
+    {
+      "sequence": "dancetrack0006",
+      "frames": 1202,
+      "mature_tracklets": 23,
+      "rules": {
+        "current_final_overlap": {
+          "roster": 10,
+          "real_slots": 8,
+          "background_slots": 2,
+          "unique_owners": 8,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 9,
+          "shown_owner_coverage": 0.8888888888888888,
+          "post_enrollment_owner_row_coverage": 0.8868960109771635
+        },
+        "coexistence_aware_overlap": {
+          "roster": 19,
+          "real_slots": 17,
+          "background_slots": 2,
+          "unique_owners": 9,
+          "duplicate_owner_slots": 8,
+          "shown_owners": 9,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "no_duplicate_suppression": {
+          "roster": 23,
+          "real_slots": 21,
+          "background_slots": 2,
+          "unique_owners": 9,
+          "duplicate_owner_slots": 12,
+          "shown_owners": 9,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "oracle_owner_dedupe_ceiling": {
+          "roster": 9,
+          "real_slots": 9,
+          "background_slots": 0,
+          "unique_owners": 9,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 9,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        }
+      },
+      "coexistence_aware_rescued_unique_owners": 1,
+      "rescued_owner_ids": [
+        0
+      ]
+    },
+    {
+      "sequence": "dancetrack0008",
+      "frames": 883,
+      "mature_tracklets": 10,
+      "rules": {
+        "current_final_overlap": {
+          "roster": 7,
+          "real_slots": 7,
+          "background_slots": 0,
+          "unique_owners": 7,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 8,
+          "shown_owner_coverage": 0.875,
+          "post_enrollment_owner_row_coverage": 0.8750381912618392
+        },
+        "coexistence_aware_overlap": {
+          "roster": 10,
+          "real_slots": 10,
+          "background_slots": 0,
+          "unique_owners": 7,
+          "duplicate_owner_slots": 3,
+          "shown_owners": 8,
+          "shown_owner_coverage": 0.875,
+          "post_enrollment_owner_row_coverage": 0.8750381912618392
+        },
+        "no_duplicate_suppression": {
+          "roster": 10,
+          "real_slots": 10,
+          "background_slots": 0,
+          "unique_owners": 7,
+          "duplicate_owner_slots": 3,
+          "shown_owners": 8,
+          "shown_owner_coverage": 0.875,
+          "post_enrollment_owner_row_coverage": 0.8750381912618392
+        },
+        "oracle_owner_dedupe_ceiling": {
+          "roster": 7,
+          "real_slots": 7,
+          "background_slots": 0,
+          "unique_owners": 7,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 8,
+          "shown_owner_coverage": 0.875,
+          "post_enrollment_owner_row_coverage": 0.8750381912618392
+        }
+      },
+      "coexistence_aware_rescued_unique_owners": 0,
+      "rescued_owner_ids": []
+    },
+    {
+      "sequence": "dancetrack0012",
+      "frames": 1203,
+      "mature_tracklets": 28,
+      "rules": {
+        "current_final_overlap": {
+          "roster": 16,
+          "real_slots": 15,
+          "background_slots": 1,
+          "unique_owners": 11,
+          "duplicate_owner_slots": 4,
+          "shown_owners": 11,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 0.9187579415501906
+        },
+        "coexistence_aware_overlap": {
+          "roster": 27,
+          "real_slots": 26,
+          "background_slots": 1,
+          "unique_owners": 11,
+          "duplicate_owner_slots": 15,
+          "shown_owners": 11,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 0.9187579415501906
+        },
+        "no_duplicate_suppression": {
+          "roster": 28,
+          "real_slots": 27,
+          "background_slots": 1,
+          "unique_owners": 11,
+          "duplicate_owner_slots": 16,
+          "shown_owners": 11,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 0.9187579415501906
+        },
+        "oracle_owner_dedupe_ceiling": {
+          "roster": 11,
+          "real_slots": 11,
+          "background_slots": 0,
+          "unique_owners": 11,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 11,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 0.9187579415501906
+        }
+      },
+      "coexistence_aware_rescued_unique_owners": 0,
+      "rescued_owner_ids": []
+    },
+    {
+      "sequence": "dancetrack0015",
+      "frames": 1203,
+      "mature_tracklets": 15,
+      "rules": {
+        "current_final_overlap": {
+          "roster": 9,
+          "real_slots": 9,
+          "background_slots": 0,
+          "unique_owners": 9,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 9,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "coexistence_aware_overlap": {
+          "roster": 13,
+          "real_slots": 13,
+          "background_slots": 0,
+          "unique_owners": 9,
+          "duplicate_owner_slots": 4,
+          "shown_owners": 9,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "no_duplicate_suppression": {
+          "roster": 15,
+          "real_slots": 15,
+          "background_slots": 0,
+          "unique_owners": 9,
+          "duplicate_owner_slots": 6,
+          "shown_owners": 9,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        },
+        "oracle_owner_dedupe_ceiling": {
+          "roster": 9,
+          "real_slots": 9,
+          "background_slots": 0,
+          "unique_owners": 9,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 9,
+          "shown_owner_coverage": 1.0,
+          "post_enrollment_owner_row_coverage": 1.0
+        }
+      },
+      "coexistence_aware_rescued_unique_owners": 0,
+      "rescued_owner_ids": []
+    },
+    {
+      "sequence": "dancetrack0082",
+      "frames": 120,
+      "mature_tracklets": 25,
+      "rules": {
+        "current_final_overlap": {
+          "roster": 21,
+          "real_slots": 21,
+          "background_slots": 0,
+          "unique_owners": 20,
+          "duplicate_owner_slots": 1,
+          "shown_owners": 24,
+          "shown_owner_coverage": 0.8333333333333334,
+          "post_enrollment_owner_row_coverage": 0.8333333333333334
+        },
+        "coexistence_aware_overlap": {
+          "roster": 24,
+          "real_slots": 24,
+          "background_slots": 0,
+          "unique_owners": 20,
+          "duplicate_owner_slots": 4,
+          "shown_owners": 24,
+          "shown_owner_coverage": 0.8333333333333334,
+          "post_enrollment_owner_row_coverage": 0.8333333333333334
+        },
+        "no_duplicate_suppression": {
+          "roster": 25,
+          "real_slots": 25,
+          "background_slots": 0,
+          "unique_owners": 20,
+          "duplicate_owner_slots": 5,
+          "shown_owners": 24,
+          "shown_owner_coverage": 0.8333333333333334,
+          "post_enrollment_owner_row_coverage": 0.8333333333333334
+        },
+        "oracle_owner_dedupe_ceiling": {
+          "roster": 20,
+          "real_slots": 20,
+          "background_slots": 0,
+          "unique_owners": 20,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 24,
+          "shown_owner_coverage": 0.8333333333333334,
+          "post_enrollment_owner_row_coverage": 0.8333333333333334
+        }
+      },
+      "coexistence_aware_rescued_unique_owners": 0,
+      "rescued_owner_ids": []
+    },
+    {
+      "sequence": "dancetrack0083",
+      "frames": 120,
+      "mature_tracklets": 25,
+      "rules": {
+        "current_final_overlap": {
+          "roster": 23,
+          "real_slots": 23,
+          "background_slots": 0,
+          "unique_owners": 23,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 25,
+          "shown_owner_coverage": 0.92,
+          "post_enrollment_owner_row_coverage": 0.92
+        },
+        "coexistence_aware_overlap": {
+          "roster": 25,
+          "real_slots": 25,
+          "background_slots": 0,
+          "unique_owners": 23,
+          "duplicate_owner_slots": 2,
+          "shown_owners": 25,
+          "shown_owner_coverage": 0.92,
+          "post_enrollment_owner_row_coverage": 0.92
+        },
+        "no_duplicate_suppression": {
+          "roster": 25,
+          "real_slots": 25,
+          "background_slots": 0,
+          "unique_owners": 23,
+          "duplicate_owner_slots": 2,
+          "shown_owners": 25,
+          "shown_owner_coverage": 0.92,
+          "post_enrollment_owner_row_coverage": 0.92
+        },
+        "oracle_owner_dedupe_ceiling": {
+          "roster": 23,
+          "real_slots": 23,
+          "background_slots": 0,
+          "unique_owners": 23,
+          "duplicate_owner_slots": 0,
+          "shown_owners": 25,
+          "shown_owner_coverage": 0.92,
+          "post_enrollment_owner_row_coverage": 0.92
+        }
+      },
+      "coexistence_aware_rescued_unique_owners": 0,
+      "rescued_owner_ids": []
+    }
+  ],
+  "combined": {
+    "current_final_overlap": {
+      "roster": 101,
+      "real_slots": 98,
+      "background_slots": 3,
+      "unique_owners": 93,
+      "duplicate_owner_slots": 5,
+      "shown_owners": 101,
+      "shown_owner_coverage": 0.9207920792079208,
+      "mean_post_enrollment_owner_row_coverage": 0.9292531846403158
+    },
+    "coexistence_aware_overlap": {
+      "roster": 137,
+      "real_slots": 134,
+      "background_slots": 3,
+      "unique_owners": 94,
+      "duplicate_owner_slots": 40,
+      "shown_owners": 101,
+      "shown_owner_coverage": 0.9306930693069307,
+      "mean_post_enrollment_owner_row_coverage": 0.9433911832681704
+    },
+    "no_duplicate_suppression": {
+      "roster": 145,
+      "real_slots": 142,
+      "background_slots": 3,
+      "unique_owners": 94,
+      "duplicate_owner_slots": 48,
+      "shown_owners": 101,
+      "shown_owner_coverage": 0.9306930693069307,
+      "mean_post_enrollment_owner_row_coverage": 0.9433911832681704
+    },
+    "oracle_owner_dedupe_ceiling": {
+      "roster": 94,
+      "real_slots": 94,
+      "background_slots": 0,
+      "unique_owners": 94,
+      "duplicate_owner_slots": 0,
+      "shown_owners": 101,
+      "shown_owner_coverage": 0.9306930693069307,
+      "mean_post_enrollment_owner_row_coverage": 0.9433911832681704
+    }
+  },
+  "rescued_unique_owners": 1,
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 320,
+    "fresh_decodes": 0,
+    "resident_mib": 15.648262023925781,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

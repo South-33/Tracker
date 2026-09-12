@@ -1,0 +1,258 @@
+{
+  "scope": "train-only protected query with explicit adjacent-frame NULL supervision; one heldout train sequence; no non-train frames",
+  "claim": "The protected query must model owner absence as a competing output, not infer absence from similarity after localization.",
+  "settings": {
+    "heldout": "dancetrack0012",
+    "steps": 10000,
+    "lr": 0.0002,
+    "candidate_cloud": 8,
+    "safe_margin": 0.1,
+    "owner_iou": 0.5,
+    "sampling": "equal-probability hard visible, low-margin safe visible, and true adjacent disappearance frames",
+    "presence_rule": "protected query person logit >= 0 means PRESENT; negative means NULL; no threshold sweep",
+    "loss": "visible box L1+GIoU plus presence BCE; absent rows use only negative presence BCE",
+    "trainable": "zero-init residual protected-query adapter; detector and decoder frozen"
+  },
+  "parameters": 263424,
+  "criteria": {
+    "accepted_precision_min": 0.99,
+    "hard_owner_recovery_min": 0.45,
+    "safe_acceptance_min": 0.65,
+    "absent_false_claim_rate_max": 0.01
+  },
+  "decision": "fail",
+  "train_counts": {
+    "dancetrack0001": {
+      "hard": 56,
+      "safe": 563,
+      "absent": 3,
+      "missing_owner": 14
+    },
+    "dancetrack0002": {
+      "hard": 139,
+      "safe": 1717,
+      "absent": 44,
+      "missing_owner": 63
+    },
+    "dancetrack0006": {
+      "hard": 304,
+      "safe": 2305,
+      "absent": 51,
+      "missing_owner": 107
+    },
+    "dancetrack0008": {
+      "hard": 186,
+      "safe": 1364,
+      "absent": 46,
+      "missing_owner": 59
+    },
+    "dancetrack0015": {
+      "hard": 57,
+      "safe": 1196,
+      "absent": 16,
+      "missing_owner": 29
+    },
+    "dancetrack0082": {
+      "hard": 35,
+      "safe": 360,
+      "absent": 0,
+      "missing_owner": 51
+    },
+    "dancetrack0083": {
+      "hard": 57,
+      "safe": 409,
+      "absent": 0,
+      "missing_owner": 119
+    }
+  },
+  "heldout_counts": {
+    "hard": 524,
+    "safe": 3315,
+    "absent": 81,
+    "missing_owner": 250
+  },
+  "curve": [
+    {
+      "step": 1,
+      "kind": "absent",
+      "loss": 0.028297901153564453,
+      "presence": 0.028297901153564453,
+      "box": 0.0
+    },
+    {
+      "step": 500,
+      "kind": "absent",
+      "loss": 2.1303694248199463,
+      "presence": 2.1303694248199463,
+      "box": 0.0
+    },
+    {
+      "step": 1000,
+      "kind": "hard",
+      "loss": 1.704086184501648,
+      "presence": 0.4650301933288574,
+      "box": 1.2390559911727905
+    },
+    {
+      "step": 1500,
+      "kind": "hard",
+      "loss": 0.7560576796531677,
+      "presence": 0.23607604205608368,
+      "box": 0.5199816226959229
+    },
+    {
+      "step": 2000,
+      "kind": "safe",
+      "loss": 0.6819512844085693,
+      "presence": 0.048913151025772095,
+      "box": 0.6330381631851196
+    },
+    {
+      "step": 2500,
+      "kind": "hard",
+      "loss": 2.248887062072754,
+      "presence": 1.2976008653640747,
+      "box": 0.9512861371040344
+    },
+    {
+      "step": 3000,
+      "kind": "safe",
+      "loss": 0.28073468804359436,
+      "presence": 0.0772341713309288,
+      "box": 0.20350050926208496
+    },
+    {
+      "step": 3500,
+      "kind": "hard",
+      "loss": 1.2654087543487549,
+      "presence": 0.13348403573036194,
+      "box": 1.1319247484207153
+    },
+    {
+      "step": 4000,
+      "kind": "safe",
+      "loss": 0.36239123344421387,
+      "presence": 0.09027868509292603,
+      "box": 0.27211254835128784
+    },
+    {
+      "step": 4500,
+      "kind": "hard",
+      "loss": 2.687220573425293,
+      "presence": 1.7278378009796143,
+      "box": 0.9593826532363892
+    },
+    {
+      "step": 5000,
+      "kind": "safe",
+      "loss": 1.9388954639434814,
+      "presence": 0.44810864329338074,
+      "box": 1.4907867908477783
+    },
+    {
+      "step": 5500,
+      "kind": "hard",
+      "loss": 1.3456932306289673,
+      "presence": 0.6202822923660278,
+      "box": 0.7254109382629395
+    },
+    {
+      "step": 6000,
+      "kind": "safe",
+      "loss": 0.7578860521316528,
+      "presence": 0.20760925114154816,
+      "box": 0.5502768158912659
+    },
+    {
+      "step": 6500,
+      "kind": "absent",
+      "loss": 1.483003854751587,
+      "presence": 1.483003854751587,
+      "box": 0.0
+    },
+    {
+      "step": 7000,
+      "kind": "hard",
+      "loss": 1.7174773216247559,
+      "presence": 0.8527013659477234,
+      "box": 0.8647758960723877
+    },
+    {
+      "step": 7500,
+      "kind": "absent",
+      "loss": 0.07829928398132324,
+      "presence": 0.07829928398132324,
+      "box": 0.0
+    },
+    {
+      "step": 8000,
+      "kind": "hard",
+      "loss": 0.8345175385475159,
+      "presence": 0.06683821976184845,
+      "box": 0.7676793336868286
+    },
+    {
+      "step": 8500,
+      "kind": "hard",
+      "loss": 5.278701305389404,
+      "presence": 3.765613079071045,
+      "box": 1.5130881071090698
+    },
+    {
+      "step": 9000,
+      "kind": "hard",
+      "loss": 0.9573221802711487,
+      "presence": 0.11588233709335327,
+      "box": 0.8414398431777954
+    },
+    {
+      "step": 9500,
+      "kind": "absent",
+      "loss": 0.014780521392822266,
+      "presence": 0.014780521392822266,
+      "box": 0.0
+    },
+    {
+      "step": 10000,
+      "kind": "absent",
+      "loss": 0.015665531158447266,
+      "presence": 0.015665531158447266,
+      "box": 0.0
+    }
+  ],
+  "heldout": {
+    "hard": 524,
+    "hard_direct_correct": 243,
+    "hard_accepted_safe": 213,
+    "safe": 3315,
+    "safe_direct_correct": 2884,
+    "safe_accepted_safe": 2751,
+    "visible_wrong_accepts": 649,
+    "absent": 81,
+    "absent_false_claims": 69,
+    "accepted_precision": 0.8049972840847366,
+    "hard_direct_recovery": 0.4637404580152672,
+    "hard_owner_recovery": 0.4064885496183206,
+    "safe_direct_accuracy": 0.8699849170437406,
+    "safe_acceptance": 0.8298642533936652,
+    "absent_false_claim_rate": 0.8518518518518519,
+    "mean_visible_logit": 1.3171169065379575,
+    "mean_absent_logit": 0.7959541980131173
+  },
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 255.9551239013672,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 11152,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

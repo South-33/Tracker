@@ -1,0 +1,270 @@
+{
+  "scope": "train-only interaction-aware motion information test; dancetrack0012 held out; no dev/gate frames",
+  "claim": "Predicting short-term motion from clean multi-agent geometry before association can resolve DanceTrack crossings without relying on appearance or suspect identity updates.",
+  "settings": {
+    "history_frames": 6,
+    "neighbors": 8,
+    "steps": 10000,
+    "batch": 512,
+    "lr": 0.0003,
+    "training_sampling": "half baseline-hard owner-available rows, half all owner-available rows",
+    "inputs": "short owner box-motion history plus nearest-track relative position, relative velocity, and relative scale",
+    "output": "next box center displacement normalized by last size plus log-size change",
+    "proposal_rule": "argmax IoU from predicted box to current score-filtered clean RT-DETR proposals; no learned association threshold"
+  },
+  "parameters": 27204,
+  "criteria": {
+    "hard_recovery_min": 0.6,
+    "safe_preservation_min": 0.95
+  },
+  "mining": {
+    "dancetrack0001": {
+      "frames": 703,
+      "owner_rows": 4749,
+      "hard": 45,
+      "safe": 4704
+    },
+    "dancetrack0002": {
+      "frames": 1203,
+      "owner_rows": 8604,
+      "hard": 92,
+      "safe": 8512
+    },
+    "dancetrack0006": {
+      "frames": 1202,
+      "owner_rows": 9623,
+      "hard": 218,
+      "safe": 9405
+    },
+    "dancetrack0008": {
+      "frames": 883,
+      "owner_rows": 6214,
+      "hard": 127,
+      "safe": 6087
+    },
+    "dancetrack0012": {
+      "frames": 1203,
+      "owner_rows": 11098,
+      "hard": 348,
+      "safe": 10750
+    },
+    "dancetrack0015": {
+      "frames": 1203,
+      "owner_rows": 10383,
+      "hard": 43,
+      "safe": 10340
+    },
+    "dancetrack0082": {
+      "frames": 120,
+      "owner_rows": 2480,
+      "hard": 20,
+      "safe": 2460
+    },
+    "dancetrack0083": {
+      "frames": 120,
+      "owner_rows": 1866,
+      "hard": 34,
+      "safe": 1832
+    }
+  },
+  "train_rows": 43919,
+  "train_hard_rows": 579,
+  "curve": [
+    {
+      "step": 1,
+      "loss": 0.08675140142440796
+    },
+    {
+      "step": 500,
+      "loss": 0.053405530750751495
+    },
+    {
+      "step": 1000,
+      "loss": 0.05106174945831299
+    },
+    {
+      "step": 1500,
+      "loss": 0.05164823681116104
+    },
+    {
+      "step": 2000,
+      "loss": 0.044238969683647156,
+      "heldout": {
+        "rows": 11098,
+        "hard": 348,
+        "safe": 10750,
+        "baseline_accuracy": 0.9686429987385115,
+        "constant_velocity": {
+          "hard_recovery": 0.16666666666666666,
+          "safe_preservation": 0.9516279069767442,
+          "overall_accuracy": 0.9270138763741215
+        },
+        "interaction_model": {
+          "hard_recovery": 0.3505747126436782,
+          "safe_preservation": 0.9766511627906976,
+          "overall_accuracy": 0.9570192827536493,
+          "mean_delta_l1": 0.059325931945749054
+        }
+      }
+    },
+    {
+      "step": 2500,
+      "loss": 0.04342590272426605
+    },
+    {
+      "step": 3000,
+      "loss": 0.04394534230232239
+    },
+    {
+      "step": 3500,
+      "loss": 0.04418496415019035
+    },
+    {
+      "step": 4000,
+      "loss": 0.038934409618377686,
+      "heldout": {
+        "rows": 11098,
+        "hard": 348,
+        "safe": 10750,
+        "baseline_accuracy": 0.9686429987385115,
+        "constant_velocity": {
+          "hard_recovery": 0.16666666666666666,
+          "safe_preservation": 0.9516279069767442,
+          "overall_accuracy": 0.9270138763741215
+        },
+        "interaction_model": {
+          "hard_recovery": 0.3333333333333333,
+          "safe_preservation": 0.9672558139534884,
+          "overall_accuracy": 0.9473779059289962,
+          "mean_delta_l1": 0.06351891392051008
+        }
+      }
+    },
+    {
+      "step": 4500,
+      "loss": 0.036744777113199234
+    },
+    {
+      "step": 5000,
+      "loss": 0.036518730223178864
+    },
+    {
+      "step": 5500,
+      "loss": 0.03530566766858101
+    },
+    {
+      "step": 6000,
+      "loss": 0.03203960135579109,
+      "heldout": {
+        "rows": 11098,
+        "hard": 348,
+        "safe": 10750,
+        "baseline_accuracy": 0.9686429987385115,
+        "constant_velocity": {
+          "hard_recovery": 0.16666666666666666,
+          "safe_preservation": 0.9516279069767442,
+          "overall_accuracy": 0.9270138763741215
+        },
+        "interaction_model": {
+          "hard_recovery": 0.3390804597701149,
+          "safe_preservation": 0.9565581395348837,
+          "overall_accuracy": 0.9371958911515589,
+          "mean_delta_l1": 0.06722598254400473
+        }
+      }
+    },
+    {
+      "step": 6500,
+      "loss": 0.02974710986018181
+    },
+    {
+      "step": 7000,
+      "loss": 0.03004128485918045
+    },
+    {
+      "step": 7500,
+      "loss": 0.02709750086069107
+    },
+    {
+      "step": 8000,
+      "loss": 0.025364907458424568,
+      "heldout": {
+        "rows": 11098,
+        "hard": 348,
+        "safe": 10750,
+        "baseline_accuracy": 0.9686429987385115,
+        "constant_velocity": {
+          "hard_recovery": 0.16666666666666666,
+          "safe_preservation": 0.9516279069767442,
+          "overall_accuracy": 0.9270138763741215
+        },
+        "interaction_model": {
+          "hard_recovery": 0.3735632183908046,
+          "safe_preservation": 0.9514418604651163,
+          "overall_accuracy": 0.9333213191566048,
+          "mean_delta_l1": 0.0703784485377171
+        }
+      }
+    },
+    {
+      "step": 8500,
+      "loss": 0.0287781935185194
+    },
+    {
+      "step": 9000,
+      "loss": 0.025929631665349007
+    },
+    {
+      "step": 9500,
+      "loss": 0.026807891204953194
+    },
+    {
+      "step": 10000,
+      "loss": 0.027242165058851242,
+      "heldout": {
+        "rows": 11098,
+        "hard": 348,
+        "safe": 10750,
+        "baseline_accuracy": 0.9686429987385115,
+        "constant_velocity": {
+          "hard_recovery": 0.16666666666666666,
+          "safe_preservation": 0.9516279069767442,
+          "overall_accuracy": 0.9270138763741215
+        },
+        "interaction_model": {
+          "hard_recovery": 0.3505747126436782,
+          "safe_preservation": 0.947906976744186,
+          "overall_accuracy": 0.9291764281852586,
+          "mean_delta_l1": 0.07222938339242647
+        }
+      }
+    }
+  ],
+  "heldout": {
+    "rows": 11098,
+    "hard": 348,
+    "safe": 10750,
+    "baseline_accuracy": 0.9686429987385115,
+    "constant_velocity": {
+      "hard_recovery": 0.16666666666666666,
+      "safe_preservation": 0.9516279069767442,
+      "overall_accuracy": 0.9270138763741215
+    },
+    "interaction_model": {
+      "hard_recovery": 0.3505747126436782,
+      "safe_preservation": 0.947906976744186,
+      "overall_accuracy": 0.9291764281852586,
+      "mean_delta_l1": 0.07222938339242647
+    }
+  },
+  "decision": "fail",
+  "cache": {
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "reads": 6637,
+    "size": 640,
+    "candidate_count": 96,
+    "torch": "2.8.0+cu128",
+    "precision": "cuda_amp_fp16",
+    "decoder": "clean-rtdetr-topk-v1"
+  }
+}

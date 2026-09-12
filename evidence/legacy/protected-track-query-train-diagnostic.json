@@ -1,0 +1,129 @@
+{
+  "scope": "train-only frozen RT-DETR protected track-query sanity check; exact 2s enrollment; no dev/gate frames",
+  "question": "Can the existing decoder directly re-localize a protected ID from immutable/recent query content plus last trusted box, removing post-hoc association?",
+  "state_rule": "oracle-safe updates only for the ceiling; raw outputs are scored without feeding wrong predictions back into state",
+  "settings": {
+    "score": 0.1,
+    "clean_iou": 0.5
+  },
+  "results": {
+    "canonical": {
+      "raw_clean_state": {
+        "true_positives": 5815,
+        "false_positives": 4197,
+        "missed_people": 6777,
+        "precision": 0.5808030363563723,
+        "recall": 0.46180114358322744,
+        "identity_switches": 1130,
+        "public_id_reuses": 5091,
+        "visible_segments": 121,
+        "strict_visible_segment_survival": 0.1322314049586777,
+        "public_ids_used": 14,
+        "mode": "canonical",
+        "sequence": "dancetrack0012",
+        "roster": 16,
+        "real_roster_slots": 12,
+        "raw_owner_accuracy": 0.12365161805833,
+        "score_veto_rate": 0.4619518486672399
+      },
+      "oracle_publication_ceiling": {
+        "true_positives": 1196,
+        "false_positives": 42,
+        "missed_people": 11396,
+        "precision": 0.9660743134087237,
+        "recall": 0.09498094027954257,
+        "identity_switches": 44,
+        "public_id_reuses": 19,
+        "visible_segments": 121,
+        "strict_visible_segment_survival": 0.9504132231404959,
+        "public_ids_used": 12,
+        "safe_publications": 1238,
+        "oracle_vetoes": 8774
+      }
+    },
+    "recent": {
+      "raw_clean_state": {
+        "true_positives": 4457,
+        "false_positives": 2700,
+        "missed_people": 8135,
+        "precision": 0.622746961017186,
+        "recall": 0.3539548919949174,
+        "identity_switches": 651,
+        "public_id_reuses": 4108,
+        "visible_segments": 121,
+        "strict_visible_segment_survival": 0.1487603305785124,
+        "public_ids_used": 14,
+        "mode": "recent",
+        "sequence": "dancetrack0012",
+        "roster": 16,
+        "real_roster_slots": 12,
+        "raw_owner_accuracy": 0.07517116110101998,
+        "score_veto_rate": 0.6153804815133276
+      },
+      "oracle_publication_ceiling": {
+        "true_positives": 475,
+        "false_positives": 63,
+        "missed_people": 12117,
+        "precision": 0.8828996282527881,
+        "recall": 0.037722363405336724,
+        "identity_switches": 32,
+        "public_id_reuses": 0,
+        "visible_segments": 121,
+        "strict_visible_segment_survival": 0.9669421487603306,
+        "public_ids_used": 12,
+        "safe_publications": 538,
+        "oracle_vetoes": 6619
+      }
+    },
+    "denoise_person": {
+      "raw_clean_state": {
+        "true_positives": 1686,
+        "false_positives": 10185,
+        "missed_people": 10906,
+        "precision": 0.14202678797068485,
+        "recall": 0.13389453621346886,
+        "identity_switches": 327,
+        "public_id_reuses": 1502,
+        "visible_segments": 121,
+        "strict_visible_segment_survival": 0.24793388429752067,
+        "public_ids_used": 15,
+        "mode": "denoise_person",
+        "sequence": "dancetrack0012",
+        "roster": 16,
+        "real_roster_slots": 12,
+        "raw_owner_accuracy": 0.011961924016510824,
+        "score_veto_rate": 0.36204858125537404
+      },
+      "oracle_publication_ceiling": {
+        "true_positives": 142,
+        "false_positives": 0,
+        "missed_people": 12450,
+        "precision": 1.0,
+        "recall": 0.01127700127064803,
+        "identity_switches": 10,
+        "public_id_reuses": 0,
+        "visible_segments": 121,
+        "strict_visible_segment_survival": 0.9669421487603306,
+        "public_ids_used": 12,
+        "safe_publications": 142,
+        "oracle_vetoes": 11729
+      }
+    }
+  },
+  "cache": {
+    "memory_hits": 80,
+    "disk_hits": 40,
+    "fresh_decodes": 0,
+    "resident_mib": 1.95465087890625,
+    "limit_mib": 128.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 3489,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

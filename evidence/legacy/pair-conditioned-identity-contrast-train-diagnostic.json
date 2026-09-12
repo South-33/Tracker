@@ -1,0 +1,303 @@
+{
+  "scope": "train-only pair-conditioned explicit identity contrast; dancetrack0012 held out; no dev frames",
+  "claim": "Identity-safe association requires explicit instance separation in the temporally conditioned detector representation, not predecessor regression as a proxy.",
+  "settings": {
+    "steps": 10000,
+    "base_lr": 2e-05,
+    "new_lr": 0.0002,
+    "topk": 96,
+    "embed_dim": 128,
+    "temperature": 0.07,
+    "distill_weight": 2.0,
+    "identity_weight": 1.0,
+    "pair_input": "current RGB plus previous RGB through exact-parity clean stem plus zero-init previous stem",
+    "identity_training": "symmetric same-owner InfoNCE plus hardest different-owner learned cosine calibration, quality weighted by detector IoU",
+    "runtime_rule": "reciprocal nearest identity embedding and learned same-logit >= 0; no hand-tuned similarity threshold"
+  },
+  "parameters": {
+    "student": 10322309,
+    "identity_head": 99202,
+    "new_previous_stem": 432
+  },
+  "criteria": {
+    "coverage_delta_min": -0.005,
+    "accepted_precision_min": 0.99,
+    "safe_acceptance_min": 0.65,
+    "hazard_veto_min": 0.9,
+    "hard_owner_recovery_min": 0.45,
+    "absent_false_claim_rate_max": 0.01
+  },
+  "decision": "fail",
+  "curve": [
+    {
+      "step": 1,
+      "loss": 5.93610954284668,
+      "distill": 0.21519222855567932,
+      "identity": 5.505724906921387,
+      "shared_owners": 23,
+      "positive_cosine": 0.916015625,
+      "hard_negative_cosine": 0.88623046875,
+      "calibration_scale": 10.0,
+      "calibration_bias": -5.0
+    },
+    {
+      "step": 500,
+      "loss": 3.639014959335327,
+      "distill": 1.2826347351074219,
+      "identity": 1.0737454891204834,
+      "shared_owners": 9,
+      "positive_cosine": 0.63037109375,
+      "hard_negative_cosine": 0.3818359375,
+      "calibration_scale": 9.543082237243652,
+      "calibration_bias": -5.058741569519043
+    },
+    {
+      "step": 1000,
+      "loss": 3.4974756240844727,
+      "distill": 1.165830373764038,
+      "identity": 1.165814995765686,
+      "shared_owners": 7,
+      "positive_cosine": 0.7568359375,
+      "hard_negative_cosine": 0.41650390625,
+      "calibration_scale": 9.216911315917969,
+      "calibration_bias": -5.118281364440918
+    },
+    {
+      "step": 1500,
+      "loss": 4.585562705993652,
+      "distill": 1.332033634185791,
+      "identity": 1.9214954376220703,
+      "shared_owners": 9,
+      "positive_cosine": 0.6796875,
+      "hard_negative_cosine": 0.50732421875,
+      "calibration_scale": 9.2123441696167,
+      "calibration_bias": -5.168429851531982
+    },
+    {
+      "step": 2000,
+      "loss": 2.319211721420288,
+      "distill": 1.1153568029403687,
+      "identity": 0.08849818259477615,
+      "shared_owners": 9,
+      "positive_cosine": 0.9453125,
+      "hard_negative_cosine": 0.147216796875,
+      "calibration_scale": 9.481070518493652,
+      "calibration_bias": -5.2086334228515625
+    },
+    {
+      "step": 2500,
+      "loss": 2.589097499847412,
+      "distill": 1.2471760511398315,
+      "identity": 0.09474547952413559,
+      "shared_owners": 8,
+      "positive_cosine": 0.94140625,
+      "hard_negative_cosine": 0.150634765625,
+      "calibration_scale": 9.738025665283203,
+      "calibration_bias": -5.247278213500977
+    },
+    {
+      "step": 3000,
+      "loss": 2.481322765350342,
+      "distill": 1.2178623676300049,
+      "identity": 0.045598022639751434,
+      "shared_owners": 7,
+      "positive_cosine": 0.91064453125,
+      "hard_negative_cosine": 0.07293701171875,
+      "calibration_scale": 10.023124694824219,
+      "calibration_bias": -5.280445098876953
+    },
+    {
+      "step": 3500,
+      "loss": 2.5665407180786133,
+      "distill": 1.2615890502929688,
+      "identity": 0.04336250200867653,
+      "shared_owners": 7,
+      "positive_cosine": 0.9931640625,
+      "hard_negative_cosine": 0.1063232421875,
+      "calibration_scale": 10.284807205200195,
+      "calibration_bias": -5.310881614685059
+    },
+    {
+      "step": 4000,
+      "loss": 2.4162471294403076,
+      "distill": 1.1837959289550781,
+      "identity": 0.048655346035957336,
+      "shared_owners": 9,
+      "positive_cosine": 0.87255859375,
+      "hard_negative_cosine": 0.10760498046875,
+      "calibration_scale": 10.468283653259277,
+      "calibration_bias": -5.345517635345459
+    },
+    {
+      "step": 4500,
+      "loss": 3.472940683364868,
+      "distill": 1.2051060199737549,
+      "identity": 1.0627286434173584,
+      "shared_owners": 9,
+      "positive_cosine": 0.888671875,
+      "hard_negative_cosine": 0.422607421875,
+      "calibration_scale": 10.661396026611328,
+      "calibration_bias": -5.378143310546875
+    },
+    {
+      "step": 5000,
+      "loss": 2.4760379791259766,
+      "distill": 1.2287483215332031,
+      "identity": 0.018541254103183746,
+      "shared_owners": 7,
+      "positive_cosine": 0.95947265625,
+      "hard_negative_cosine": 0.0609130859375,
+      "calibration_scale": 10.82845687866211,
+      "calibration_bias": -5.410472393035889
+    },
+    {
+      "step": 5500,
+      "loss": 2.442795991897583,
+      "distill": 1.206273078918457,
+      "identity": 0.030249878764152527,
+      "shared_owners": 9,
+      "positive_cosine": 0.955078125,
+      "hard_negative_cosine": 0.12493896484375,
+      "calibration_scale": 11.002398490905762,
+      "calibration_bias": -5.443622589111328
+    },
+    {
+      "step": 6000,
+      "loss": 2.3595776557922363,
+      "distill": 1.1743711233139038,
+      "identity": 0.010835327208042145,
+      "shared_owners": 9,
+      "positive_cosine": 0.98779296875,
+      "hard_negative_cosine": 0.0394287109375,
+      "calibration_scale": 11.124631881713867,
+      "calibration_bias": -5.480563640594482
+    },
+    {
+      "step": 6500,
+      "loss": 2.8942768573760986,
+      "distill": 1.3662822246551514,
+      "identity": 0.16171248257160187,
+      "shared_owners": 8,
+      "positive_cosine": 0.8662109375,
+      "hard_negative_cosine": 0.1715087890625,
+      "calibration_scale": 11.236642837524414,
+      "calibration_bias": -5.516805648803711
+    },
+    {
+      "step": 7000,
+      "loss": 2.6999008655548096,
+      "distill": 1.2317203283309937,
+      "identity": 0.23646022379398346,
+      "shared_owners": 8,
+      "positive_cosine": 0.8349609375,
+      "hard_negative_cosine": 0.201416015625,
+      "calibration_scale": 11.371472358703613,
+      "calibration_bias": -5.552287578582764
+    },
+    {
+      "step": 7500,
+      "loss": 2.470933437347412,
+      "distill": 1.2282683849334717,
+      "identity": 0.01439670193940401,
+      "shared_owners": 7,
+      "positive_cosine": 0.98046875,
+      "hard_negative_cosine": 0.043701171875,
+      "calibration_scale": 11.443229675292969,
+      "calibration_bias": -5.590100288391113
+    },
+    {
+      "step": 8000,
+      "loss": 2.844944953918457,
+      "distill": 1.4134905338287354,
+      "identity": 0.01796398125588894,
+      "shared_owners": 7,
+      "positive_cosine": 0.93212890625,
+      "hard_negative_cosine": 0.016632080078125,
+      "calibration_scale": 11.54499340057373,
+      "calibration_bias": -5.623301029205322
+    },
+    {
+      "step": 8500,
+      "loss": 2.7653236389160156,
+      "distill": 1.378450870513916,
+      "identity": 0.008421847596764565,
+      "shared_owners": 9,
+      "positive_cosine": 0.97265625,
+      "hard_negative_cosine": 0.027740478515625,
+      "calibration_scale": 11.710177421569824,
+      "calibration_bias": -5.649469375610352
+    },
+    {
+      "step": 9000,
+      "loss": 3.0018842220306396,
+      "distill": 1.4979749917984009,
+      "identity": 0.0059343427419662476,
+      "shared_owners": 7,
+      "positive_cosine": 0.99462890625,
+      "hard_negative_cosine": -0.0090179443359375,
+      "calibration_scale": 11.763144493103027,
+      "calibration_bias": -5.684922695159912
+    },
+    {
+      "step": 9500,
+      "loss": 3.082857131958008,
+      "distill": 1.4139853715896606,
+      "identity": 0.25488632917404175,
+      "shared_owners": 21,
+      "positive_cosine": 0.8623046875,
+      "hard_negative_cosine": 0.32275390625,
+      "calibration_scale": 11.869494438171387,
+      "calibration_bias": -5.714588165283203
+    },
+    {
+      "step": 10000,
+      "loss": 2.8676469326019287,
+      "distill": 1.4168248176574707,
+      "identity": 0.033997319638729095,
+      "shared_owners": 9,
+      "positive_cosine": 0.89208984375,
+      "hard_negative_cosine": 0.117919921875,
+      "calibration_scale": 11.968944549560547,
+      "calibration_bias": -5.7442450523376465
+    }
+  ],
+  "heldout": {
+    "visible_rows": 13010,
+    "teacher_covered": 12953,
+    "student_covered": 12957,
+    "safe_links": 11347,
+    "accepted_safe": 8374,
+    "hazards": 555,
+    "hard_owner_available": 345,
+    "hard_owner_recovered": 161,
+    "hard_wrong_reanchor": 110,
+    "accepted_hazard": 133,
+    "absent_tracks": 81,
+    "absent_false_claims": 42,
+    "accepted_precision": 0.9843658163865052,
+    "safe_acceptance": 0.7379924209042038,
+    "hazard_veto": 0.7603603603603604,
+    "hard_owner_recovery": 0.4666666666666667,
+    "hard_wrong_reanchor_rate": 0.3188405797101449,
+    "absent_false_claim_rate": 0.5185185185185185,
+    "teacher_top96_gt_coverage": 0.995618754803997,
+    "student_top96_gt_coverage": 0.9959262106072252,
+    "coverage_delta": 0.0003074558032282182
+  },
+  "teacher_cache": {
+    "memory_hits": 1200,
+    "disk_hits": 1202,
+    "fresh_decodes": 0,
+    "resident_mib": 58.73265838623047,
+    "limit_mib": 128.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

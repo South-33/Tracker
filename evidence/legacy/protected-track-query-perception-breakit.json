@@ -1,0 +1,162 @@
+{
+  "scope": "frozen non-gate dev break-it probe: force an ambiguous-frame veto, keep the protected anchor immutable, and ask whether later protected-query/local-proposal agreement safely reanchors without a private trajectory",
+  "mechanism": {
+    "anchor": "same trusted feature and trusted box from frame t for every retry; no intermediate update",
+    "attempts": "frames t+2 through t+5 after deliberately withholding the ambiguous t+1 observation",
+    "certificate": "query person score >= 0.1 and query box IoU >= 0.5 with the stale-anchor track-perspective best current detector proposal",
+    "publication": "the current detector proposal, never the stale anchor or raw query box"
+  },
+  "criteria": {
+    "accepted_precision_by5_min": 0.99,
+    "safe_recovery_by3_min": 0.7,
+    "safe_recovery_by5_min": 0.8,
+    "absent_accept_rate_max": 0.01
+  },
+  "decision": "fail",
+  "events": {
+    "total": 4651,
+    "safe": 3878,
+    "hard": 773
+  },
+  "per_gap": {
+    "2": {
+      "attempts": 4637,
+      "owner_visible": 4592,
+      "direct_correct": 3759,
+      "certified": 4039,
+      "certified_safe": 3366,
+      "certified_wrong": 673,
+      "absent_attempts": 45,
+      "absent_certified": 36,
+      "direct_accuracy_when_visible": 0.8185975609756098,
+      "certified_precision": 0.8333745976726913,
+      "certificate_rate": 0.8710373086047013,
+      "absent_accept_rate": 0.8
+    },
+    "3": {
+      "attempts": 4631,
+      "owner_visible": 4556,
+      "direct_correct": 3560,
+      "certified": 3945,
+      "certified_safe": 3188,
+      "certified_wrong": 757,
+      "absent_attempts": 75,
+      "absent_certified": 58,
+      "direct_accuracy_when_visible": 0.781387181738367,
+      "certified_precision": 0.8081115335868188,
+      "certificate_rate": 0.8518678471172533,
+      "absent_accept_rate": 0.7733333333333333
+    },
+    "4": {
+      "attempts": 4624,
+      "owner_visible": 4537,
+      "direct_correct": 3382,
+      "certified": 3881,
+      "certified_safe": 3035,
+      "certified_wrong": 846,
+      "absent_attempts": 87,
+      "absent_certified": 62,
+      "direct_accuracy_when_visible": 0.7454264932774961,
+      "certified_precision": 0.7820149446019067,
+      "certificate_rate": 0.8393166089965398,
+      "absent_accept_rate": 0.7126436781609196
+    },
+    "5": {
+      "attempts": 4615,
+      "owner_visible": 4507,
+      "direct_correct": 3239,
+      "certified": 3778,
+      "certified_safe": 2853,
+      "certified_wrong": 925,
+      "absent_attempts": 108,
+      "absent_certified": 76,
+      "direct_accuracy_when_visible": 0.7186598624362104,
+      "certified_precision": 0.7551614610905241,
+      "certificate_rate": 0.81863488624052,
+      "absent_accept_rate": 0.7037037037037037
+    }
+  },
+  "first_accept_by_gap3": {
+    "max_gap": 3,
+    "by_kind": {
+      "safe": {
+        "events": 3878,
+        "recoverable_events": 3836,
+        "safe_accepts": 3249,
+        "wrong_accepts": 384,
+        "unresolved": 245,
+        "accepted_precision": 0.8943022295623452,
+        "recovery_rate": 0.8469760166840459,
+        "wrong_event_rate": 0.09902011346054668
+      },
+      "hard": {
+        "events": 773,
+        "recoverable_events": 761,
+        "safe_accepts": 276,
+        "wrong_accepts": 404,
+        "unresolved": 93,
+        "accepted_precision": 0.40588235294117647,
+        "recovery_rate": 0.36268068331143233,
+        "wrong_event_rate": 0.5226390685640362
+      }
+    },
+    "combined": {
+      "safe_accepts": 3525,
+      "wrong_accepts": 788,
+      "accepted_precision": 0.8172965453280779,
+      "mean_safe_accept_gap": 2.0451063829787235
+    }
+  },
+  "first_accept_by_gap5": {
+    "max_gap": 5,
+    "by_kind": {
+      "safe": {
+        "events": 3878,
+        "recoverable_events": 3850,
+        "safe_accepts": 3322,
+        "wrong_accepts": 438,
+        "unresolved": 118,
+        "accepted_precision": 0.8835106382978724,
+        "recovery_rate": 0.8628571428571429,
+        "wrong_event_rate": 0.11294481691593605
+      },
+      "hard": {
+        "events": 773,
+        "recoverable_events": 767,
+        "safe_accepts": 293,
+        "wrong_accepts": 445,
+        "unresolved": 35,
+        "accepted_precision": 0.3970189701897019,
+        "recovery_rate": 0.3820078226857888,
+        "wrong_event_rate": 0.5756791720569211
+      }
+    },
+    "combined": {
+      "safe_accepts": 3615,
+      "wrong_accepts": 883,
+      "accepted_precision": 0.8036905291240551,
+      "mean_safe_accept_gap": 2.10179806362379
+    }
+  },
+  "absence": {
+    "attempts": 315,
+    "certified": 232,
+    "accept_rate": 0.7365079365079366
+  },
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 2495,
+    "fresh_decodes": 0,
+    "resident_mib": 122.0086669921875,
+    "limit_mib": 256.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 2495,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

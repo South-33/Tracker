@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "cycle": "joint-permutation-bundle",
+  "status": "probing",
+  "probe_budget": 3,
+  "jump_claim": "Represent crossing ambiguity jointly instead of corrupting or freezing per-ID state. When a small group becomes ambiguous, suppress publication for the group and carry a bounded bank of one-to-one permutation hypotheses driven only by causal motion smoothness. Resolve public IDs only after the group separates.",
+  "probes": [],
+  "development": {
+    "heldout_train_sequence": "dancetrack0012",
+    "active_experiment": null,
+    "planned_compute": "Next train-only diagnostic should oracle-seed only the victim ID at hard-event entry, not the competing partner. Carry an anonymous local proposal set forward and allow protected membership to emerge causally from interaction with that set. Include safe links as injected false alarms and measure whether the state returns to the correct public identity without corrupting it.",
+    "mechanism_test": "A victim-only anonymous bundle must recover a large share of hard exits while also unwinding false alarms on safe links at very high precision. This isolates whether anonymous state fixes the absorbing-veto problem before reusing any learned entry guard.",
+    "negative_scope": "Do not tune rank, horizon, hypothesis count, pool size, motion weights, or hazard thresholds. If victim-only oracle entry still cannot preserve identity through the ambiguous window, kill the joint-bundle family rather than adding another association model."
+  },
+  "promotion": {
+    "target_survival": 0.8,
+    "target_recall": 0.55,
+    "precision_floor": 0.98,
+    "gate_sequence": "dancetrack0096"
+  },
+  "decision_note": "CoTracker3 scaled online failed the strong information ceiling at 21.88% hard recovery / 90.63% safe preservation. A direct audit found 447/533 hard links choose another real dancer. With oracle pair membership, the bounded two-person joint state recovered 93/140 = 66.43% outgoing permutations. The first observable expanding trigger failed badly: 17.14% overall recovery, 27.59% conditional recovery, and 26.87% safe collateral. The remaining high-value question is whether oracle victim-only entry plus anonymous state can remove the absorbing-veto failure without knowing the partner up front."
+}

@@ -1,0 +1,199 @@
+{
+  "scope": "fully causal non-gate dev ceiling; exact 2s private enrollment; births close once; private shadows advance on every reciprocal local link including unsafe links; GT only vetoes publication/trusted-state updates; no shadow reset, appearance recovery, or velocity",
+  "settings": {
+    "candidate_count": 96,
+    "feature_cache": "data/features",
+    "detection_cache": "data/detections",
+    "cache_mib": 512,
+    "enrollment_seconds": 2.0,
+    "enrollment_score": 0.4,
+    "enrollment_minimum_iou": 0.1,
+    "enrollment_maximum_age": 0.5,
+    "enrollment_hits": 3,
+    "enrollment_duplicate_iou": 0.5,
+    "proposal_score": 0.1,
+    "minimum_iou": 0.1,
+    "clean_iou": 0.5
+  },
+  "promotion_target": {
+    "target_survival": 0.8,
+    "target_recall": 0.55,
+    "precision_floor": 0.98,
+    "gate_sequence": "dancetrack0096"
+  },
+  "passes_architecture_floor": false,
+  "per_sequence": [
+    {
+      "true_positives": 1384,
+      "false_positives": 0,
+      "missed_people": 11229,
+      "precision": 1.0,
+      "recall": 0.10972805835249345,
+      "identity_switches": 0,
+      "public_id_reuses": 0,
+      "visible_segments": 65,
+      "strict_visible_segment_survival": 1.0,
+      "public_ids_used": 6,
+      "sequence": "dancetrack0016",
+      "frames": 2163,
+      "final_roster": 8,
+      "real_roster_slots": 6,
+      "background_roster_slots": 2,
+      "unique_roster_owners": 6,
+      "duplicate_owner_slots": 0,
+      "reciprocal_shadow_links": 10791,
+      "oracle_publications": 1384,
+      "unsafe_shadow_advances": 9407,
+      "unmatched_shadow_rows": 6185,
+      "post_enrollment_gt_rows": 12367,
+      "represented_owner_gt_rows": 12367,
+      "represented_owner_coverage": 1.0,
+      "progress": [
+        {
+          "frame": 250,
+          "roster": 8,
+          "outputs": 1,
+          "unsafe_shadow_advances": 569
+        },
+        {
+          "frame": 500,
+          "roster": 8,
+          "outputs": 2,
+          "unsafe_shadow_advances": 1571
+        },
+        {
+          "frame": 750,
+          "roster": 8,
+          "outputs": 0,
+          "unsafe_shadow_advances": 2598
+        },
+        {
+          "frame": 1000,
+          "roster": 8,
+          "outputs": 0,
+          "unsafe_shadow_advances": 4012
+        },
+        {
+          "frame": 1250,
+          "roster": 8,
+          "outputs": 0,
+          "unsafe_shadow_advances": 4950
+        },
+        {
+          "frame": 1500,
+          "roster": 8,
+          "outputs": 0,
+          "unsafe_shadow_advances": 6188
+        },
+        {
+          "frame": 1750,
+          "roster": 8,
+          "outputs": 0,
+          "unsafe_shadow_advances": 7443
+        },
+        {
+          "frame": 2000,
+          "roster": 8,
+          "outputs": 0,
+          "unsafe_shadow_advances": 8722
+        },
+        {
+          "frame": 2163,
+          "roster": 8,
+          "outputs": 2,
+          "unsafe_shadow_advances": 9407
+        }
+      ]
+    },
+    {
+      "true_positives": 2613,
+      "false_positives": 0,
+      "missed_people": 17561,
+      "precision": 1.0,
+      "recall": 0.12952314860711808,
+      "identity_switches": 5,
+      "public_id_reuses": 4,
+      "visible_segments": 169,
+      "strict_visible_segment_survival": 0.9822485207100592,
+      "public_ids_used": 27,
+      "sequence": "dancetrack0020",
+      "frames": 583,
+      "final_roster": 29,
+      "real_roster_slots": 27,
+      "background_roster_slots": 2,
+      "unique_roster_owners": 26,
+      "duplicate_owner_slots": 1,
+      "reciprocal_shadow_links": 11850,
+      "oracle_publications": 2613,
+      "unsafe_shadow_advances": 9237,
+      "unmatched_shadow_rows": 3868,
+      "post_enrollment_gt_rows": 18756,
+      "represented_owner_gt_rows": 12668,
+      "represented_owner_coverage": 0.6754105352953721,
+      "progress": [
+        {
+          "frame": 250,
+          "roster": 29,
+          "outputs": 3,
+          "unsafe_shadow_advances": 3039
+        },
+        {
+          "frame": 500,
+          "roster": 29,
+          "outputs": 2,
+          "unsafe_shadow_advances": 7720
+        },
+        {
+          "frame": 583,
+          "roster": 29,
+          "outputs": 2,
+          "unsafe_shadow_advances": 9237
+        }
+      ]
+    }
+  ],
+  "combined": {
+    "true_positives": 3997,
+    "false_positives": 0,
+    "missed_people": 28790,
+    "identity_switches": 5,
+    "public_id_reuses": 4,
+    "visible_segments": 234,
+    "final_roster": 37,
+    "real_roster_slots": 33,
+    "background_roster_slots": 4,
+    "unique_roster_owners": 32,
+    "duplicate_owner_slots": 1,
+    "reciprocal_shadow_links": 22641,
+    "oracle_publications": 3997,
+    "unsafe_shadow_advances": 18644,
+    "unmatched_shadow_rows": 10053,
+    "post_enrollment_gt_rows": 31123,
+    "represented_owner_gt_rows": 25035,
+    "precision": 1.0,
+    "recall": 0.12190807332174337,
+    "strict_visible_segment_survival": 0.9871794871794872,
+    "represented_owner_coverage": 0.8043890370465572,
+    "sequences": [
+      "dancetrack0016",
+      "dancetrack0020"
+    ],
+    "frames": 2746
+  },
+  "detection_cache": {
+    "memory_hits": 0,
+    "disk_hits": 2746,
+    "fresh_decodes": 0,
+    "resident_mib": 134.24585723876953,
+    "limit_mib": 512.0,
+    "directory": "data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

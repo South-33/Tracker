@@ -9,8 +9,10 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = {
     "train1.zip": 3606300312,
+    "train2.zip": 3299320948,
     "val.zip": 4209785614,
 }
+DEFAULT_ARCHIVES = ["train1.zip", "val.zip"]
 
 
 def fetch(name: str) -> dict:
@@ -65,7 +67,7 @@ def fetch(name: str) -> dict:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("archives", nargs="*", default=list(SOURCES), choices=list(SOURCES))
+    parser.add_argument("archives", nargs="*", default=DEFAULT_ARCHIVES, choices=list(SOURCES))
     arguments = parser.parse_args()
     for archive in arguments.archives:
         fetch(archive)

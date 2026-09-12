@@ -1,0 +1,60 @@
+{
+  "scope": "train-only; temporal signature trained without held-out dancetrack0012",
+  "holdout": "dancetrack0012",
+  "train_record_counts": {
+    "dancetrack0001": 702,
+    "dancetrack0002": 1202,
+    "dancetrack0006": 1201,
+    "dancetrack0008": 882,
+    "dancetrack0015": 1202,
+    "dancetrack0082": 119,
+    "dancetrack0083": 119
+  },
+  "training": [
+    {
+      "epoch": 1,
+      "loss": 0.5049974752404074,
+      "train_pair_top1": 0.8543578475722717,
+      "pairs": 46422
+    },
+    {
+      "epoch": 2,
+      "loss": 0.34898460418786975,
+      "train_pair_top1": 0.8937572702597906,
+      "pairs": 46422
+    },
+    {
+      "epoch": 3,
+      "loss": 0.29973279617627246,
+      "train_pair_top1": 0.907134548274525,
+      "pairs": 46422
+    },
+    {
+      "epoch": 4,
+      "loss": 0.27070698699254464,
+      "train_pair_top1": 0.9171513506527078,
+      "pairs": 46422
+    }
+  ],
+  "evaluation": {
+    "geom_links": 11880,
+    "geom_safe": 11398,
+    "geom_unsafe": 482,
+    "raw_accept": 8010,
+    "raw_safe_accept": 7822,
+    "raw_unsafe_accept": 188,
+    "projected_accept": 9014,
+    "projected_safe_accept": 8809,
+    "projected_unsafe_accept": 205,
+    "geom_precision": 0.9594276094276094,
+    "raw_accepted_precision": 0.9765293383270911,
+    "raw_safe_acceptance": 0.6862607474995613,
+    "raw_hazard_veto": 0.6099585062240664,
+    "projected_accepted_precision": 0.9772575992899933,
+    "projected_safe_acceptance": 0.7728548868222496,
+    "projected_hazard_veto": 0.5746887966804979,
+    "raw_margin_unsafe_auc": 0.5760181956651054,
+    "projected_margin_unsafe_auc": 0.7374805145257339
+  },
+  "parameters": 41152
+}

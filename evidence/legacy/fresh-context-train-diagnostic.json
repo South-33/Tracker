@@ -1,0 +1,206 @@
+{
+  "scope": "train-only leave-one-sequence-out fresh-link information probe; no dev/gate frames",
+  "claim": "A bounded contextual set critic can identify the rare first unsafe IoU write better than the existing per-link 16-D evidence without choosing an alternate identity.",
+  "heldout": "dancetrack0012",
+  "settings": {
+    "candidate_count": 8,
+    "steps": 3000,
+    "batch": 256,
+    "lr": 0.0003,
+    "decision": "safe iff logit >= 0; balanced minibatches; no heldout threshold fitting"
+  },
+  "per_sequence_rows": {
+    "dancetrack0001": {
+      "rows": 4391,
+      "safe": 4334,
+      "hazards": 57
+    },
+    "dancetrack0002": {
+      "rows": 7602,
+      "safe": 7462,
+      "hazards": 140
+    },
+    "dancetrack0006": {
+      "rows": 7313,
+      "safe": 7111,
+      "hazards": 202
+    },
+    "dancetrack0008": {
+      "rows": 3693,
+      "safe": 3600,
+      "hazards": 93
+    },
+    "dancetrack0012": {
+      "rows": 6195,
+      "safe": 5883,
+      "hazards": 312
+    },
+    "dancetrack0015": {
+      "rows": 10201,
+      "safe": 10129,
+      "hazards": 72
+    },
+    "dancetrack0082": {
+      "rows": 1636,
+      "safe": 1616,
+      "hazards": 20
+    },
+    "dancetrack0083": {
+      "rows": 1081,
+      "safe": 1011,
+      "hazards": 70
+    }
+  },
+  "compact": {
+    "curve": [
+      {
+        "step": 1,
+        "loss": 0.6967949271202087
+      },
+      {
+        "step": 250,
+        "loss": 0.46100160479545593
+      },
+      {
+        "step": 500,
+        "loss": 0.42632776498794556
+      },
+      {
+        "step": 750,
+        "loss": 0.4222298264503479
+      },
+      {
+        "step": 1000,
+        "loss": 0.3168504238128662
+      },
+      {
+        "step": 1250,
+        "loss": 0.3646872639656067
+      },
+      {
+        "step": 1500,
+        "loss": 0.2781931161880493
+      },
+      {
+        "step": 1750,
+        "loss": 0.39352649450302124
+      },
+      {
+        "step": 2000,
+        "loss": 0.3524554967880249
+      },
+      {
+        "step": 2250,
+        "loss": 0.32717573642730713
+      },
+      {
+        "step": 2500,
+        "loss": 0.33731216192245483
+      },
+      {
+        "step": 2750,
+        "loss": 0.33700108528137207
+      },
+      {
+        "step": 3000,
+        "loss": 0.40385258197784424
+      }
+    ],
+    "heldout": {
+      "rows": 6195,
+      "safe_rows": 5883,
+      "hazard_rows": 312,
+      "safe_auroc": 0.8615268025645384,
+      "accepted": 3186,
+      "accepted_safe": 3167,
+      "accepted_hazard": 19,
+      "accepted_precision": 0.9940364360809326,
+      "safe_acceptance": 0.5383307933807373,
+      "hazard_veto_recall": 0.9391025900840759
+    }
+  },
+  "context": {
+    "curve": [
+      {
+        "step": 1,
+        "loss": 0.6954447627067566
+      },
+      {
+        "step": 250,
+        "loss": 0.3257478177547455
+      },
+      {
+        "step": 500,
+        "loss": 0.2936083972454071
+      },
+      {
+        "step": 750,
+        "loss": 0.20220068097114563
+      },
+      {
+        "step": 1000,
+        "loss": 0.1748335361480713
+      },
+      {
+        "step": 1250,
+        "loss": 0.21158857643604279
+      },
+      {
+        "step": 1500,
+        "loss": 0.0999237522482872
+      },
+      {
+        "step": 1750,
+        "loss": 0.08653642982244492
+      },
+      {
+        "step": 2000,
+        "loss": 0.0874248743057251
+      },
+      {
+        "step": 2250,
+        "loss": 0.058168429881334305
+      },
+      {
+        "step": 2500,
+        "loss": 0.05951230227947235
+      },
+      {
+        "step": 2750,
+        "loss": 0.12903395295143127
+      },
+      {
+        "step": 3000,
+        "loss": 0.06475840508937836
+      }
+    ],
+    "heldout": {
+      "rows": 6195,
+      "safe_rows": 5883,
+      "hazard_rows": 312,
+      "safe_auroc": 0.816111285450908,
+      "accepted": 5003,
+      "accepted_safe": 4878,
+      "accepted_hazard": 125,
+      "accepted_precision": 0.9750149846076965,
+      "safe_acceptance": 0.8291687965393066,
+      "hazard_veto_recall": 0.5993589758872986
+    }
+  },
+  "cache": {
+    "memory_hits": 0,
+    "disk_hits": 6637,
+    "fresh_decodes": 0,
+    "resident_mib": 324.05543518066406,
+    "limit_mib": 512.0,
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "feature_cache": {
+      "gpu_cache_hits": 0,
+      "disk_cache_hits": 0,
+      "fresh_encodes": 0,
+      "resident_mib": 0.0,
+      "limit_mib": 0.0,
+      "directory": "D:\\Project\\tracker\\data\\features\\9df5d0a45f4f4cb8c223aa1e"
+    }
+  }
+}

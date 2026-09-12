@@ -1,0 +1,44 @@
+{
+  "scope": "train-only zero-parameter structural conflict audit; heldout dancetrack0012 only; no dev/gate frames",
+  "question": "Can physically isolated reciprocal IoU links bypass learned safety while overlap conflicts contain nearly every dangerous write?",
+  "rule": {
+    "local_link": "reciprocal best IoU with IoU >= 0.1",
+    "clean_state": "previous owner box is the best frozen detector proposal with GT IoU >= 0.5; GT is used only to define/score this information audit",
+    "certified_isolated": "trusted box has exactly zero IoU with every other active trusted box AND chosen current proposal has exactly zero IoU with every other reciprocal chosen proposal",
+    "conflict": "logical negation of certified_isolated; no tuned conflict threshold"
+  },
+  "criteria": {
+    "isolated_accepted_precision_min": 0.999,
+    "safe_coverage_min": 0.7,
+    "hazard_containment_min": 0.95
+  },
+  "heldout": {
+    "reciprocal_links": 12161,
+    "safe_links": 11566,
+    "hazard_links": 595,
+    "isolated_links": 610,
+    "isolated_safe": 608,
+    "isolated_hazard": 2,
+    "conflict_links": 11551,
+    "conflict_safe": 10958,
+    "conflict_hazard": 593,
+    "isolated_accepted_precision": 0.9967213114754099,
+    "safe_coverage": 0.0525678713470517,
+    "hazard_containment": 0.9966386554621849,
+    "conflict_rate": 0.9498396513444618,
+    "previous_conflict_rate": 0.9396431214538278,
+    "current_conflict_rate": 0.9368472987418798,
+    "mean_isolated_iou": 0.8999875970551225,
+    "mean_conflict_iou": 0.8691108522322485
+  },
+  "decision": "weak",
+  "cache": {
+    "directory": "D:\\Project\\tracker\\data\\detections\\db31eb8377399bae2dbc6d75",
+    "reads": 1203,
+    "size": 640,
+    "candidate_count": 96,
+    "torch": "2.8.0+cu128",
+    "precision": "cuda_amp_fp16",
+    "decoder": "clean-rtdetr-topk-v1"
+  }
+}
