@@ -1,4 +1,4 @@
-"""One front door for the research loop: inspect cheaply, count learned experiments, then promote or kill."""
+"""Guarded research runs with bounded exploration and durable evidence."""
 
 from __future__ import annotations
 
@@ -16,8 +16,11 @@ import shutil
 import statistics
 import re
 import psutil
+import time
 
-from .research_cycle import VALID_PROBE_KINDS, load_ledger, status_text
+from .research_cycle import VALID_PROBE_KINDS, action_allowed, exploration_used, load_ledger, status_text
+from .experiment_archive import start_experiment, finish_experiment
+from .validation_cache import test_fingerprint, passing_result
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -91,7 +94,13 @@ def _process_tree(process: subprocess.Popen) -> list[psutil.Process]:
 
 def _set_research_priority(process: subprocess.Popen, profile: dict[str, float | int | str]) -> None:
     """Prefer interactive apps, then widen the research slice only while idle."""
+    applied = getattr(process, "_tracker_resource_settings", {})
+    desired = (profile["mode"], profile["cores"])
+    live = set()
     for item in _process_tree(process):
+        live.add(item.pid)
+        if applied.get(item.pid) == desired:
+            continue
         try:
             if os.name == "nt":
                 priority = (
@@ -109,8 +118,10 @@ def _set_research_priority(process: subprocess.Popen, profile: dict[str, float |
                     pass
             else:
                 item.nice(10 if profile["mode"] == "idle" else 19)
+            applied[item.pid] = desired
         except (psutil.Error, PermissionError):
             pass
+    process._tracker_resource_settings = {pid: value for pid, value in applied.items() if pid in live}
 
 
 def _suspend_research(process: subprocess.Popen) -> None:
@@ -197,6 +208,17 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def research_input_issues(ledger: dict) -> list[str]:
+    issues = []
+    for label, spec in ledger.get("inputs", {}).items():
+        path = ROOT / spec["path"]
+        if not path.is_file():
+            issues.append(f"missing shared {label}: {spec['path']}")
+        elif sha256(path) != spec["sha256"]:
+            issues.append(f"shared {label} hash changed: {spec['path']}")
+    return issues
+
+
 def big_run_input_issues(ledger: dict) -> list[str]:
     big = ledger.get("big_run")
     if not big:
@@ -254,9 +276,9 @@ def big_run_input_issues(ledger: dict) -> list[str]:
         if abs(total - 1.0) > 1e-8:
             issues.append(f"curriculum probabilities sum to {total}, expected 1.0")
     training = big["training"]
-    if "unroll" in training and not 32 <= int(training["unroll"]) <= 48:
-        issues.append("frozen recurrent big-run unroll must be 32-48 frames")
-    if int(big["architecture"].get("candidate_count", 0)) <= 0:
+    if "unroll" in training and int(training["unroll"]) <= 0:
+        issues.append("big-run unroll must be positive; choose context from the mechanism and real time span")
+    if "candidate_count" in big["architecture"] and int(big["architecture"]["candidate_count"]) <= 0:
         issues.append("big-run candidate_count must be positive")
     script = big.get("script")
     if not script or not (ROOT / script).is_file():
@@ -359,8 +381,12 @@ def development_issues(ledger: dict) -> list[str]:
     name = active.get("name")
     if name:
         issues.extend(diagnostic_issues(name))
+        if script.resolve() != diagnostic_script(name).resolve():
+            issues.append("active development script differs from the script that diagnose would execute")
     if not active.get("question"):
         issues.append("active development must state the decision question")
+    if not active.get("output"):
+        issues.append("active development must name its output artifact")
     return issues
 
 def source_lock_issues(ledger: dict, root: Path = ROOT) -> list[str]:
@@ -443,107 +469,47 @@ def active_gpu_processes(min_sm=15) -> list[dict]:
     return sorted(active, key=lambda row: row["sm"], reverse=True)
 
 
-def progress_rows(big: dict) -> list[dict]:
+def progress_rows(big: dict, limit: int = 50) -> list[dict]:
+    """Read a bounded log tail; status must not rescan an entire training run."""
     path = ROOT / big["output"] / "loss.jsonl"
     if not path.is_file():
         return []
+    with path.open("rb") as stream:
+        stream.seek(0, 2)
+        start = max(0, stream.tell() - 256 * 1024)
+        stream.seek(start)
+        lines = stream.read().splitlines()
+    if start:
+        lines = lines[1:]
     rows = []
-    with path.open("r", encoding="utf-8") as stream:
-        for line in stream:
-            if not line.strip():
-                continue
-            try:
-                rows.append(json.loads(line))
-            except json.JSONDecodeError:
-                # The trainer appends one complete JSON object at a time. Ignore a
-                # partially visible final line if status races an append.
-                continue
-    return rows
+    for line in lines:
+        try:
+            row = json.loads(line)
+            if isinstance(row, dict) and "step" in row:
+                rows.append(row)
+        except (ValueError, UnicodeError):
+            pass  # A writer may still be appending its final JSON object.
+    return rows[-limit:]
 
 
 def progress_text(big: dict, window: int = 50) -> list[str]:
-    rows = progress_rows(big)
-    total = int(big["training"]["steps"])
+    rows = progress_rows(big, window)
+    total = big.get("training", {}).get("steps", "unspecified")
     if not rows:
         return [f"progress: 0/{total}"]
-    recent = rows[-window:]
-    mean = lambda key: statistics.fmean(float(row[key]) for row in recent if row.get(key) is not None)
     lines = [f"progress: {int(rows[-1]['step'])}/{total}"]
-    if "recovery_hazard_veto_recall" in recent[-1]:
-        lines.append(
-            f"recent {len(recent)}: write_precision={mean('accepted_write_precision'):.3f} "
-            f"write_recall={mean('visible_write_recall'):.3f} "
-            f"local_accept={mean('local_safe_acceptance'):.3f} "
-            f"local_veto={mean('local_hazard_veto_recall'):.3f} "
-            f"recovery_accept={mean('recovery_safe_acceptance'):.3f} "
-            f"recovery_veto={mean('recovery_hazard_veto_recall'):.3f} "
-            f"wrong={mean('wrong_write_rate'):.5f} "
-            f"strict={mean('clip_strict_survival'):.3f}"
-        )
-        latest_epoch = int(rows[-1].get("epoch", -1))
-        epoch_rows = [row for row in rows if int(row.get("epoch", -2)) == latest_epoch]
-        first_by_sequence = []
-        for sequence in dict.fromkeys(row.get("sequence") for row in epoch_rows):
-            sequence_rows = [row for row in epoch_rows if row.get("sequence") == sequence]
-            first_by_sequence.extend(sequence_rows[:2])
-        if first_by_sequence:
-            fresh_mean = lambda key: statistics.fmean(
-                float(row[key]) for row in first_by_sequence if row.get(key) is not None
-            )
-            lines.append(
-                f"fresh-start epoch {latest_epoch}: n={len(first_by_sequence)} "
-                f"precision={fresh_mean('accepted_write_precision'):.3f} "
-                f"recall={fresh_mean('visible_write_recall'):.3f} "
-                f"strict={fresh_mean('clip_strict_survival'):.3f}"
-            )
-    elif "visible_branch_coverage" in recent[-1]:
-        nonzero = sum(float(row["clip_strict_survival"]) > 0 for row in recent)
-        lines.append(
-            f"recent {len(recent)}: branch={mean('visible_branch_coverage'):.3f} "
-            f"top1={mean('visible_top1_accuracy'):.3f} "
-            f"noobs={mean('absent_branch_noobs'):.3f} "
-            f"strict={mean('clip_strict_survival'):.3f} "
-            f"strict_nonzero={nonzero}/{len(recent)}"
-        )
-    elif "visible_action_accuracy" in recent[-1]:
-        lines.append(
-            f"recent {len(recent)}: action={mean('visible_action_accuracy'):.3f} "
-            f"write_precision={mean('accepted_write_precision'):.3f} "
-            f"write_recall={mean('visible_write_recall'):.3f} "
-            f"wrong={mean('wrong_write_rate'):.3f} "
-            f"defer={mean('absent_defer_accuracy'):.3f} "
-            f"strict={mean('clip_strict_survival'):.3f}"
-        )
-    elif "hazard_veto_recall" in recent[-1]:
-        useful = sum(float(row["visible_commit_recall"]) > .55 for row in recent)
-        wrong = sum(float(row["wrong_write_rate"]) > 0 for row in recent)
-        lines.append(
-            f"recent {len(recent)}: write_precision={mean('accepted_write_precision'):.3f} "
-            f"write_recall={mean('visible_commit_recall'):.3f} "
-            f"local={mean('local_link_coverage'):.3f} "
-            f"safe_accept={mean('safe_link_acceptance'):.3f} "
-            f"hazard_veto={mean('hazard_veto_recall'):.3f} "
-            f"hazard_rate={mean('hazard_link_rate'):.3f} "
-            f"wrong={mean('wrong_write_rate'):.5f} "
-            f"strict={mean('clip_strict_survival'):.3f} "
-            f"useful={useful}/{len(recent)} wrong_clips={wrong}/{len(recent)}"
-        )
-    elif "existing_visible_accuracy" in recent[-1]:
-        lines.append(
-            f"recent {len(recent)}: existing={mean('existing_visible_accuracy'):.3f} "
-            f"absent={mean('existing_absent_accuracy'):.3f} "
-            f"proposal={mean('proposal_accuracy'):.3f} "
-            f"new={mean('new_recall'):.3f} bg={mean('background_accuracy'):.3f}"
-        )
-    cache = ROOT / big["training"]["feature_cache"]
-    if cache.is_dir():
-        files = [path for path in cache.rglob("*.pt") if path.is_file()]
-        bytes_used = sum(path.stat().st_size for path in files)
-        free = shutil.disk_usage(ROOT).free
-        lines.append(
-            f"feature cache: {len(files)} frames, {bytes_used / 2**30:.1f} GiB; "
-            f"disk free {free / 2**30:.1f} GiB"
-        )
+    values = []
+    for key in ("loss", "seconds", "precision", "recall", "covered_identity_segment_rate",
+                "covered_identity_frame_rate", "accepted_write_precision", "visible_write_recall"):
+        samples = [float(row[key]) for row in rows if isinstance(row.get(key), (int, float))]
+        if samples:
+            values.append(f"{key}={statistics.fmean(samples):.4f}")
+    if values:
+        lines.append(f"recent {len(rows)} training diagnostics (not acceptance): " + " ".join(values))
+    cache = big.get("training", {}).get("feature_cache")
+    if cache:
+        lines.append(f"feature cache: {cache}")
+    lines.append(f"disk free: {shutil.disk_usage(ROOT).free / 2**30:.1f} GiB")
     return lines
 
 
@@ -566,6 +532,10 @@ def command_status() -> int:
     if big:
         for line in progress_text(big):
             print(line)
+    attempts = sorted((ROOT / "evidence" / "attempts").glob("*/record.json"))
+    for path in attempts[-3:]:
+        record = json.loads(path.read_text(encoding="utf-8"))
+        print(f"saved attempt: {record['name']} [{record['status']}] {path.relative_to(ROOT).as_posix()}")
     return 0
 
 
@@ -573,7 +543,8 @@ def command_doctor(require_idle_gpu=False) -> int:
     ledger = load_ledger()
     sync_cycle_marker(ledger)
     issues = (
-        big_run_input_issues(ledger)
+        research_input_issues(ledger)
+        + big_run_input_issues(ledger)
         + probe_input_issues(ledger)
         + evaluation_issues(ledger)
         + development_issues(ledger)
@@ -594,53 +565,49 @@ def command_doctor(require_idle_gpu=False) -> int:
         for issue in issues:
             print(f"FAIL {issue}")
         return 2
-    print("OK frozen inputs, hashes, source lock, no0096 boundary, curriculum, architecture, evaluation protocol, context hygiene")
+    print("OK declared input/source/context checks passed. This does not establish scientific validity or tracking acceptance.")
     if not active:
         print("OK GPU appears idle")
     return 0
 
 
-def command_test() -> int:
+def command_test(use_cache=False) -> int:
+    fingerprint = test_fingerprint(ROOT)
+    cached = passing_result(ROOT, fingerprint) if use_cache else None
+    if cached:
+        print(f"tests: reuse passing source/dependency fingerprint {fingerprint[:12]} (explicit 'lab test' forces a fresh run)")
+        return 0
+    started = time.perf_counter()
     result = run_managed([sys.executable, "-m", "pytest", "-q"], cwd=ROOT)
+    if result.returncode == 0:
+        if test_fingerprint(ROOT) != fingerprint:
+            print("test inputs changed during execution; rerun before research")
+            return 2
+        output = ROOT / "runs/.lab-tests.json"
+        output.parent.mkdir(parents=True, exist_ok=True)
+        temporary = output.with_suffix(".tmp")
+        temporary.write_text(json.dumps({"fingerprint": fingerprint, "returncode": 0,
+                                          "elapsed_seconds": time.perf_counter() - started}) + "\n", encoding="utf-8")
+        temporary.replace(output)
     return int(result.returncode)
 
 
-def _call_name(node: ast.AST) -> str:
-    if isinstance(node, ast.Name):
-        return node.id
-    if isinstance(node, ast.Attribute):
-        prefix = _call_name(node.value)
-        return f"{prefix}.{node.attr}" if prefix else node.attr
-    return ""
+def command_preflight_tests() -> int:
+    return command_test(use_cache=True)
 
 
-def learned_experiment_signals(text: str) -> list[str]:
-    """Identify scripts that learn parameters and therefore consume a formal probe slot."""
-    try:
-        tree = ast.parse(text)
-    except SyntaxError:
-        return ["script does not parse"]
-    signals = set()
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
-            continue
-        name = _call_name(node.func)
-        if name.endswith(".backward") or name in {"torch.autograd.grad", "autograd.grad"}:
-            signals.add("gradient computation")
-        if name.startswith("torch.optim.") or name.startswith("optim."):
-            signals.add("optimizer construction")
-        if name.endswith("requires_grad_") and node.args and isinstance(node.args[0], ast.Constant) and node.args[0].value is True:
-            signals.add("trainable parameters")
-        if name in {"torch.nn.Parameter", "nn.Parameter"}:
-            signals.add("trainable parameter creation")
-    return sorted(signals)
+def diagnostic_script(name: str, root: Path | None = None) -> Path:
+    root = ROOT if root is None else root
+    durable = root / "experiments" / name / "probe.py"
+    return durable if durable.is_file() else root / "runs" / f"_diag_{name}" / "probe.py"
 
 
-def diagnostic_issues(name: str, root: Path = ROOT) -> list[str]:
+def diagnostic_issues(name: str, root: Path | None = None) -> list[str]:
     """Keep train-only scratch work inside the contamination boundary."""
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", name):
         return [f"invalid diagnostic name: {name!r}"]
-    script = root / "runs" / f"_diag_{name}" / "probe.py"
+    root = ROOT if root is None else root
+    script = diagnostic_script(name, root)
     if not script.is_file():
         return [f"missing diagnostic script: {script.relative_to(root)}"]
     text = script.read_text(encoding="utf-8")
@@ -663,6 +630,22 @@ def diagnostic_issues(name: str, root: Path = ROOT) -> list[str]:
     return issues
 
 
+def run_archived(name: str, script: str, device: str, output: str, ledger: dict, command=None):
+    """Capture source before execution, including failures and incomplete outputs."""
+    command = command or [sys.executable, str(script), "--device", device]
+    record = start_experiment(ROOT, name, script, command, ledger, output)
+    print(f"source saved: {record.relative_to(ROOT).as_posix()}", flush=True)
+    try:
+        result = run_managed(command, cwd=ROOT)
+    except BaseException as exc:
+        finish_experiment(ROOT, record, None, f"{type(exc).__name__}: {exc}")
+        raise
+    outcome = finish_experiment(ROOT, record, int(result.returncode))
+    if outcome["status"] != "complete":
+        raise RuntimeError(f"Experiment {outcome['status']}; inspect {record.relative_to(ROOT)}")
+    return record
+
+
 def command_diagnose(name: str, device: str) -> int:
     issues = diagnostic_issues(name)
     if issues:
@@ -670,16 +653,18 @@ def command_diagnose(name: str, device: str) -> int:
             print(f"FAIL {issue}")
         return 2
     ledger = load_ledger()
-    script = ROOT / "runs" / f"_diag_{name}" / "probe.py"
-    learned = learned_experiment_signals(script.read_text(encoding="utf-8"))
+    allowed, message = action_allowed(ledger, "diagnose")
+    if not allowed:
+        print(message)
+        return 2
+    script = diagnostic_script(name)
     active = ledger.get("development", {}).get("active_experiment")
-    if learned:
-        if not active or active.get("name") != name:
-            print(
-                "FAIL learned train-only development needs one matching development.active_experiment "
-                "with a question before launch"
-            )
-            return 2
+    if not active or active.get("name") != name or not active.get("question") or not active.get("output"):
+        print("FAIL every diagnostic needs a matching active_experiment with question, script and output before launch")
+        return 2
+    if (ROOT / active["output"]).exists():
+        print("FAIL output already exists; interpret it or declare a new named experiment instead of overwriting evidence")
+        return 2
     if active and active.get("name") == name:
         expected = active.get("script_sha256")
         actual = sha256(script)
@@ -695,18 +680,30 @@ def command_diagnose(name: str, device: str) -> int:
     if command_doctor(require_idle_gpu=str(device).lower().startswith("cuda")):
         print("diagnostic not started; fix doctor failures first")
         return 2
-    if command_test():
+    if command_preflight_tests():
         print("diagnostic not started; tests failed")
         return 2
-    result = run_managed([sys.executable, str(script), "--device", device], cwd=ROOT)
-    if result.returncode:
-        raise subprocess.CalledProcessError(result.returncode, result.args)
+    active["status"] = "running"
+    atomic_write_ledger(ledger)
+    try:
+        record = run_archived(name, str(script), device, active["output"], ledger)
+    except BaseException:
+        failed = load_ledger()
+        failed["development"]["active_experiment"]["status"] = "failed"
+        atomic_write_ledger(failed)
+        raise
     finished = load_ledger()
     active = finished.get("development", {}).get("active_experiment")
     if active and active.get("name") == name:
         active["status"] = "complete"
-        atomic_write_ledger(finished)
-    print("diagnostic complete; interpret/archive the result, then clear the active development and scratch")
+    finished.setdefault("diagnostics", []).append({
+        "name": name, "question": active["question"], "output": active["output"],
+        "archive": record.relative_to(ROOT).as_posix(),
+    })
+    if exploration_used(finished) >= finished.get("exploration_budget", 3):
+        finished["status"] = "decision_required"
+    atomic_write_ledger(finished)
+    print("diagnostic archived and counted; interpret the result, keep its source, then choose the next decision")
     return 0
 
 
@@ -732,7 +729,7 @@ def record_probe_result(ledger: dict, probe: dict) -> dict:
     }
     ledger["probes"].append(completed)
     ledger.pop("probe", None)
-    if len(ledger["probes"]) >= ledger["probe_budget"]:
+    if len(ledger["probes"]) >= ledger["probe_budget"] or exploration_used(ledger) >= ledger.get("exploration_budget", 3):
         ledger["status"] = "decision_required"
     atomic_write_ledger(ledger)
     return completed
@@ -779,12 +776,10 @@ def command_probe(kind: str, device: str) -> int:
     if command_doctor(require_idle_gpu=True):
         print("probe not started; fix doctor failures first")
         return 2
-    if command_test():
+    if command_preflight_tests():
         print("probe not started; tests failed")
         return 2
-    result = run_managed([sys.executable, probe["script"], "--device", device], cwd=ROOT)
-    if result.returncode:
-        raise subprocess.CalledProcessError(result.returncode, result.args)
+    run_archived(f"probe-{kind}", probe["script"], device, probe["output"], ledger)
     finished = load_ledger()
     completed = record_probe_result(finished, finished["probe"])
     print(
@@ -805,17 +800,13 @@ def command_eval(device: str) -> int:
     if command_doctor(require_idle_gpu=True):
         print("evaluation not started; fix doctor failures first")
         return 2
-    if command_test():
+    if command_preflight_tests():
         print("evaluation not started; tests failed")
         return 2
     evaluation["status"] = "running"
     atomic_write_ledger(ledger)
     try:
-        result = run_managed(
-            [sys.executable, evaluation["script"], "--device", device], cwd=ROOT,
-        )
-        if result.returncode:
-            raise subprocess.CalledProcessError(result.returncode, result.args)
+        run_archived("evaluation", evaluation["script"], device, evaluation["output"], ledger)
     except BaseException:
         failed = load_ledger()
         failed["evaluation"]["status"] = "required"
@@ -835,7 +826,7 @@ def command_run(device: str) -> int:
     if command_doctor(require_idle_gpu=True):
         print("run not started; fix doctor failures first")
         return 2
-    if command_test():
+    if command_preflight_tests():
         print("run not started; tests failed")
         return 2
 
@@ -844,12 +835,9 @@ def command_run(device: str) -> int:
     ledger["big_run"]["status"] = "running"
     atomic_write_ledger(ledger)
     try:
-        result = run_managed(
-            [sys.executable, ledger["big_run"]["script"], "--device", device],
-            cwd=ROOT,
-        )
-        if result.returncode:
-            raise subprocess.CalledProcessError(result.returncode, result.args)
+        big = ledger["big_run"]
+        run_archived("substantial-run", big["script"], device,
+                     big.get("result", str(Path(big["output"]) / "last.pt")), ledger)
     except BaseException:
         previous["status"] = "big_run_required"
         previous["big_run"]["status"] = "required"
@@ -871,13 +859,35 @@ def command_run(device: str) -> int:
     return 0
 
 
+def command_score(run: str, manifest: str) -> int:
+    """Evaluate saved predictions without launching a tracker or reading video."""
+    command = [sys.executable, "scripts/evaluate.py", "--run", run, "--manifest", manifest]
+    context = copy.deepcopy(load_ledger())
+    metadata_path = ROOT / run / "run.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    context["prediction_metadata"] = metadata
+    prediction_path = ROOT / run / f"{metadata['sequence']}.txt"
+    context["scoring_inputs"] = {
+        label: {"path": str(path), "sha256": sha256(path)}
+        for label, path in (("manifest", ROOT / manifest), ("run_metadata", metadata_path),
+                            ("predictions", prediction_path))
+    }
+    run_archived("score", "scripts/evaluate.py", "cpu", str(Path(run) / "metrics.json"),
+                 context, command=command)
+    return 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("status", help="show the research contract and current progress")
     sub.add_parser("doctor", help="check frozen inputs, contamination, and GPU activity")
     sub.add_parser("test", help="run the small active test suite")
-    diagnose = sub.add_parser("diagnose", help="run one guarded train-only diagnostic under runs/_diag_<name>/probe.py")
+    sub.add_parser("benchmark-data", help="verify and measure the laptop annotation loading path; no model training")
+    score = sub.add_parser("score", help="score saved MOT predictions with official metrics and coverage-aware diagnostics")
+    score.add_argument("--run", required=True)
+    score.add_argument("--manifest", required=True)
+    diagnose = sub.add_parser("diagnose", help="run and archive one train-only experiment from experiments/<name>/probe.py")
     diagnose.add_argument("name")
     diagnose.add_argument("--device", default="cuda")
     probe = sub.add_parser("probe", help="run one frozen decision-changing experiment and account for it automatically")
@@ -895,6 +905,14 @@ def main(argv=None) -> int:
         return command_doctor()
     if args.command == "test":
         return command_test()
+    if args.command == "benchmark-data":
+        if command_doctor() or command_preflight_tests():
+            return 2
+        run_archived("laptop-data-path", "scripts/benchmark_data.py", "cpu",
+                     "runs/laptop-data-path/result.json", load_ledger())
+        return 0
+    if args.command == "score":
+        return command_score(args.run, args.manifest)
     if args.command == "diagnose":
         return command_diagnose(args.name, args.device)
     if args.command == "probe":

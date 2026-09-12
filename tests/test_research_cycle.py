@@ -103,3 +103,30 @@ def test_completed_development_status_requests_archive_not_more_training():
     text = status_text(complete)
     assert "interpret/archive" in text
     assert "finish and interpret" not in text
+
+
+def test_train_only_diagnostics_share_the_probe_budget():
+    data = copy.deepcopy(load_ledger())
+    data.update(status="decision_required", probes=[{"kind": "mechanism"}],
+                diagnostics=[{"name": "first"}, {"name": "second"}])
+    assert not action_allowed(data, "diagnose")[0]
+    assert not action_allowed(data, "probe", "reality")[0]
+    assert "optional probe slots available: 0" in status_text(data)
+    data["status"] = "probing"
+    with pytest.raises(ValueError, match="exploration budget"):
+        validate_ledger(data)
+
+
+def test_substantial_run_is_allowed_after_exploration_is_spent():
+    data = copy.deepcopy(load_ledger())
+    data.update(status="big_run_required", diagnostics=[{}, {}, {}])
+    assert action_allowed(data, "big-run")[0]
+    assert not action_allowed(data, "diagnose")[0]
+
+
+def test_fourth_train_only_experiment_is_rejected():
+    data = copy.deepcopy(load_ledger())
+    data.update(status="probing", diagnostics=[{}, {}])
+    assert action_allowed(data, "diagnose")[0]
+    data["diagnostics"].append({})
+    assert not action_allowed(data, "diagnose")[0]

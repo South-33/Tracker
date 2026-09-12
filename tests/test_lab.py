@@ -69,7 +69,7 @@ def test_progress_text_has_zero_state_for_fresh_output(tmp_path):
     ]
 
 
-def test_progress_text_understands_local_recovery(tmp_path, monkeypatch):
+def test_progress_text_labels_training_diagnostics_without_claiming_acceptance(tmp_path, monkeypatch):
     from tracker import lab
     big = {
         "output": "run",
@@ -87,10 +87,10 @@ def test_progress_text_understands_local_recovery(tmp_path, monkeypatch):
     (run / "loss.jsonl").write_text(json.dumps(row) + "\n", encoding="utf-8")
     monkeypatch.setattr(lab, "ROOT", tmp_path)
     text = "\n".join(progress_text(big))
-    assert "local_veto=0.900" in text
-    assert "recovery_veto=0.950" in text
-    assert "fresh-start epoch 2" in text
-    assert "precision=0.990" in text
+    assert "accepted_write_precision=0.9900" in text
+    assert "visible_write_recall=0.6000" in text
+    assert "not acceptance" in text
+    assert "strict=" not in text
 
 
 def test_current_context_is_clean():
@@ -254,28 +254,76 @@ def test_diagnose_source_locks_and_completes_nonlearned_active_experiment(tmp_pa
     script = directory / "probe.py"
     script.write_text("print('ok')\n", encoding="utf-8")
     ledger = {
+        "status": "probing", "cycle": "test", "probes": [], "diagnostics": [],
         "development": {
             "active_experiment": {
                 "name": "ceiling",
                 "status": "planned",
                 "script_sha256": lab.sha256(script),
+                "question": "Can the mechanism work?",
+                "output": "runs/result.json",
             }
         }
     }
     written = []
     monkeypatch.setattr(lab, "ROOT", tmp_path)
     monkeypatch.setattr(lab, "diagnostic_issues", lambda name: [])
-    monkeypatch.setattr(lab, "learned_experiment_signals", lambda text: [])
     monkeypatch.setattr(lab, "load_ledger", lambda: copy.deepcopy(ledger))
     monkeypatch.setattr(lab, "atomic_write_ledger", lambda value: written.append(copy.deepcopy(value)))
     monkeypatch.setattr(lab, "command_doctor", lambda require_idle_gpu=False: 0)
-    monkeypatch.setattr(lab, "command_test", lambda: 0)
-    monkeypatch.setattr(lab.subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=0, args=args[0]))
+    monkeypatch.setattr(lab, "command_preflight_tests", lambda: 0)
+    monkeypatch.setattr(lab, "run_archived", lambda *args: tmp_path / "evidence/record.json")
 
     assert lab.command_diagnose("ceiling", "cpu") == 0
     assert written[-1]["development"]["active_experiment"]["status"] == "complete"
+    assert len(written[-1]["diagnostics"]) == 1
 
     script.write_text("print('changed')\n", encoding="utf-8")
     written.clear()
     assert lab.command_diagnose("ceiling", "cpu") == 2
     assert written == []
+
+
+def test_durable_experiment_source_is_preferred(tmp_path):
+    from tracker.lab import diagnostic_script
+    durable = tmp_path / "experiments/example/probe.py"
+    durable.parent.mkdir(parents=True)
+    durable.write_text("pass\n")
+    assert diagnostic_script("example", tmp_path) == durable
+
+
+def test_shared_input_hash_drift_is_detected(tmp_path, monkeypatch):
+    from tracker import lab
+    monkeypatch.setattr(lab, "ROOT", tmp_path)
+    source = tmp_path / "manifest.json"
+    source.write_text("{}")
+    ledger = {"inputs": {"manifest": {"path": "manifest.json", "sha256": lab.sha256(source)}}}
+    assert lab.research_input_issues(ledger) == []
+    source.write_text('{"changed":true}')
+    assert lab.research_input_issues(ledger)
+
+
+def test_resource_settings_are_only_reapplied_on_change(monkeypatch):
+    from tracker import lab
+    calls = []
+    child = SimpleNamespace(pid=1, nice=lambda value: calls.append(value))
+    process = SimpleNamespace()
+    monkeypatch.setattr(lab, "_process_tree", lambda process: [child])
+    monkeypatch.setattr(lab.os, "name", "posix")
+    lab._set_research_priority(process, lab.resource_profile(0))
+    lab._set_research_priority(process, lab.resource_profile(0))
+    assert calls == [19]
+    lab._set_research_priority(process, lab.resource_profile(100))
+    assert calls == [19, 10]
+
+
+def test_status_reads_recent_rows_and_ignores_incomplete_append(tmp_path, monkeypatch):
+    from tracker import lab
+    monkeypatch.setattr(lab, "ROOT", tmp_path)
+    output = tmp_path / "run"
+    output.mkdir()
+    (output / "loss.jsonl").write_text(
+        "".join(json.dumps({"step": i, "loss": i, "padding": "x" * 1000}) + "\n" for i in range(500))
+        + '{"step":500,"loss":', encoding="utf-8")
+    rows = lab.progress_rows({"output": "run"}, 10)
+    assert [row["step"] for row in rows] == list(range(490, 500))

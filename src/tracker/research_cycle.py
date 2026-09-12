@@ -71,10 +71,27 @@ def validate_ledger(data: dict[str, Any]) -> None:
 
     if data["status"] == "probing" and len(probes) >= budget:
         raise ValueError("probing is inconsistent with an exhausted probe budget")
+    small_budget = data.get("exploration_budget", 3)
+    if not isinstance(small_budget, int) or not 1 <= small_budget <= 3:
+        raise ValueError("exploration_budget must be between 1 and 3")
+    diagnostics = data.get("diagnostics", [])
+    if not isinstance(diagnostics, list):
+        raise ValueError("diagnostics must be a list")
+    if data["status"] == "probing" and exploration_used(data) >= small_budget:
+        raise ValueError("probing is inconsistent with an exhausted exploration budget")
+
+
+def exploration_used(data: dict[str, Any]) -> int:
+    """Train-only diagnostics count too; checkpoint evaluations within a big run do not."""
+    return len(data.get("probes", [])) + len(data.get("diagnostics", []))
 
 
 def action_allowed(data: dict[str, Any], action: str, probe_kind: str | None = None) -> tuple[bool, str]:
     status = data["status"]
+    if action in {"probe", "diagnose"} and exploration_used(data) >= data.get("exploration_budget", 3):
+        return False, "Exploration budget spent. Commit to a substantial run or document a new direction; another small variant is not allowed."
+    if action == "diagnose":
+        return (status == "probing", "Train-only experiment allowed" if status == "probing" else f"cycle status is {status}; decide the next substantial action first")
     if action == "probe":
         if status != "probing":
             return False, f"cycle status is {status}; another probe is out of contract"
@@ -103,7 +120,8 @@ def status_text(data: dict[str, Any]) -> str:
         f"{probe['kind']}:{probe.get('decision', probe.get('status', 'done'))}"
         for probe in data["probes"]
     ) or "none"
-    remaining_slots = data["probe_budget"] - len(data["probes"])
+    remaining_slots = max(0, min(data["probe_budget"] - len(data["probes"]),
+                                 data.get("exploration_budget", 3) - exploration_used(data)))
     big = data.get("big_run", {})
     lines = [
         f"cycle: {data['cycle']}",
@@ -111,7 +129,14 @@ def status_text(data: dict[str, Any]) -> str:
         f"formal probes used: {len(data['probes'])}/{data['probe_budget']} ({probes})",
         f"optional probe slots available: {remaining_slots}",
         f"jump claim: {data['jump_claim']}",
+        f"exploratory experiments used: {exploration_used(data)}/{data.get('exploration_budget', 3)} (includes train-only diagnostics)",
     ]
+    if data.get("incumbent") is None:
+        lines.append("validated incumbent: none; do not report historical oracle/component scores as tracker progress")
+    else:
+        lines.append(f"validated incumbent: {data['incumbent']}")
+    if data.get("next_action"):
+        lines.append(f"priority: {data['next_action']}")
     development = data.get("development", {})
     active_development = development.get("active_experiment")
     if active_development:
@@ -141,7 +166,7 @@ def status_text(data: dict[str, Any]) -> str:
         if data["status"] == "evaluation_required" and evaluation.get("status") != "complete":
             lines.append("next action: EVALUATE THE FROZEN MECHANISM ON NON-GATE DEV BEFORE TUNING OR NEW IDEAS.")
         elif data["status"] == "evaluation_required" and evaluation.get("status") == "complete":
-            lines.append("next action: MAKE THE ARCHITECTURE DECISION; DO NOT TUNE A FAILED FULL-SYSTEM RESULT.")
+            lines.append("next action: compare the frozen system to the incumbent. Scale a learning mechanism, fix a confirmed defect, or change the causal hypothesis; do not drift into micro-tuning.")
     if data["status"] == "probing" and not active_probe and not active_development:
         remaining = [kind for kind in VALID_PROBE_KINDS if kind not in {probe["kind"] for probe in data["probes"]}]
         lines.append(
@@ -157,9 +182,9 @@ def status_text(data: dict[str, Any]) -> str:
         else:
             lines.append("next action: finish and interpret the active experiment. Do not start another variant in parallel.")
     if data["status"] == "decision_required":
-        lines.append("next action: make the architecture decision now. Unused probe slots are not debt.")
+        lines.append("next action: choose and declare a substantial run/bet or a reasoned change of direction. Do not reset the counter to continue the same small probes.")
     if data["status"] == "big_run_required":
-        lines.append("next action: BUILD/RUN THE REAL MECHANISM OR KILL THE CYCLE. NO PROBE 4.")
+        lines.append("next action: run the declared substantial experiment through its planned compute and causal evaluation. No additional exploratory variants.")
     return "\n".join(lines)
 
 
@@ -169,7 +194,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command")
     sub.add_parser("status")
     check = sub.add_parser("check", help="check whether a research action is allowed")
-    check.add_argument("action", choices=("probe", "big-run"))
+    check.add_argument("action", choices=("probe", "diagnose", "big-run"))
     check.add_argument("--kind", choices=VALID_PROBE_KINDS)
     return parser
 

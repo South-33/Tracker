@@ -1,0 +1,2 @@
+# Evidence hashes describe exact captured bytes, including Windows line endings.
+evidence/** -text -whitespace

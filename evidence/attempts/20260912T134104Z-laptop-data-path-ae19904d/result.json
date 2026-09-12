@@ -1,0 +1,38 @@
+{
+  "scope": "CPU annotation indexing only, loaded arrays; excludes CSV/image decoding and model training. No training-step speed claim.",
+  "sequences": [
+    "dancetrack0001",
+    "dancetrack0002",
+    "dancetrack0006",
+    "dancetrack0008",
+    "dancetrack0012",
+    "dancetrack0015",
+    "dancetrack0082",
+    "dancetrack0083"
+  ],
+  "frames": 6637,
+  "exact_label_parity": true,
+  "seconds": {
+    "previous": [
+      0.2256163000001834,
+      0.20910709999952815,
+      0.2072203999996418,
+      0.19718470000043453,
+      0.17673180000019784,
+      0.1951731999997719
+    ],
+    "grouped": [
+      0.015751299999465118,
+      0.012931899998875451,
+      0.023247999999512103,
+      0.014853900000161957,
+      0.012833600001613377,
+      0.013851199999407982
+    ]
+  },
+  "median_seconds": {
+    "previous": 0.20220255000003817,
+    "grouped": 0.01435254999978497
+  },
+  "speedup": 14.088266545183092
+}

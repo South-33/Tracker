@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "remember-tracker"
+version = "0.1.0"
+description = "Standalone research into learned person tracking with bounded memory"
+requires-python = ">=3.12"
+dependencies = [
+  "torch==2.8.0", "torchvision==0.23.0",
+  "numpy<3", "scipy", "PyYAML", "Pillow", "opencv-python",
+  "faster-coco-eval>=1.6.5", "tensorboard",
+  "onnx>=1.17", "onnxruntime", "gdown", "pytest", "psutil>=7.0"
+]
+
+[project.scripts]
+lab = "tracker.lab:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

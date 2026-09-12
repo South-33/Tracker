@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "name": "score",
+  "cycle": "coverage-and-causal-learning",
+  "started_at": "2026-09-12T13:31:04.535207+00:00",
+  "status": "complete",
+  "git_revision": "e6dae0bb945c4167c6d2ba7a60d4bd3cfc116578",
+  "command": [
+    "D:\\Project\\tracker\\.venv\\Scripts\\python.exe",
+    "scripts/evaluate.py",
+    "--run",
+    "runs/harness-check-empty",
+    "--manifest",
+    "data/_harness-metric-fixture.json"
+  ],
+  "script": "scripts/evaluate.py",
+  "expected_output": "runs/harness-check-empty/metrics.json",
+  "source_sha256": {
+    "AGENTS.md": "c68f409c275290ad3b9026bb80db3d8ec34bbc0309e7549e487fe5f6c25d138d",
+    "GOAL.md": "efc60a8213c964892e3db411bbb727f8f38107f758a85ff2145f058511ff1798",
+    "pyproject.toml": "72021bc733738c37911f48e31a13178915c10c4cb1c5f01359023cf09b94cfe9",
+    "requirements-laptop.txt": "b53195f32b8ba7141d1c2094a78b2bd3534408fbdc57756490a704a9226193dc",
+    "research-cycle.json": "7c1ae8e860a367738c520d732e0db1fac33b0345e3fb2e882ae23a22b8521088",
+    "scripts/bootstrap.py": "787b08e4dadcde7998795072c053d28e869cbc5de5810f8bf53266262f3b5a2a",
+    "scripts/evaluate.py": "c1197aa8f2165346c9348a1bb448fb7a3e3fb6497e056a223fb28489ac366168",
+    "scripts/fetch_data.py": "cb1a68123a197e25d053c15ae9b9c3ea6e19bef21176ff748ba0b65384aadd84",
+    "scripts/prepare_data.py": "762ebc39ae3a717ae6fd89bf36290743354887fa28ab10c6728c412e28cde4b7",
+    "src/tracker/__init__.py": "e3aa58da82cf6d39a3c09b961723f3aaefa8ff9bdf798a45e034a2d5fc5547dc",
+    "src/tracker/ancestry.py": "9aac37b6e705aff984be1015c57278ba0d3603489a5bc2253282fb15cfec345a",
+    "src/tracker/data.py": "5aefe0ab6ed9a458ac608b1e0abf1611222905df716097fa2a10a9e754d402c8",
+    "src/tracker/detections.py": "a4f5f6055ca6301ead2056b84f3f1d6facd4bc8c491d8d309be4349bb9bc68c0",
+    "src/tracker/detector.py": "6bc50f419ebe0c1e267a71e159ba80338cee130960d99d9caf4cd2c0cb94ea0b",
+    "src/tracker/enrollment.py": "8351b993eabb64d6805315b38ec5dfa55eef32b66a172a8190ca9435db76f0a9",
+    "src/tracker/episodes.py": "7ccc97d75feb5e0bc64b6a2ee60e2bb187d12779955744694fc526d3624bc478",
+    "src/tracker/experiment_archive.py": "ecfb972feb755b4f23b410253b9bd558f02d2eabc54d44f13c010d826a69a2ad",
+    "src/tracker/features.py": "f8e61b0f2ea717e5dced01fb9843a004c34f8ca84f5241be11298fa0a4df8bdd",
+    "src/tracker/geometry.py": "e1905352e99d708b98a5c13f9932095010f8ce69d808cc5680a86a19b5f50673",
+    "src/tracker/lab.py": "9f5f8279714cc187c21eb9f87321df4e57471b384e53dc086f4836f388a35928",
+    "src/tracker/local_continuity.py": "f601755a6e75cc314be3b70e91385331b23a2a038763f8ba03b62c26dedaca6f",
+    "src/tracker/loss.py": "7bd02f876bf170d8a5706284aa6769de59c32ece770d49bf6f9052344cc304fc",
+    "src/tracker/proposals.py": "7949fc0fb3d196656a099daffa035e9408eec4aaba532338d236572dccf2f58a",
+    "src/tracker/research_cycle.py": "28853c769ce8647a2eb0095c56b939cc943d346e80babb70e1f6d6933f4cb9da",
+    "src/tracker/state_split.py": "a71a30390b8f666ec4a785d820ae036de5ae9be9ebeaf319f1598e6f2920e870",
+    "src/tracker/tracking_metrics.py": "457fa700a0d6d10aec162dd804d0952607dc4a3c83f744d0a551471463a83305",
+    "src/tracker/validation_cache.py": "c70da3373460991ea6f0b684a9b3caa2b5bb0b873cd416a3b29b522a3b9e6059",
+    "tracker.md": "b7ece5fb5b87d1d2d3f13b3bbf01e3fdeb0bb9d3eea0c96ae8229bc153d40720"
+  },
+  "ledger": {
+    "version": 1,
+    "cycle": "coverage-and-causal-learning",
+    "status": "decision_required",
+    "jump_claim": "Reach the useful 80% tracking regime by choosing a substantial temporal model/state/training intervention, measured on complete causal rollouts with sustained identity coverage. Do not optimize an oracle component score as if it were the system goal.",
+    "next_action": "Restore one runnable reference and score full already-exposed dev using metric version 2. Then declare the substantial bet, with at most three exploratory experiments only for decisive unknowns. Read GOAL.md for scope and acceptance.",
+    "incumbent": null,
+    "exploration_budget": 3,
+    "diagnostics": [],
+    "probe_budget": 3,
+    "probes": [],
+    "inputs": {
+      "checkpoint": {
+        "path": "runs/expanded-0002/last.pt",
+        "sha256": "a997260a060c5dabc475c3b1970a572e82c880979632a7377c0717cd459ab0fc"
+      },
+      "manifest": {
+        "path": "data/manifest-train-full-dense-no0096.json",
+        "sha256": "8987eb513dc280ea73b1672a2a13284638abb431fd376a7fc6f7d87f1e0f518e"
+      }
+    },
+    "development": {
+      "active_experiment": null,
+      "exposure": "0012, 0016 and 0020 have been repeatedly used for architecture selection. 0012 is not fresh held-out evidence even when excluded from gradient updates.",
+      "decision_rule": "At most three small experiments across train-only and formal dev, then a substantial causal run or a documented new hypothesis. No counter reset to continue the same small variants. Intermediate checkpoints within the declared substantial run are allowed.",
+      "negative_scope": "Retain exact failure conditions. Local negatives do not hard-close all temporal learning, geometry, appearance, teachers or joint state. Explain the changed assumption before a revisit."
+    },
+    "promotion": {
+      "metric_version": 2,
+      "primary_metric": "covered_identity_segment_rate",
+      "target_segment_rate": 0.8,
+      "target_frame_rate": 0.8,
+      "minimum_segment_coverage": 0.8,
+      "target_recall": 0.8,
+      "precision_floor": 0.98,
+      "gate_sequence": "dancetrack0096",
+      "final_holdouts": [
+        "dancetrack0004",
+        "dancetrack0005",
+        "dancetrack0007",
+        "dancetrack0010"
+      ],
+      "continuous_births_required": true,
+      "reentry_unconditional_recovery": 0.8,
+      "reentry_wrong_link_rate_max": 0.01,
+      "reentry_min_events": 20,
+      "reentry_min_sequences": 3,
+      "nano_fps_min": 15
+    },
+    "decision_note": "User reaffirmed substantial bets, frequent informative failure, and proactive context cleanup. Historical source/results were preserved before this reset. No new tracking accuracy result or acceptance pass is claimed. The next interval must produce a reproducible reference plus a completed or resumable substantial experiment.",
+    "prediction_metadata": {
+      "sequence": "_harness_synthetic",
+      "frames": 10,
+      "manifest_sha256": "ab99a54f7c7fa2291ebb885d5c372e54e51c035cc2be105e250ff53dc4be9320",
+      "checkpoint_sha256": null,
+      "scope": "Synthetic evaluator fixture, not a tracker result"
+    },
+    "scoring_inputs": {
+      "manifest": {
+        "path": "D:\\Project\\tracker\\data\\_harness-metric-fixture.json",
+        "sha256": "ab99a54f7c7fa2291ebb885d5c372e54e51c035cc2be105e250ff53dc4be9320"
+      },
+      "run_metadata": {
+        "path": "D:\\Project\\tracker\\runs\\harness-check-empty\\run.json",
+        "sha256": "846ecafad5d895c42b39295ce2a2f28b10decf692730c3ae37fc776170db92db"
+      },
+      "predictions": {
+        "path": "D:\\Project\\tracker\\runs\\harness-check-empty\\_harness_synthetic.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "reproduction": "Restore the source snapshot at repository root and supply the ledger's exact local input hashes. External dependencies/data/checkpoints are not bundled.",
+  "finished_at": "2026-09-12T13:31:13.039068+00:00",
+  "returncode": 0,
+  "output_sha256": "3c5331b2078b265b1a293c7509d8d61b10f019a2fdc3a4b2f4212bb73404a17e",
+  "output_bytes": 1470,
+  "archived_result": "result.json"
+}
