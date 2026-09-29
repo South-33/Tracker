@@ -1,6 +1,6 @@
 import torch
 import pytest
-from tracker.tracking_metrics import TrackingAccumulator
+from tracker.metrics import TrackingAccumulator
 
 
 def box(x):
@@ -86,7 +86,7 @@ def test_empty_sequence_is_not_perfect():
 
 
 def test_below_threshold_pairs_cannot_steal_valid_match(monkeypatch):
-    import tracker.tracking_metrics as metrics
+    import tracker.metrics as metrics
     monkeypatch.setattr(metrics, "box_iou", lambda *args: torch.tensor([[.51,.49],[.49,0.]]))
     metric = TrackingAccumulator()
     boxes = box([[.2,.2,.1,.1], [.7,.7,.1,.1]])
@@ -96,7 +96,7 @@ def test_below_threshold_pairs_cannot_steal_valid_match(monkeypatch):
 
 def test_mot_scoring_keeps_unreported_frames_in_denominator():
     import numpy as np
-    from tracker.tracking_metrics import score_mot_rows
+    from tracker.metrics import score_mot_rows
     truth = np.array([[frame, 1, 10, 20, 30, 40] for frame in range(1, 11)])
     predictions = np.array([[1, 7, 10, 20, 30, 40]])
     result = score_mot_rows(truth, predictions, 10)
@@ -106,7 +106,7 @@ def test_mot_scoring_keeps_unreported_frames_in_denominator():
 
 def test_mot_scoring_rejects_predictions_outside_the_run():
     import numpy as np
-    from tracker.tracking_metrics import score_mot_rows
+    from tracker.metrics import score_mot_rows
     truth = np.array([[1, 1, 10, 20, 30, 40]])
     with pytest.raises(ValueError, match="outside"):
         score_mot_rows(truth, np.array([[2, 7, 10, 20, 30, 40]]), 1)

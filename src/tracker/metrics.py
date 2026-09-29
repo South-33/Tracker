@@ -12,7 +12,11 @@ import numpy as np
 from scipy.optimize import linear_sum_assignment
 from torchvision.ops import box_iou
 
-from .geometry import cxcywh_to_xyxy
+
+
+def cxcywh_to_xyxy(boxes):
+    return torch.cat((boxes[..., :2] - boxes[..., 2:] / 2,
+                      boxes[..., :2] + boxes[..., 2:] / 2), -1)
 
 
 def score_mot_rows(truth: np.ndarray, predictions: np.ndarray, frame_count: int) -> dict:
