@@ -1,4 +1,4 @@
-"""Train causal YOLO memory association from 3-frame PersonPath22 sequences."""
+"""Train a 64D identity embedding directly from YOLO26n detector features."""
 from __future__ import annotations
 
 import argparse
@@ -13,8 +13,8 @@ from torch.optim import AdamW
 import ultralytics
 from ultralytics.utils.nms import non_max_suppression
 
-from tracker.model import TemporalYOLO, causal_association_loss
-from tracker.data import DanceTrackTriples, PersonPathTriples
+from tracker.data import DanceTrackPairs, PersonPathPairs
+from tracker.model import TrackingYOLO, identity_retrieval_loss
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -26,6 +26,16 @@ def sha256(path: Path) -> str:
 
 def git_commit() -> str:
     return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+
+
+def git_dirty() -> bool:
+    return bool(
+        subprocess.check_output(
+            ["git", "status", "--porcelain"],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+    )
 
 
 def box_iou(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
@@ -61,121 +71,155 @@ def label_predictions(boxes, truth_boxes, truth_ids, min_iou=0.5):
 
 
 def detector_frames(model, images, truth_boxes, truth_ids):
-    """Use the exact runtime detector distribution during training."""
+    """Embed the same post-NMS person detections used at tracking time."""
     with torch.no_grad():
         raw, pyramid = model.extract(images)
         prediction = raw[0] if isinstance(raw, tuple) else raw
         detections = non_max_suppression(
-            prediction, conf_thres=0.1, iou_thres=0.7, classes=[0], max_det=300
+            prediction,
+            conf_thres=0.1,
+            iou_thres=0.7,
+            classes=[0],
+            max_det=300,
         )
     boxes = [detection[:, :4] for detection in detections]
     labels = [
-        label_predictions(boxes[i], truth_boxes[i], truth_ids[i]) for i in range(len(boxes))
+        label_predictions(boxes[i], truth_boxes[i], truth_ids[i])
+        for i in range(len(boxes))
     ]
     embeddings = model.embed_boxes(pyramid, boxes)
     embeddings = list(torch.split(embeddings, [len(box) for box in boxes]))
-    return boxes, labels, embeddings
+    return labels, embeddings
 
 
-def memory_velocity(previous_boxes, previous_ids, latest_boxes, latest_ids, history_seconds):
-    """Velocity state attached to latest detector-backed tracks."""
-    velocity = torch.zeros_like(latest_boxes)
-    known = torch.zeros(len(latest_boxes), device=latest_boxes.device)
-    previous = {
-        int(identity): previous_boxes[i]
-        for i, identity in enumerate(previous_ids.tolist())
-        if int(identity) >= 0
-    }
-    for i, identity in enumerate(latest_ids.tolist()):
-        if int(identity) >= 0 and int(identity) in previous:
-            velocity[i] = (latest_boxes[i] - previous[int(identity)]) / max(history_seconds, 1e-3)
-            known[i] = 1.0
-    return velocity, known
-
-
-def sample_loss(model, sample, device):
+def sample_loss(model, sample, device, temperature):
     (
-        image_a, gt_boxes_a, gt_ids_a,
-        image_b, gt_boxes_b, gt_ids_b,
-        image_c, gt_boxes_c, gt_ids_c,
-        history_seconds, gap_seconds,
+        image_a,
+        gt_boxes_a,
+        gt_ids_a,
+        image_b,
+        gt_boxes_b,
+        gt_ids_b,
+        _gap_seconds,
     ) = sample
-    images = torch.stack((image_a, image_b, image_c)).to(device)
-    truth_boxes = [gt_boxes_a.to(device), gt_boxes_b.to(device), gt_boxes_c.to(device)]
-    truth_ids = [gt_ids_a.to(device), gt_ids_b.to(device), gt_ids_c.to(device)]
-    boxes, labels, embeddings = detector_frames(model, images, truth_boxes, truth_ids)
-    velocity, known = memory_velocity(
-        boxes[0], labels[0], boxes[1], labels[1], history_seconds
-    )
-    return causal_association_loss(
-        model,
-        embeddings[1], boxes[1], velocity, known, labels[1],
-        embeddings[2], boxes[2], labels[2], gap_seconds,
+    images = torch.stack((image_a, image_b)).to(device)
+    truth_boxes = [gt_boxes_a.to(device), gt_boxes_b.to(device)]
+    truth_ids = [gt_ids_a.to(device), gt_ids_b.to(device)]
+    labels, embeddings = detector_frames(model, images, truth_boxes, truth_ids)
+    return identity_retrieval_loss(
+        embeddings[0],
+        labels[0],
+        embeddings[1],
+        labels[1],
+        temperature=temperature,
     )
 
 
 @torch.no_grad()
-def validate(model, dataset, device, samples=100):
+def validate(model, dataset, device, temperature, samples):
     model.eval()
-    losses, accuracies = [], []
+    losses, reports = [], []
     indices = list(range(len(dataset)))
     random.Random(0).shuffle(indices)
     for index in indices[: min(samples, len(indices))]:
         try:
-            loss, accuracy = sample_loss(model, dataset[index], device)
+            loss, report = sample_loss(
+                model,
+                dataset[index],
+                device,
+                temperature,
+            )
         except ValueError:
             continue
         losses.append(loss.item())
-        accuracies.append(accuracy.item())
+        reports.append(report)
     if not losses:
-        raise RuntimeError("validation produced no detector-backed sequence samples")
-    return sum(losses) / len(losses), sum(accuracies) / len(accuracies)
+        raise RuntimeError("validation produced no detector-backed identity pairs")
+    return {
+        "loss": sum(losses) / len(losses),
+        **{
+            key: sum(report[key] for report in reports) / len(reports)
+            for key in reports[0]
+        },
+    }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--steps", type=int, default=500)
     parser.add_argument("--lr", type=float, default=1e-3)
-    parser.add_argument("--output", default="runs/sequence-head")
+    parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--validation-samples", type=int, default=100)
+    parser.add_argument("--output", default="runs/identity-head-v2")
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
 
     torch.manual_seed(0)
-    personpath_videos = json.loads((ROOT / "data" / "personpath22" / "starter.json").read_text())["videos"]
+    personpath_videos = json.loads(
+        (ROOT / "data" / "personpath22" / "starter.json").read_text()
+    )["videos"]
     dancetrack_train = [
-        "dancetrack0001", "dancetrack0002", "dancetrack0006", "dancetrack0008",
+        "dancetrack0001",
+        "dancetrack0002",
+        "dancetrack0006",
+        "dancetrack0008",
         "dancetrack0015",
     ]
     dancetrack_validation = ["dancetrack0012"]
-    personpath = PersonPathTriples(ROOT / "data" / "personpath22", personpath_videos)
-    dancetrack = DanceTrackTriples(ROOT / "data" / "dancetrack", dancetrack_train)
+    personpath = PersonPathPairs(
+        ROOT / "data" / "personpath22",
+        personpath_videos,
+    )
+    dancetrack = DanceTrackPairs(
+        ROOT / "data" / "dancetrack",
+        dancetrack_train,
+    )
     train_sets = (personpath, dancetrack)
-    validation = DanceTrackTriples(ROOT / "data" / "dancetrack", dancetrack_validation)
+    validation = DanceTrackPairs(
+        ROOT / "data" / "dancetrack",
+        dancetrack_validation,
+    )
     print(
-        f"train triples: personpath={len(personpath)} dancetrack={len(dancetrack)} "
+        f"train pairs: personpath={len(personpath)} dancetrack={len(dancetrack)} "
         f"validation={len(validation)}"
     )
 
     device = torch.device(args.device)
     weights = ROOT / "weights" / "yolo26n.pt"
-    model = TemporalYOLO(weights).to(device)
+    model = TrackingYOLO(weights).to(device)
     optimizer = AdamW(
-        list(model.embedding.parameters())
-        + list(model.association.parameters())
-        + list(model.absence.parameters()),
+        model.embedding.parameters(),
         lr=args.lr,
         weight_decay=1e-4,
     )
 
-    before_loss, before_accuracy = validate(model, validation, device)
-    print(f"before: loss={before_loss:.4f} choice_acc={before_accuracy:.3f}")
+    before = validate(
+        model,
+        validation,
+        device,
+        args.temperature,
+        args.validation_samples,
+    )
+    print(
+        "before: "
+        f"loss={before['loss']:.4f} "
+        f"top1={before['top1_accuracy']:.3f} "
+        f"pos={before['positive_cosine']:.3f} "
+        f"hard_neg={before['hard_negative_cosine']:.3f}"
+    )
+    model.train()
     rng = random.Random(0)
     for step in range(1, args.steps + 1):
         dataset = train_sets[(step - 1) % len(train_sets)]
         while True:
             index = rng.randrange(len(dataset))
             try:
-                loss, accuracy = sample_loss(model, dataset[index], device)
+                loss, report = sample_loss(
+                    model,
+                    dataset[index],
+                    device,
+                    args.temperature,
+                )
             except ValueError:
                 continue
             break
@@ -183,37 +227,64 @@ def main():
         loss.backward()
         optimizer.step()
         if step == 1 or step % 50 == 0:
-            print(f"step={step} loss={loss.detach().item():.4f} choice_acc={accuracy.item():.3f}")
+            print(
+                f"step={step} loss={loss.detach().item():.4f} "
+                f"top1={report['top1_accuracy']:.3f} "
+                f"pos={report['positive_cosine']:.3f} "
+                f"hard_neg={report['hard_negative_cosine']:.3f}"
+            )
 
-    after_loss, after_accuracy = validate(model, validation, device)
-    print(f"after: loss={after_loss:.4f} choice_acc={after_accuracy:.3f}")
+    after = validate(
+        model,
+        validation,
+        device,
+        args.temperature,
+        args.validation_samples,
+    )
+    print(
+        "after: "
+        f"loss={after['loss']:.4f} "
+        f"top1={after['top1_accuracy']:.3f} "
+        f"pos={after['positive_cosine']:.3f} "
+        f"hard_neg={after['hard_negative_cosine']:.3f}"
+    )
 
     output = ROOT / args.output
     output.mkdir(parents=True, exist_ok=True)
-    torch.save({
-        "embedding": model.embedding.state_dict(),
-        "association": model.association.state_dict(),
-        "absence": model.absence.state_dict(),
-        "embedding_dim": 64,
-        "detector": "weights/yolo26n.pt",
-        "detector_sha256": sha256(weights),
-        "repo_commit": git_commit(),
-        "torch": str(torch.__version__),
-        "ultralytics": ultralytics.__version__,
-        "seed": 0,
-        "device": args.device,
-        "detector_settings": {"classes": [0], "conf": 0.1, "iou": 0.7, "imgsz": 640},
-        "data": {
-            "personpath_train": personpath_videos,
-            "dancetrack_train": dancetrack_train,
-            "dancetrack_validation": dancetrack_validation,
-            "sampling": "alternate datasets; uniform random triple within each dataset",
+    torch.save(
+        {
+            "embedding": model.embedding.state_dict(),
+            "embedding_dim": model.embedding_dim,
+            "detector": "weights/yolo26n.pt",
+            "detector_sha256": sha256(weights),
+            "repo_commit": git_commit(),
+            "repo_dirty": git_dirty(),
+            "torch": str(torch.__version__),
+            "ultralytics": ultralytics.__version__,
+            "seed": 0,
+            "device": args.device,
+            "objective": "symmetric identity retrieval over post-NMS detector boxes",
+            "temperature": args.temperature,
+            "validation_samples": args.validation_samples,
+            "detector_settings": {
+                "classes": [0],
+                "conf": 0.1,
+                "iou": 0.7,
+                "imgsz": 640,
+            },
+            "data": {
+                "personpath_train": personpath_videos,
+                "dancetrack_train": dancetrack_train,
+                "dancetrack_validation": dancetrack_validation,
+                "sampling": "alternate datasets; uniform random pair within each dataset",
+            },
+            "steps": args.steps,
+            "lr": args.lr,
+            "before": before,
+            "after": after,
         },
-        "steps": args.steps,
-        "lr": args.lr,
-        "before": {"loss": before_loss, "choice_accuracy": before_accuracy},
-        "after": {"loss": after_loss, "choice_accuracy": after_accuracy},
-    }, output / "head.pt")
+        output / "head.pt",
+    )
 
 
 if __name__ == "__main__":

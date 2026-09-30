@@ -11,5 +11,6 @@ This is the project's AGENTS.md
 - Prefer simple direct code and few files.
 - Heavy/generated data, weights and runs stay untracked.
 - A result is only real when its settings, data and metrics are reproducible.
+- For learned appearance experiments, compare against both the official frozen baseline and the identical manual detector + BoT-SORT path with ReID disabled. Do not attribute detector-preprocessing differences to the embedding.
 - Local DanceTrack `0082` and `0083` are partial 120-frame slices; the strict sequence loader rejects them until the full sequences are downloaded.
 - Use exposed DanceTrack `0016` and `0020` for development. Keep `0096` and `0004/0005/0007/0010` untouched until a model is frozen.

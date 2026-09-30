@@ -48,8 +48,8 @@ def restore_boxes(boxes: torch.Tensor, original_shape, size=640) -> torch.Tensor
     return result
 
 
-class PersonPathTriples(Dataset):
-    """Causal (previous, latest, target) triples from PersonPath22."""
+class PersonPathPairs(Dataset):
+    """Causal frame pairs from PersonPath22 with shared person identities."""
 
     def __init__(self, root: str | Path, videos: list[str], size=640, max_gap_seconds=5.0):
         self.root = Path(root)
@@ -59,7 +59,7 @@ class PersonPathTriples(Dataset):
         self.cache_root = self.root / "frames"
         self.frames = {}
         self.fps = {}
-        self.triples = []
+        self.pairs = []
 
         for video in videos:
             annotation = json.loads((self.annotation_root / f"{video}.json").read_text())
@@ -78,15 +78,13 @@ class PersonPathTriples(Dataset):
 
             max_gap = round(max_gap_seconds * self.fps[video])
             frame_numbers = sorted(frame_map)
-            for i in range(1, len(frame_numbers) - 1):
-                previous = frame_numbers[i - 1]
-                latest = frame_numbers[i]
+            for i, latest in enumerate(frame_numbers[:-1]):
                 latest_ids = {identity for identity, _ in frame_map[latest]}
                 for target in frame_numbers[i + 1 :]:
                     if target - latest > max_gap:
                         break
                     if latest_ids & {identity for identity, _ in frame_map[target]}:
-                        self.triples.append((video, previous, latest, target))
+                        self.pairs.append((video, latest, target))
 
     def _ensure_frame_cache(self, video: str, frame_map):
         target = self.cache_root / Path(video).stem
@@ -111,7 +109,7 @@ class PersonPathTriples(Dataset):
             raise RuntimeError(f"could not decode {len(missing)} annotated frames from {video}")
 
     def __len__(self):
-        return len(self.triples)
+        return len(self.pairs)
 
     def _frame(self, video, frame):
         image = cv2.imread(str(self.cache_root / Path(video).stem / f"{frame:06d}.jpg"))
@@ -123,22 +121,21 @@ class PersonPathTriples(Dataset):
         return image, boxes, ids
 
     def __getitem__(self, index):
-        video, previous, latest, target = self.triples[index]
-        a = self._frame(video, previous)
-        b = self._frame(video, latest)
-        c = self._frame(video, target)
-        return (*a, *b, *c, (latest - previous) / self.fps[video], (target - latest) / self.fps[video])
+        video, first, second = self.pairs[index]
+        a = self._frame(video, first)
+        b = self._frame(video, second)
+        return (*a, *b, (second - first) / self.fps[video])
 
 
-class DanceTrackTriples(Dataset):
-    """Dense DanceTrack sequence triples with fixed future gaps."""
+class DanceTrackPairs(Dataset):
+    """Dense DanceTrack frame pairs with fixed future gaps."""
 
     def __init__(self, root: str | Path, sequences: list[str], size=640, gaps=(1, 2, 4, 8, 16, 32, 64, 100)):
         self.root = Path(root)
         self.size = size
         self.frames = {}
         self.fps = {}
-        self.triples = []
+        self.pairs = []
 
         for sequence in sequences:
             sequence_dir = self.root / sequence
@@ -168,20 +165,17 @@ class DanceTrackTriples(Dataset):
                     frame_map.setdefault(frame, []).append((identity, box))
             self.frames[sequence] = frame_map
 
-            for latest in sorted(frame_map):
-                previous = latest - 1
-                if previous not in frame_map:
-                    continue
-                latest_ids = {identity for identity, _ in frame_map[latest]}
+            for first in sorted(frame_map):
+                first_ids = {identity for identity, _ in frame_map[first]}
                 for gap in gaps:
-                    target = latest + gap
-                    if target not in frame_map:
+                    second = first + gap
+                    if second not in frame_map:
                         continue
-                    if latest_ids & {identity for identity, _ in frame_map[target]}:
-                        self.triples.append((sequence, previous, latest, target))
+                    if first_ids & {identity for identity, _ in frame_map[second]}:
+                        self.pairs.append((sequence, first, second))
 
     def __len__(self):
-        return len(self.triples)
+        return len(self.pairs)
 
     def _frame(self, sequence, frame):
         path = self.root / sequence / "img1" / f"{frame:08d}.jpg"
@@ -194,9 +188,8 @@ class DanceTrackTriples(Dataset):
         return image, boxes, ids
 
     def __getitem__(self, index):
-        sequence, previous, latest, target = self.triples[index]
-        a = self._frame(sequence, previous)
-        b = self._frame(sequence, latest)
-        c = self._frame(sequence, target)
+        sequence, first, second = self.pairs[index]
+        a = self._frame(sequence, first)
+        b = self._frame(sequence, second)
         fps = self.fps[sequence]
-        return (*a, *b, *c, (latest - previous) / fps, (target - latest) / fps)
+        return (*a, *b, (second - first) / fps)

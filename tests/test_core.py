@@ -5,8 +5,8 @@ from tempfile import TemporaryDirectory
 import numpy as np
 import torch
 
-from tracker.data import DanceTrackTriples, letterbox, restore_boxes
-from tracker.model import pair_geometry
+from tracker.data import DanceTrackPairs, letterbox, restore_boxes
+from tracker.model import identity_retrieval_loss
 
 
 class LetterboxTests(unittest.TestCase):
@@ -25,24 +25,34 @@ class LetterboxTests(unittest.TestCase):
             letterbox(None, [])
 
 
-class GeometryTests(unittest.TestCase):
-    def test_constant_velocity_prediction_hits_current_box(self):
-        memory = torch.tensor([[0.0, 0.0, 10.0, 10.0]])
-        current = torch.tensor([[10.0, 0.0, 20.0, 10.0]])
-        velocity = torch.tensor([[10.0, 0.0, 10.0, 0.0]])
+class IdentityLossTests(unittest.TestCase):
+    def test_perfect_embeddings_retrieve_the_same_identity(self):
+        first = torch.tensor([[1.0, 0.0], [0.0, 1.0]])
+        second = torch.tensor([[0.0, 1.0], [1.0, 0.0]])
+        first_ids = torch.tensor([10, 20])
+        second_ids = torch.tensor([20, 10])
 
-        features = pair_geometry(
-            memory,
-            velocity,
-            torch.tensor([1.0]),
-            current,
-            gap_seconds=1.0,
+        loss, report = identity_retrieval_loss(
+            first,
+            first_ids,
+            second,
+            second_ids,
+            temperature=1.0,
         )
 
-        self.assertEqual(tuple(features.shape), (1, 1, 10))
-        self.assertAlmostEqual(features[0, 0, 8].item(), 1.0, places=6)
-        self.assertAlmostEqual(features[0, 0, 6].item(), 0.0, places=6)
-        self.assertAlmostEqual(features[0, 0, 7].item(), 0.0, places=6)
+        self.assertLess(loss.item(), 0.32)
+        self.assertEqual(report["top1_accuracy"], 1.0)
+        self.assertEqual(report["positive_cosine"], 1.0)
+        self.assertEqual(report["hard_negative_cosine"], 0.0)
+
+    def test_pair_without_shared_detector_identity_is_rejected(self):
+        with self.assertRaises(ValueError):
+            identity_retrieval_loss(
+                torch.tensor([[1.0, 0.0]]),
+                torch.tensor([1]),
+                torch.tensor([[0.0, 1.0]]),
+                torch.tensor([2]),
+            )
 
 
 class DanceTrackDataTests(unittest.TestCase):
@@ -60,7 +70,7 @@ class DanceTrackDataTests(unittest.TestCase):
             )
 
             with self.assertRaisesRegex(RuntimeError, "incomplete"):
-                DanceTrackTriples(directory, ["dancetrack0001"])
+                DanceTrackPairs(directory, ["dancetrack0001"])
 
 
 if __name__ == "__main__":
