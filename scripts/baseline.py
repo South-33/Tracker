@@ -1,4 +1,4 @@
-"""Run the frozen YOLO26n + BoT-SORT baseline on DanceTrack sequences."""
+"""External comparison only: YOLO26n + BoT-SORT on DanceTrack."""
 from __future__ import annotations
 
 import argparse

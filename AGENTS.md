@@ -1,35 +1,71 @@
-This is the project's AGENTS.md
+This is the project's AGENTS.md.
 
-# Project rules
+# Non-negotiable project goal
 
-- Work only in the main repository worktree on branch `main`. Do not create
-  extra Git worktrees or research branches. Use small checkpoint commits on
-  `main`, push them, then continue.
-- Before any risky reset, destructive cleanup, or large refactor, make and push
-  a checkpoint commit first. Recover with Git history instead of backup
-  branches/worktrees.
-- `README.md` is the short operating guide. `tracker.md` is the detailed
-  research notebook.
-- Read `tracker.md` first.
-- Optimize for the next real experiment, not framework completeness.
-- Treat the current tracker bet as the incumbent. Do not change it merely to make progress: first measure it, identify a concrete weakness, and only replace or complicate it when a focused experiment gives evidence that the change is meaningfully better. "No change" is a valid result.
-- Work with broad research freedom inside that constraint: inspect data and failure cases, research papers/implementations, question the current formulation, rewrite or remove parts of the approach, and run ambitious experiments when they have a clear hypothesis. Be conservative about what gets promoted, not about what gets investigated.
-- Keep the active repo small. Delete stale code and use Git history as the archive.
-- No legacy compatibility unless the current experiment needs it.
-- Prefer simple direct code and few files.
-- Heavy/generated data, weights and runs stay untracked.
-- A result is only real when its settings, data and metrics are reproducible.
-- Housekeeping is part of the research loop: keep the tree tidy, make meaningful
-  Git checkpoint commits, and push useful checkpoints/results to `main`
-  instead of letting validated work live only locally.
-- For learned appearance experiments, compare against both the official frozen baseline and the identical manual detector + BoT-SORT path with ReID disabled. Do not attribute detector-preprocessing differences to the embedding.
-- Before attributing a gain to appearance training, also compare against raw ROI-pooled YOLO features and the seeded untrained 64D projection exposed by `scripts/track.py --feature-mode`.
-- Dataset roles are defined only in `src/tracker/splits.py`. Never duplicate
-  split lists inside scripts.
-- TRAIN may update weights. CALIBRATION may tune thresholds. DEV may guide the
-  online hill-climb.
-- CONSUMED_HOLDOUT is historical evidence only and must never guide a new
-  change.
-- RESERVED_HOLDOUT is sealed until a candidate is frozen. Local 0082/0083 are
-  partial 120-frame slices, so do not score them until the complete official
-  sequences are installed.
+Build one small causal neural person tracker by post-training YOLO26n on ordered
+human video sequences.
+
+    frame + bounded neural memory
+        -> boxes + confidence + anonymous track slots + updated memory
+
+The active model itself must own identity continuity.
+
+## Anti-drift rules
+
+- No BoT-SORT, ByteTrack, Kalman filter, Hungarian online association, external
+  ReID model, owner scorer, or hand-written ID lifecycle in the active inference
+  path.
+- Those systems may exist only as frozen comparison baselines.
+- If a proposed solution says "YOLO detections -> tracker", stop. That is the
+  legacy direction, not the goal.
+- The slot/memory state must be bounded and causal. No future frames at
+  inference.
+- Train on contiguous ordered clips with track IDs. Do not turn video training
+  into shuffled independent frames.
+- Temporal augmentations must be consistent across each clip.
+- A memory-reset ablation is mandatory for every serious candidate.
+- Prefer one clear temporal architecture over stacks of auxiliary models.
+
+## Dataset policy
+
+Active training datasets:
+
+- PersonPath22: varied real-world human video.
+- DanceTrack: difficult crossings/crowd association.
+- SportsMOT: running and fast motion.
+
+Benchmark-only:
+
+- held-out DanceTrack/SportsMOT splits
+- MOT17
+- optionally MOT20 for extreme crowds
+
+Do not train on benchmark-only videos.
+
+## Research workflow
+
+1. Start from official pretrained YOLO26n.
+2. Preserve its useful person-detection knowledge.
+3. Add the smallest bounded neural temporal memory that can plausibly maintain
+   anonymous person slots.
+4. Train on ordered clips with boxes + track IDs.
+5. Compare normal memory vs memory reset.
+6. Compare against stock YOLO26n + BoT-SORT.
+7. Only add complexity when a focused experiment proves a missing capability.
+
+The original Jetson Nano Super >=15 FPS target still matters, but architecture
+research happens on the RTX 4060 first. Prefer operations that can later map to
+FP16/TensorRT, but do not weaken the core temporal-learning experiment just to
+optimize deployment early.
+
+## Repository rules
+
+- Work only on main.
+- Use Git commits as checkpoints. Push meaningful checkpoints.
+- No normal research worktrees or backup branches.
+- Keep the active repo small. Git history is the archive.
+- The old tracker is archived at tag legacy-botsort-v1.
+- Do not reintroduce legacy tracker code merely because it already works.
+- Generated data, runs and weights remain untracked.
+- README.md defines the active architecture and dataset plan.
+- tracker.md records only current temporal-model decisions and experiments.

@@ -1,1 +1,1 @@
-"""One image, bounded memory, person boxes and anonymous identities."""
+"""One temporal YOLO model with bounded neural person-track memory."""

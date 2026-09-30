@@ -1,284 +1,164 @@
-"""Train a 64D identity embedding directly from YOLO26n detector features."""
+"""Train the temporal YOLO track-slot head on contiguous human video clips."""
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
-import random
-import subprocess
 
 import torch
 from torch.optim import AdamW
-import ultralytics
-from ultralytics.utils.nms import non_max_suppression
+from torch.utils.data import DataLoader
 
-from tracker.data import DanceTrackPairs, PersonPathPairs
-from tracker.model import TrackingYOLO, identity_retrieval_loss
-from tracker.splits import CALIBRATION, TRAIN
+from tracker.data import MOTClipDataset, collate_clips
+from tracker.model import TemporalYOLO, temporal_slot_loss
+from tracker.splits import TRAIN, assert_train_only
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def sha256(path: Path) -> str:
-    with path.open("rb") as stream:
-        return hashlib.file_digest(stream, "sha256").hexdigest()
-
-
-def git_commit() -> str:
-    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-
-
-def git_dirty() -> bool:
-    return bool(
-        subprocess.check_output(
-            ["git", "status", "--porcelain"],
-            cwd=ROOT,
-            text=True,
-        ).strip()
-    )
-
-
-def box_iou(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
-    if not len(a) or not len(b):
-        return torch.empty((len(a), len(b)), device=a.device)
-    top_left = torch.maximum(a[:, None, :2], b[None, :, :2])
-    bottom_right = torch.minimum(a[:, None, 2:], b[None, :, 2:])
-    wh = (bottom_right - top_left).clamp_min(0)
-    intersection = wh[..., 0] * wh[..., 1]
-    area_a = (a[:, 2] - a[:, 0]) * (a[:, 3] - a[:, 1])
-    area_b = (b[:, 2] - b[:, 0]) * (b[:, 3] - b[:, 1])
-    return intersection / (area_a[:, None] + area_b[None, :] - intersection).clamp_min(1e-6)
-
-
-def label_predictions(boxes, truth_boxes, truth_ids, min_iou=0.5):
-    labels = torch.full((len(boxes),), -1, device=boxes.device, dtype=torch.long)
-    if not len(boxes) or not len(truth_boxes):
-        return labels
-    iou = box_iou(boxes, truth_boxes)
-    used_predictions, used_truth = set(), set()
-    truth_ids = truth_ids.to(boxes.device)
-    for index in torch.argsort(iou.flatten(), descending=True).tolist():
-        prediction = index // len(truth_boxes)
-        truth = index % len(truth_boxes)
-        if float(iou[prediction, truth]) < min_iou:
-            break
-        if prediction in used_predictions or truth in used_truth:
-            continue
-        labels[prediction] = truth_ids[truth]
-        used_predictions.add(prediction)
-        used_truth.add(truth)
-    return labels
-
-
-def detector_frames(model, images, truth_boxes, truth_ids):
-    """Embed the same post-NMS person detections used at tracking time."""
-    with torch.no_grad():
-        raw, pyramid = model.extract(images)
-        prediction = raw[0] if isinstance(raw, tuple) else raw
-        detections = non_max_suppression(
-            prediction,
-            conf_thres=0.1,
-            iou_thres=0.7,
-            classes=[0],
-            max_det=300,
-        )
-    boxes = [detection[:, :4] for detection in detections]
-    labels = [
-        label_predictions(boxes[i], truth_boxes[i], truth_ids[i])
-        for i in range(len(boxes))
-    ]
-    embeddings = model.embed_boxes(pyramid, boxes)
-    embeddings = list(torch.split(embeddings, [len(box) for box in boxes]))
-    return labels, embeddings
-
-
-def sample_loss(model, sample, device, temperature):
-    (
-        image_a,
-        gt_boxes_a,
-        gt_ids_a,
-        image_b,
-        gt_boxes_b,
-        gt_ids_b,
-        _gap_seconds,
-    ) = sample
-    images = torch.stack((image_a, image_b)).to(device)
-    truth_boxes = [gt_boxes_a.to(device), gt_boxes_b.to(device)]
-    truth_ids = [gt_ids_a.to(device), gt_ids_b.to(device)]
-    labels, embeddings = detector_frames(model, images, truth_boxes, truth_ids)
-    return identity_retrieval_loss(
-        embeddings[0],
-        labels[0],
-        embeddings[1],
-        labels[1],
-        temperature=temperature,
-    )
-
-
-@torch.no_grad()
-def validate(model, dataset, device, temperature, samples):
-    model.eval()
-    losses, reports = [], []
-    indices = list(range(len(dataset)))
-    random.Random(0).shuffle(indices)
-    for index in indices[: min(samples, len(indices))]:
-        try:
-            loss, report = sample_loss(
-                model,
-                dataset[index],
-                device,
-                temperature,
-            )
-        except ValueError:
-            continue
-        losses.append(loss.item())
-        reports.append(report)
-    if not losses:
-        raise RuntimeError("validation produced no detector-backed identity pairs")
-    return {
-        "loss": sum(losses) / len(losses),
-        **{
-            key: sum(report[key] for report in reports) / len(reports)
-            for key in reports[0]
-        },
-    }
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--steps", type=int, default=500)
-    parser.add_argument("--lr", type=float, default=1e-3)
-    parser.add_argument("--temperature", type=float, default=0.1)
-    parser.add_argument("--validation-samples", type=int, default=100)
-    parser.add_argument("--output", default="runs/identity-head-v2")
+    parser.add_argument(
+        "--sequence",
+        action="append",
+        dest="sequences",
+        help="DanceTrack training sequence. Repeat for multiple.",
+    )
+    parser.add_argument("--clip-length", type=int, default=8)
+    parser.add_argument("--clip-stride", type=int, default=4)
+    parser.add_argument("--frame-step", type=int, default=1)
+    parser.add_argument("--slots", type=int, default=64)
+    parser.add_argument("--memory-dim", type=int, default=128)
+    parser.add_argument("--steps", type=int, default=200)
+    parser.add_argument("--batch-size", type=int, default=1)
+    parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--device", default="cuda")
+    parser.add_argument(
+        "--overfit-one",
+        action="store_true",
+        help="Repeat one clip. This is the required Stage-0 smoke test.",
+    )
+    parser.add_argument("--clip-index", type=int, default=0)
+    parser.add_argument("--output", default="runs/temporal-smoke")
     args = parser.parse_args()
 
     torch.manual_seed(0)
-    personpath_videos = json.loads(
-        (ROOT / "data" / "personpath22" / "starter.json").read_text()
-    )["videos"]
-    dancetrack_train = list(TRAIN)
-    dancetrack_validation = list(CALIBRATION)
-    personpath = PersonPathPairs(
-        ROOT / "data" / "personpath22",
-        personpath_videos,
-    )
-    dancetrack = DanceTrackPairs(
+    sequences = tuple(args.sequences or [TRAIN[0]])
+    assert_train_only(sequences)
+
+    dataset = MOTClipDataset(
         ROOT / "data" / "dancetrack",
-        dancetrack_train,
+        sequences,
+        clip_length=args.clip_length,
+        clip_stride=args.clip_stride,
+        frame_step=args.frame_step,
     )
-    train_sets = (personpath, dancetrack)
-    validation = DanceTrackPairs(
-        ROOT / "data" / "dancetrack",
-        dancetrack_validation,
-    )
-    print(
-        f"train pairs: personpath={len(personpath)} dancetrack={len(dancetrack)} "
-        f"validation={len(validation)}"
-    )
+    if not 0 <= args.clip_index < len(dataset):
+        raise ValueError(
+            f"--clip-index must be between 0 and {len(dataset) - 1}"
+        )
+
+    if args.overfit_one:
+        fixed_batch = collate_clips(
+            [dataset[args.clip_index] for _ in range(args.batch_size)]
+        )
+        loader = None
+    else:
+        fixed_batch = None
+        loader = DataLoader(
+            dataset,
+            batch_size=args.batch_size,
+            shuffle=True,
+            num_workers=0,
+            collate_fn=collate_clips,
+        )
+        iterator = iter(loader)
 
     device = torch.device(args.device)
-    weights = ROOT / "weights" / "yolo26n.pt"
-    model = TrackingYOLO(weights).to(device)
+    model = TemporalYOLO(
+        ROOT / "weights" / "yolo26n.pt",
+        slots=args.slots,
+        memory_dim=args.memory_dim,
+        freeze_visual=True,
+    ).to(device)
     optimizer = AdamW(
-        model.embedding.parameters(),
+        model.temporal.parameters(),
         lr=args.lr,
         weight_decay=1e-4,
     )
 
-    before = validate(
-        model,
-        validation,
-        device,
-        args.temperature,
-        args.validation_samples,
-    )
     print(
-        "before: "
-        f"loss={before['loss']:.4f} "
-        f"top1={before['top1_accuracy']:.3f} "
-        f"pos={before['positive_cosine']:.3f} "
-        f"hard_neg={before['hard_negative_cosine']:.3f}"
+        json.dumps(
+            {
+                "mode": "overfit-one" if args.overfit_one else "train",
+                "sequences": sequences,
+                "clips": len(dataset),
+                "clip_length": args.clip_length,
+                "frame_step": args.frame_step,
+                "slots": args.slots,
+                "memory_dim": args.memory_dim,
+            }
+        )
     )
+
+    history = []
     model.train()
-    rng = random.Random(0)
     for step in range(1, args.steps + 1):
-        dataset = train_sets[(step - 1) % len(train_sets)]
-        while True:
-            index = rng.randrange(len(dataset))
+        if fixed_batch is not None:
+            batch = fixed_batch
+        else:
             try:
-                loss, report = sample_loss(
-                    model,
-                    dataset[index],
-                    device,
-                    args.temperature,
-                )
-            except ValueError:
-                continue
-            break
+                batch = next(iterator)
+            except StopIteration:
+                iterator = iter(loader)
+                batch = next(iterator)
+
+        frames = batch["frames"].to(device, non_blocking=True)
+        outputs = model(frames)
+        loss, report = temporal_slot_loss(
+            outputs,
+            batch["boxes"],
+            batch["identities"],
+        )
         optimizer.zero_grad(set_to_none=True)
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.temporal.parameters(), 5.0)
         optimizer.step()
-        if step == 1 or step % 50 == 0:
-            print(
-                f"step={step} loss={loss.detach().item():.4f} "
-                f"top1={report['top1_accuracy']:.3f} "
-                f"pos={report['positive_cosine']:.3f} "
-                f"hard_neg={report['hard_negative_cosine']:.3f}"
-            )
 
-    after = validate(
-        model,
-        validation,
-        device,
-        args.temperature,
-        args.validation_samples,
-    )
-    print(
-        "after: "
-        f"loss={after['loss']:.4f} "
-        f"top1={after['top1_accuracy']:.3f} "
-        f"pos={after['positive_cosine']:.3f} "
-        f"hard_neg={after['hard_negative_cosine']:.3f}"
-    )
+        history.append(report)
+        if step == 1 or step % 10 == 0 or step == args.steps:
+            print(
+                f"step={step} "
+                f"loss={report['loss']:.4f} "
+                f"presence={report['presence_loss']:.4f} "
+                f"box={report['box_loss']:.4f} "
+                f"targets={int(report['visible_targets'])}"
+            )
 
     output = ROOT / args.output
     output.mkdir(parents=True, exist_ok=True)
     torch.save(
         {
-            "embedding": model.embedding.state_dict(),
-            "embedding_dim": model.embedding_dim,
-            "detector": "weights/yolo26n.pt",
-            "detector_sha256": sha256(weights),
-            "repo_commit": git_commit(),
-            "repo_dirty": git_dirty(),
-            "torch": str(torch.__version__),
-            "ultralytics": ultralytics.__version__,
-            "seed": 0,
-            "device": args.device,
-            "objective": "symmetric identity retrieval over post-NMS detector boxes",
-            "temperature": args.temperature,
-            "validation_samples": args.validation_samples,
-            "detector_settings": {
-                "classes": [0],
-                "conf": 0.1,
-                "iou": 0.7,
-                "imgsz": 640,
-            },
-            "data": {
-                "personpath_train": personpath_videos,
-                "dancetrack_train": dancetrack_train,
-                "dancetrack_validation": dancetrack_validation,
-                "sampling": "alternate datasets; uniform random pair within each dataset",
-            },
+            "format": "temporal-yolo-slots-v0",
+            "yolo": "weights/yolo26n.pt",
+            "temporal": model.temporal.state_dict(),
+            "slots": args.slots,
+            "memory_dim": args.memory_dim,
+            "clip_length": args.clip_length,
+            "frame_step": args.frame_step,
+            "training_sequences": list(sequences),
+            "overfit_one": args.overfit_one,
+            "clip_index": args.clip_index,
             "steps": args.steps,
             "lr": args.lr,
-            "before": before,
-            "after": after,
+            "initial_loss": history[0]["loss"],
+            "final_loss": history[-1]["loss"],
         },
-        output / "head.pt",
+        output / "model.pt",
+    )
+    (output / "history.json").write_text(
+        json.dumps(history, indent=2) + "\n",
+        encoding="utf-8",
     )
 
 

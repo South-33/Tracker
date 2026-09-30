@@ -1,12 +1,20 @@
-"""Single source of truth for DanceTrack data roles.
+"""Dataset roles for the temporal YOLO experiment.
 
-TRAIN may update learned weights.
-CALIBRATION may tune thresholds and choose between hypotheses.
-DEV is the normal online tracking hill-climb set.
-CONSUMED_HOLDOUT is historical final evidence and must not guide new changes.
-RESERVED_HOLDOUT is sealed for the next frozen candidate.
+PersonPath22 and SportsMOT keep their official dataset-native train/validation
+splits. The sequence lists below are only for the local DanceTrack copy.
 """
 from __future__ import annotations
+
+TRAIN_DATASETS = (
+    "personpath22",
+    "dancetrack",
+    "sportsmot",
+)
+
+BENCHMARK_ONLY_DATASETS = (
+    "mot17",
+    "mot20",
+)
 
 TRAIN = (
     "dancetrack0001",
@@ -80,6 +88,14 @@ def assert_train_only(sequences) -> None:
         raise ValueError(
             "training is restricted to TRAIN sequences; refused: "
             + ", ".join(invalid)
+        )
+
+
+def assert_dataset_can_train(dataset: str) -> None:
+    if dataset not in TRAIN_DATASETS:
+        raise ValueError(
+            f"{dataset} is not an active training dataset; "
+            f"allowed: {', '.join(TRAIN_DATASETS)}"
         )
 
 

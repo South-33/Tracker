@@ -1,189 +1,347 @@
-"""YOLO26n detector features plus a tiny person-identity embedding head."""
+"""YOLO26n visual features with bounded recurrent neural track slots."""
 from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
+from scipy.optimize import linear_sum_assignment
 import torch
 from torch import nn
 from torch.nn import functional as F
-from torchvision.ops import roi_align
 from ultralytics import YOLO
 
 
-class TrackingYOLO(nn.Module):
-    """Frozen YOLO26n perception with a trainable 64D tracking embedding."""
+class TemporalSlotHead(nn.Module):
+    """Update persistent anonymous person slots from current visual tokens."""
 
     def __init__(
         self,
-        weights: str | Path | nn.Module,
-        embedding_dim: int = 64,
+        feature_channels: tuple[int, ...],
+        *,
+        slots: int = 64,
+        memory_dim: int = 128,
+        attention_heads: int = 4,
+        pool_sizes: tuple[int, ...] = (20, 10, 5),
     ):
         super().__init__()
-        self.embedding_dim = embedding_dim
+        if len(feature_channels) != len(pool_sizes):
+            raise ValueError("one pool size is required for each feature level")
+        if memory_dim % attention_heads:
+            raise ValueError("memory_dim must be divisible by attention_heads")
+        self.slots = int(slots)
+        self.memory_dim = int(memory_dim)
+        self.pool_sizes = tuple(int(x) for x in pool_sizes)
+
+        self.projections = nn.ModuleList(
+            nn.Conv2d(channels, memory_dim, 1)
+            for channels in feature_channels
+        )
+        self.scale_embedding = nn.Parameter(
+            torch.zeros(len(feature_channels), memory_dim)
+        )
+        self.initial_slots = nn.Parameter(
+            torch.randn(slots, memory_dim) * 0.02
+        )
+        self.slot_norm = nn.LayerNorm(memory_dim)
+        self.token_norm = nn.LayerNorm(memory_dim)
+        self.attention = nn.MultiheadAttention(
+            memory_dim,
+            attention_heads,
+            batch_first=True,
+        )
+        self.update = nn.GRUCell(memory_dim, memory_dim)
+        self.ffn = nn.Sequential(
+            nn.LayerNorm(memory_dim),
+            nn.Linear(memory_dim, memory_dim * 2),
+            nn.SiLU(),
+            nn.Linear(memory_dim * 2, memory_dim),
+        )
+        self.output_norm = nn.LayerNorm(memory_dim)
+        self.alive = nn.Linear(memory_dim, 1)
+        self.box = nn.Linear(memory_dim, 4)
+
+    def initial_memory(
+        self,
+        batch_size: int,
+        *,
+        device=None,
+        dtype=None,
+    ) -> torch.Tensor:
+        memory = self.initial_slots
+        if device is not None or dtype is not None:
+            memory = memory.to(device=device, dtype=dtype)
+        return memory.unsqueeze(0).expand(batch_size, -1, -1).clone()
+
+    def visual_tokens(
+        self,
+        pyramid: tuple[torch.Tensor, ...],
+    ) -> torch.Tensor:
+        tokens = []
+        for index, (feature, projection, size) in enumerate(
+            zip(pyramid, self.projections, self.pool_sizes)
+        ):
+            projected = projection(feature)
+            pooled = F.adaptive_avg_pool2d(projected, (size, size))
+            level = pooled.flatten(2).transpose(1, 2)
+            level = level + self.scale_embedding[index][None, None, :]
+            tokens.append(level)
+        return torch.cat(tokens, dim=1)
+
+    def forward(
+        self,
+        pyramid: tuple[torch.Tensor, ...],
+        memory: torch.Tensor | None = None,
+    ) -> dict[str, torch.Tensor]:
+        tokens = self.visual_tokens(pyramid)
+        batch_size = tokens.shape[0]
+        if memory is None:
+            memory = self.initial_memory(
+                batch_size,
+                device=tokens.device,
+                dtype=tokens.dtype,
+            )
+        if memory.shape != (batch_size, self.slots, self.memory_dim):
+            raise ValueError(
+                "memory must have shape "
+                f"[B, {self.slots}, {self.memory_dim}]"
+            )
+
+        context, _ = self.attention(
+            self.slot_norm(memory),
+            self.token_norm(tokens),
+            self.token_norm(tokens),
+            need_weights=False,
+        )
+        flat_context = context.reshape(-1, self.memory_dim)
+        flat_memory = memory.reshape(-1, self.memory_dim)
+        updated = self.update(flat_context, flat_memory).view_as(memory)
+        updated = updated + self.ffn(updated)
+        output = self.output_norm(updated)
+        return {
+            "alive_logits": self.alive(output).squeeze(-1),
+            "boxes_cxcywh": self.box(output).sigmoid(),
+            "memory": updated,
+        }
+
+
+class TemporalYOLO(nn.Module):
+    """Pretrained YOLO26n perception plus a recurrent track-slot head."""
+
+    def __init__(
+        self,
+        weights: str | Path | nn.Module = "yolo26n.pt",
+        *,
+        slots: int = 64,
+        memory_dim: int = 128,
+        freeze_visual: bool = True,
+    ):
+        super().__init__()
+        self.freeze_visual = bool(freeze_visual)
         self.detector = (
             weights
             if isinstance(weights, nn.Module)
             else YOLO(str(weights)).model
         )
         detect = self.detector.model[-1]
-        channels = [branch[0].conv.in_channels for branch in detect.cv2]
-        self.strides = [int(x) for x in detect.stride.tolist()]
-        self.embedding = nn.Sequential(
-            nn.Linear(sum(channels), 128),
-            nn.SiLU(),
-            nn.Linear(128, embedding_dim),
+        channels = tuple(
+            branch[0].conv.in_channels
+            for branch in detect.cv2
         )
-
+        self.temporal = TemporalSlotHead(
+            channels,
+            slots=slots,
+            memory_dim=memory_dim,
+        )
         self._pyramid = None
         self._hook = detect.register_forward_pre_hook(self._capture_pyramid)
-        for parameter in self.detector.parameters():
-            parameter.requires_grad_(False)
-        self.detector.eval()
+        self.set_visual_trainable(not freeze_visual)
 
-    def train(self, mode: bool = True):
-        super().train(mode)
-        # The current probe isolates identity representation. Detector weights
-        # and BatchNorm/runtime behavior stay frozen until this signal is real.
-        self.detector.eval()
-        return self
+    @property
+    def slots(self) -> int:
+        return self.temporal.slots
+
+    @property
+    def memory_dim(self) -> int:
+        return self.temporal.memory_dim
 
     def _capture_pyramid(self, _module, args):
         self._pyramid = tuple(args[0])
 
-    def extract(self, images: torch.Tensor):
+    def set_visual_trainable(self, enabled: bool) -> None:
+        self.freeze_visual = not enabled
+        for parameter in self.detector.parameters():
+            parameter.requires_grad_(enabled)
+        if self.freeze_visual:
+            self.detector.eval()
+
+    def train(self, mode: bool = True):
+        super().train(mode)
+        if self.freeze_visual:
+            self.detector.eval()
+        return self
+
+    def extract_pyramid(self, frame: torch.Tensor) -> tuple[torch.Tensor, ...]:
         self._pyramid = None
-        predictions = self.detector(images)
+        if self.freeze_visual:
+            with torch.no_grad():
+                self.detector(frame)
+        else:
+            self.detector(frame)
         if self._pyramid is None:
             raise RuntimeError("YOLO feature hook did not run")
-        return predictions, self._pyramid
+        return self._pyramid
 
-    def pool_boxes(self, pyramid, boxes_per_image: list[torch.Tensor]) -> torch.Tensor:
-        count = sum(len(boxes) for boxes in boxes_per_image)
-        if count == 0:
-            channels = sum(feature.shape[1] for feature in pyramid)
-            return pyramid[0].new_empty((0, channels))
-        pooled = []
-        for feature, stride in zip(pyramid, self.strides):
-            x = roi_align(
-                feature,
-                boxes_per_image,
-                output_size=1,
-                spatial_scale=1.0 / stride,
-                aligned=True,
-            )
-            pooled.append(x.flatten(1))
-        return torch.cat(pooled, dim=1)
+    def step(
+        self,
+        frame: torch.Tensor,
+        memory: torch.Tensor | None = None,
+    ) -> dict[str, torch.Tensor]:
+        pyramid = self.extract_pyramid(frame)
+        return self.temporal(pyramid, memory)
 
-    def embed_boxes(self, pyramid, boxes_per_image: list[torch.Tensor]) -> torch.Tensor:
-        pooled = self.pool_boxes(pyramid, boxes_per_image)
-        if not len(pooled):
-            return pooled.new_empty((0, self.embedding_dim))
-        return F.normalize(self.embedding(pooled), dim=1)
+    def forward(
+        self,
+        clip: torch.Tensor,
+        memory: torch.Tensor | None = None,
+    ) -> list[dict[str, torch.Tensor]]:
+        if clip.ndim != 5:
+            raise ValueError("clip must have shape [B, T, C, H, W]")
+        outputs = []
+        state = memory
+        for time_index in range(clip.shape[1]):
+            result = self.step(clip[:, time_index], state)
+            state = result["memory"]
+            outputs.append(result)
+        return outputs
 
 
-def _retrieval_direction(
-    query_embeddings: torch.Tensor,
-    query_ids: torch.Tensor,
-    candidate_embeddings: torch.Tensor,
-    candidate_ids: torch.Tensor,
-    temperature: float,
-):
-    candidate_lookup = {
-        int(identity): index
-        for index, identity in enumerate(candidate_ids.tolist())
-        if int(identity) >= 0
-    }
-    rows, targets = [], []
-    for index, identity in enumerate(query_ids.tolist()):
-        identity = int(identity)
-        if identity >= 0 and identity in candidate_lookup:
-            rows.append(index)
-            targets.append(candidate_lookup[identity])
-    if not rows:
-        return None
-
-    similarity = query_embeddings[rows] @ candidate_embeddings.T
-    target = torch.tensor(targets, device=similarity.device, dtype=torch.long)
-    index = torch.arange(len(rows), device=similarity.device)
-    positive = similarity[index, target]
-    logits = similarity / temperature
-    loss = F.cross_entropy(logits, target)
-
-    row_ids = query_ids[rows]
-    negative_mask = (
-        (candidate_ids >= 0)[None, :]
-        & (candidate_ids[None, :] != row_ids[:, None])
+def _new_identity_assignment(
+    predicted_boxes: torch.Tensor,
+    target_boxes: torch.Tensor,
+    free_slots: list[int],
+) -> list[tuple[int, int]]:
+    """Training-only matching for identities when they first enter a clip."""
+    if not len(target_boxes):
+        return []
+    if len(target_boxes) > len(free_slots):
+        raise ValueError("clip contains more identities than available slots")
+    slot_tensor = torch.as_tensor(
+        free_slots,
+        device=predicted_boxes.device,
+        dtype=torch.long,
     )
-    hard_negative = similarity.masked_fill(~negative_mask, -1.0).max(1).values
-    has_negative = negative_mask.any(1)
-    with torch.no_grad():
-        correct = (logits.argmax(1) == target).sum()
-    return {
-        "loss": loss,
-        "matches": len(rows),
-        "hard_negatives": int(has_negative.sum()),
-        "correct": correct,
-        "positive_cosine": positive.sum(),
-        "hard_negative_cosine": hard_negative[has_negative].sum(),
-    }
-
-
-def identity_retrieval_loss(
-    first_embeddings: torch.Tensor,
-    first_ids: torch.Tensor,
-    second_embeddings: torch.Tensor,
-    second_ids: torch.Tensor,
-    temperature: float = 0.1,
-):
-    """Symmetric identity retrieval over detector-backed boxes."""
-    if temperature <= 0:
-        raise ValueError("temperature must be positive")
-    directions = [
-        _retrieval_direction(
-            first_embeddings,
-            first_ids,
-            second_embeddings,
-            second_ids,
-            temperature,
-        ),
-        _retrieval_direction(
-            second_embeddings,
-            second_ids,
-            first_embeddings,
-            first_ids,
-            temperature,
-        ),
+    cost = torch.cdist(
+        predicted_boxes[slot_tensor].detach(),
+        target_boxes.detach(),
+        p=1,
+    )
+    rows, columns = linear_sum_assignment(cost.cpu().numpy())
+    return [
+        (free_slots[int(row)], int(column))
+        for row, column in zip(rows, columns)
     ]
-    directions = [result for result in directions if result is not None]
-    if not directions:
-        raise ValueError("sample has no detector-backed identity match across frames")
 
-    matches = sum(result["matches"] for result in directions)
-    hard_negatives = sum(result["hard_negatives"] for result in directions)
-    loss = sum(
-        result["loss"] * result["matches"] for result in directions
-    ) / matches
-    if hard_negatives:
-        hard_negative_cosine = float(
-            sum(
-                result["hard_negative_cosine"].detach()
-                for result in directions
+
+def temporal_slot_loss(
+    outputs: list[dict[str, torch.Tensor]],
+    boxes: list[list[torch.Tensor]],
+    identities: list[list[torch.Tensor]],
+    *,
+    positive_weight: float = 4.0,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """Sequence loss with a fixed neural slot for each identity in a clip.
+
+    Hungarian matching is used only during training when an identity first
+    appears. Once assigned, that identity keeps the same slot for the remainder
+    of the clip. Inference has no Hungarian or external ID association.
+    """
+    if not outputs:
+        raise ValueError("outputs cannot be empty")
+    batch_size = outputs[0]["alive_logits"].shape[0]
+    if len(boxes) != batch_size or len(identities) != batch_size:
+        raise ValueError("target batch size does not match model outputs")
+
+    mappings: list[dict[int, int]] = [dict() for _ in range(batch_size)]
+    total_presence = outputs[0]["alive_logits"].new_zeros(())
+    total_box = outputs[0]["alive_logits"].new_zeros(())
+    visible_count = 0
+    frame_count = 0
+
+    for time_index, output in enumerate(outputs):
+        logits = output["alive_logits"]
+        predicted_boxes = output["boxes_cxcywh"]
+        target_alive = torch.zeros_like(logits)
+
+        for batch_index in range(batch_size):
+            frame_boxes = boxes[batch_index][time_index].to(
+                predicted_boxes.device
             )
-            / hard_negatives
+            frame_ids = identities[batch_index][time_index].to(
+                predicted_boxes.device
+            )
+            mapping = mappings[batch_index]
+
+            new_positions = [
+                position
+                for position, identity in enumerate(frame_ids.tolist())
+                if int(identity) not in mapping
+            ]
+            if new_positions:
+                used = set(mapping.values())
+                free = [
+                    slot
+                    for slot in range(predicted_boxes.shape[1])
+                    if slot not in used
+                ]
+                new_boxes = frame_boxes[new_positions]
+                assignments = _new_identity_assignment(
+                    predicted_boxes[batch_index],
+                    new_boxes,
+                    free,
+                )
+                for slot, column in assignments:
+                    identity = int(frame_ids[new_positions[column]])
+                    mapping[identity] = slot
+
+            visible_slots = []
+            visible_targets = []
+            for position, identity in enumerate(frame_ids.tolist()):
+                identity = int(identity)
+                slot = mapping.get(identity)
+                if slot is None:
+                    continue
+                target_alive[batch_index, slot] = 1.0
+                visible_slots.append(slot)
+                visible_targets.append(frame_boxes[position])
+
+            if visible_slots:
+                slot_tensor = torch.tensor(
+                    visible_slots,
+                    device=predicted_boxes.device,
+                    dtype=torch.long,
+                )
+                target_tensor = torch.stack(visible_targets)
+                total_box = total_box + F.l1_loss(
+                    predicted_boxes[batch_index, slot_tensor],
+                    target_tensor,
+                    reduction="sum",
+                )
+                visible_count += len(visible_slots)
+
+        total_presence = total_presence + F.binary_cross_entropy_with_logits(
+            logits,
+            target_alive,
+            pos_weight=logits.new_tensor(positive_weight),
+            reduction="mean",
         )
-    else:
-        hard_negative_cosine = -1.0
-    stats = {
-        "top1_accuracy": (
-            sum(int(result["correct"]) for result in directions) / matches
-        ),
-        "positive_cosine": float(
-            sum(
-                result["positive_cosine"].detach()
-                for result in directions
-            )
-            / matches
-        ),
-        "hard_negative_cosine": hard_negative_cosine,
+        frame_count += 1
+
+    presence_loss = total_presence / max(frame_count, 1)
+    box_loss = total_box / max(visible_count * 4, 1)
+    loss = presence_loss + 5.0 * box_loss
+    return loss, {
+        "loss": float(loss.detach()),
+        "presence_loss": float(presence_loss.detach()),
+        "box_loss": float(box_loss.detach()),
+        "visible_targets": float(visible_count),
     }
-    return loss, stats
