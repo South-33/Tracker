@@ -40,7 +40,7 @@ def detector_weights() -> Path:
     return target
 
 
-def run_sequence(sequence: str, output: Path, model_path: Path) -> dict:
+def run_sequence(sequence: str, output: Path, model_path: Path, tracker_path: Path) -> dict:
     sequence_dir = ROOT / "data" / "dancetrack" / sequence
     images = sorted((sequence_dir / "img1").glob("*.jpg"))
     if not images:
@@ -61,7 +61,7 @@ def run_sequence(sequence: str, output: Path, model_path: Path) -> dict:
         result = model.track(
             frame,
             persist=True,
-            tracker="botsort.yaml",
+            tracker=str(tracker_path),
             classes=[0],
             conf=0.1,
             iou=0.7,
@@ -102,23 +102,46 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("sequences", nargs="+", help="DanceTrack sequence names")
     parser.add_argument("--output", default="runs/yolo26n-botsort")
+    parser.add_argument(
+        "--reid",
+        action="store_true",
+        help="Enable BoT-SORT ReID using native YOLO detector features.",
+    )
     args = parser.parse_args()
 
     output = ROOT / args.output
     weight = detector_weights()
-    stats = [run_sequence(sequence, output, weight) for sequence in args.sequences]
-
     tracker = Path(ULTRALYTICS_ROOT) / "cfg" / "trackers" / "botsort.yaml"
+    tracker_config = tracker.read_text(encoding="utf-8")
+    tracker_path = tracker
+    if args.reid:
+        tracker_config = tracker_config.replace("with_reid: False", "with_reid: True")
+        if "with_reid: True" not in tracker_config:
+            raise RuntimeError("could not enable ReID in the installed botsort.yaml")
+        output.mkdir(parents=True, exist_ok=True)
+        tracker_path = output / "botsort-reid.yaml"
+        tracker_path.write_text(tracker_config, encoding="utf-8")
+
+    stats = [
+        run_sequence(sequence, output, weight, tracker_path)
+        for sequence in args.sequences
+    ]
+
     metadata = {
-        "system": "YOLO26n + Ultralytics BoT-SORT",
+        "system": (
+            "YOLO26n + Ultralytics BoT-SORT native ReID"
+            if args.reid
+            else "YOLO26n + Ultralytics BoT-SORT"
+        ),
         "ultralytics": ultralytics.__version__,
         "torch": torch.__version__,
         "cuda": torch.version.cuda,
         "repo_commit": git_commit(),
         "model": str(weight.relative_to(ROOT)),
         "model_sha256": sha256(weight),
-        "tracker": "botsort.yaml",
-        "tracker_config": tracker.read_text(encoding="utf-8"),
+        "tracker": tracker_path.name,
+        "tracker_config": tracker_config,
+        "reid": args.reid,
         "settings": {"classes": [0], "conf": 0.1, "iou": 0.7, "imgsz": 640, "device": 0},
         "sequences": stats,
     }
