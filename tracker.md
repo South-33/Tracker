@@ -210,19 +210,31 @@ owner appearance pruning                  33.45  30.97  39.17   236   368
 owner full-cost bonus 0.05                32.81  29.52  38.39   246   375
 ```
 
-An exact first-association replay shows why pairwise accuracy is insufficient. The incumbent Hungarian assignment preserves the previous public owner on **90.01%** of held-out `0012` targets. A tiny rank bonus of **0.005**, selected on the five training sequences, improves that frozen-trajectory metric to **90.93%**. Yet the same first-association-only bonus reaches only **32.15 HOTA / 239 IDSW** online on `0020`.
+An exact first-association replay shows why pairwise accuracy is insufficient. The incumbent Hungarian assignment preserves the previous public owner on **89.34%** of held-out `0012` targets. A per-detection normalized assignment residual selected on the five training sequences improves that frozen-trajectory metric to **92.01%**, but a large residual (`alpha=0.2`) destabilizes rollout and falls to **30.37 HOTA / 321 IDSW** on `0020`. One round of on-policy data collection and retraining does not rescue it: the owner scorer moves only from **95.78%** to **95.82%** on its induced `0012` states and the corresponding rollout falls further to **29.52 HOTA / 354 IDSW**.
+
+The useful part is much smaller. Keeping the same owner scorer but reducing the assignment residual to **0.005**, with the value chosen on the five training sequences, reproducibly gives on `0020`:
+
+```text
+variant                         HOTA   AssA   IDF1  IDSW  Frag  Recall  Precision
+incumbent 0.45                 33.69  31.21  39.40   236   376   48.72      94.29
+owner residual alpha=0.005     33.75  31.26  39.69   228   363   48.63      94.39
+```
+
+This is a real dense-sequence identity-continuity gain, but it does not earn promotion across both exposed development sequences. On `0016`, HOTA changes **33.12 -> 33.00** and IDSW **87 -> 88**. Combined `0016+0020`, the residual gives **33.564 HOTA / 21.158 AssA / 33.757 IDF1 / 316 IDSW / 473 Frag**, versus the current candidate's roughly **33.578 HOTA / 21.195 AssA / 33.601 IDF1 / 323 IDSW / 486 Frag**. The residual reduces switches and fragments but does not improve the primary combined HOTA/AssA result, so keep it as evidence rather than the default.
+
+Trying to preserve BoT-SORT's matchable-edge set does not help: the candidate-graph-preserving `alpha=0.005` version falls to **33.53 HOTA / 272 IDSW** on `0020`. A density gate selected only on the five training sequences is also rejected; training prefers applying the tiny residual everywhere it is available.
 
 The switch diagnostic confirms that association still matters: among **349** public-owner changes on `0020`, the previous owner remains in the first-association candidate pool in **300** cases, and the owner scorer prefers it in **135** cases versus **60** for cosine. But changing those decisions perturbs later memory and assignment states, so one-step improvements can still reduce end-to-end HOTA.
 
-The conclusion is stronger than “use a larger pair scorer”: **teacher-forced or frozen-trajectory association accuracy is not a reliable promotion metric**. Small assignment changes alter the future memory distribution. Do not spend more time tuning static score blends inside BoT-SORT.
+The conclusion is stronger than "use a larger pair scorer": **teacher-forced or frozen-trajectory association accuracy is not a reliable promotion metric**. Small assignment changes alter the future memory distribution, and the semantic KNOWN/NEWBORN/DROP decision remains entangled with assignment. Do not spend more time tuning static score blends inside BoT-SORT.
 
 ### Next research question
 
 Freeze the global `new_track_thresh=0.45` learned-feature configuration as the current dev candidate. Do not spend more iterations tuning that scalar. The evidence now says the next capability to learn should be **lifecycle**, especially deciding when a weak unmatched detection deserves to become persistent memory without sacrificing ByteTrack's useful low-score continuation.
 
-Single-frame and pairwise memory cues have now been pushed far enough. The next probe should be trained on **self-generated rollout states**, not oracle memory or a frozen teacher trajectory. Use the cached detector outputs and 64D features so this is cheap enough to iterate. Scheduled sampling or dataset aggregation is the right complexity class: keep the memory state and scorer small, but expose them during training to the mistakes and duplicate states they create themselves.
+Single-frame and pairwise memory cues have now been pushed far enough. One explicit on-policy retraining iteration did not stabilize the pairwise assignment policy, and simple appearance-history aggregation/EMA does not improve the candidate scorer. The next probe should therefore change the **memory state**, not keep retuning the same score.
 
-Only add a recurrent track state if rollout-trained last-state memory is still insufficient. The immediate objective is to close the train/inference state-distribution gap, not to add sequence-model capacity. Promotion requires a full online `0020` rollout that beats the current `0.45` candidate; one-step assignment accuracy alone no longer counts as evidence.
+Use the cached detector outputs and 64D features to train the smallest causal track-state model that can jointly carry appearance stability, motion/history, and lifecycle evidence. A tiny recurrent cell or similarly compact state-space update is now justified, but keep it narrow: bounded per-track state, current detection query, explicit KNOWN / NEWBORN / DROP semantics, and one-to-one assignment at the output. Train it on sequential rollouts rather than arbitrary pairs, and require an online `0020` rollout plus the `0016` regression check before promotion.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
 
