@@ -145,17 +145,43 @@ Most of the capability jump comes from exposing ROI-pooled YOLO appearance featu
 
 Two focused follow-ups did not earn their place. Raising retrieval temperature from `0.1` to `1.0` reduced held-out top-1 retrieval from **57.67% to 49.68%** and reduced `0020` tracking HOTA from 32.79 to 32.63. Restricting appearance to detections overlapping another box at IoU >=0.3 reduced `0020` switches from 452 to 428 and raised AssA from 27.56 to 27.79, but lowered HOTA to 32.66 and hurt DetA/recall/precision. Keep the simpler temperature-`0.1`, dense-frame gate as the active probe.
 
+### Lifecycle correction
+
+Targeted switch review on `0020` showed that much of the appearance regression was track-birth churn in crowded frames, not just pairwise identity swaps. The simplest useful fix was therefore lifecycle, not a larger embedding model: keep ByteTrack-style low-score recovery for existing tracks, but require a stronger score to start a new track.
+
+Sweeping only `new_track_thresh` on `0020` with the frozen learned feature found `0.45` as the best HOTA point:
+
+```text
+new_track_thresh   HOTA   AssA   IDF1  IDSW  Frag  Recall
+0.25               32.79  27.56  37.22   452   496   53.28
+0.35               32.77  28.24  38.29   344   439   51.37
+0.40               32.73  28.69  37.59   286   403   50.14
+0.45               33.69  31.21  39.40   236   376   48.72
+0.50               33.17  31.19  39.36   219   353   47.02
+```
+
+Across both development sequences, the global `0.45` rule gives the strongest current dev candidate:
+
+```text
+                                      HOTA   AssA   DetA   IDF1  IDSW  Frag  Recall  Precision
+official model.track baseline         32.20  19.39  53.94  30.32   397   499   66.67     96.03
+manual no-ReID, new-track 0.45        33.24  21.18  52.40  33.25   289   458   64.73     97.27
+learned 64D, new-track 0.45           33.58  21.19  53.44  33.60   323   486   66.14     96.44
+```
+
+The lifecycle rule is doing most of the work. At the same `0.45` threshold, learned appearance adds **+0.34 HOTA, +0.35 IDF1, and +1.41 recall points**, but also adds 34 switches and 28 fragments. Keep the learned feature because it still gives the highest HOTA/IDF1 while recovering recall, but treat lifecycle as the dominant current bottleneck.
+
+Three follow-ups were rejected rather than accumulated: confidence-gating appearance at 0.35/0.40/0.45 lowered `0020` HOTA versus the ungated 0.45 candidate; applying the stricter birth threshold only on dense/ReID-active frames produced 33.69 HOTA but worse IDF1 and more switches than the global rule; and a short explicit hard-negative-margin training probe behaved almost identically to the existing low-temperature retrieval loss.
+
 ### Next research question
 
-Keep the official no-ReID baseline as the incumbent. Keep the simple 64D identity head as the active candidate, but require future embedding changes to beat raw pooled features and the seeded random-projection control as well as no-ReID. The next high-information work is to reduce the switch/fragment penalty while making learned representation earn a larger margin over those cheap controls. Prefer focused experiments over a larger neural matcher. In particular:
+Freeze the global `new_track_thresh=0.45` learned-feature configuration as the current dev candidate. Do not spend more iterations tuning that scalar. The evidence now says the next capability to learn should be **lifecycle**, especially deciding when a weak unmatched detection deserves to become persistent memory without sacrificing ByteTrack's useful low-score continuation.
 
-1. isolate where ROI-pooled appearance changes BoT-SORT assignments on `0020`, especially the new switches;
-2. separate genuine re-identification wins from extra low-confidence track births and false continuation;
-3. train against harder same-frame/crossing impostors and measure the margin over raw/random controls;
-4. test only conservative association/lifecycle changes justified by those failure cases;
-5. only then consider learned assignment, temporal memory, or detector fine-tuning.
+Prefer a tiny causal birth/continuation module using frozen YOLO features, detector confidence, and bounded recent track state over another full learned assignment system. Its job is narrow: recover true low-confidence track births/re-entries that the fixed 0.45 rule suppresses while retaining the large switch/fragment reduction. Keep IoU/motion association fixed during this probe so the lifecycle signal is attributable.
 
-Do not touch the untouched DanceTrack sequences until a dev candidate is clearly better across the full metric set.
+The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
+
+Keep `0096` and `0004/0005/0007/0010` untouched while the lifecycle module is being selected on development.
 
 ### Reproduction commands
 
@@ -181,9 +207,13 @@ Do not touch the untouched DanceTrack sequences until a dev candidate is clearly
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/raw-pooled-feature-0020 dancetrack0020
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/random-identity-track dancetrack0020
 
-# Learned feature candidate
-.\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --head runs/identity-head-v2/head.pt --output runs/identity-v2-track
-.\.venv\Scripts\python.exe scripts/evaluate.py runs/identity-v2-track dancetrack0016 dancetrack0020
+# Current dev candidate
+.\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --head runs/identity-head-v2/head.pt --new-track-threshold 0.45 --output runs/identity-v2-new045
+.\.venv\Scripts\python.exe scripts/evaluate.py runs/identity-v2-new045 dancetrack0016 dancetrack0020
+
+# Lifecycle-only control
+.\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --disable-reid --new-track-threshold 0.45 --output runs/manual-no-reid-new045
+.\.venv\Scripts\python.exe scripts/evaluate.py runs/manual-no-reid-new045 dancetrack0016 dancetrack0020
 ```
 
 ## Research loop
