@@ -307,6 +307,10 @@ The benchmark path is validated on the development laptop, where a 200-frame den
 
 The neural perception path is ready for acceleration if native PyTorch misses the Orin target. `scripts/export_perception.py` exports a fixed-640 ONNX graph containing the raw YOLO prediction tensor plus all three feature maps consumed by the ROI identity head. ONNX Runtime validation on the development machine matches PyTorch closely: feature-map max absolute error is **1.81e-5 or lower**, prediction max absolute error is **6.1e-4**, and the graph is about **9.9 MB**. TensorRT tools are not installed in this workspace, so engine build and target-hardware equivalence remain deployment tasks. Any TensorRT path must preserve these feature maps and be revalidated rather than substituting a detector-only engine.
 
+Current public target-hardware evidence makes the >=15 FPS requirement plausible even before TensorRT. Ultralytics reports **15.60 ms/image** for YOLO26n PyTorch at 640 on the Jetson Orin Nano Super and **4.57 ms/image** for TensorRT FP16. A 15 FPS frame budget is **66.7 ms**, so the published PyTorch detector figure leaves about **51 ms/frame** for preprocessing, NMS, ROI appearance, GMC, and association. This is a feasibility margin only, not acceptance evidence, because the CPU-heavy GMC path still has to be measured on the actual board.
+
+`scripts/orin_acceptance.py` is the final one-command target check. It refuses to run unless `/etc/nv_tegra_release` exists, records the Jetson model, L4T release, power mode, clock state, and TensorRT package version, then invokes the frozen benchmark and writes the combined report to `runs/orin-benchmark.json`.
+
 Do not spend more development time on detached public-ID remapping, generic crop backbones, gap-only metric heads, or always-on secondary ReID unless a new dataset or stronger supervision changes the evidence.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
@@ -352,6 +356,9 @@ The protected sequences `0096/0004/0005/0007/0010` are now consumed as final hol
 
 # Deployment-hardware benchmark (use this unchanged on Orin Nano Super)
 .\.venv\Scripts\python.exe scripts/benchmark_tracker.py dancetrack0020 --tracker runs/person-tracker.pt --warmup 30 --target-fps 15 --max-memory-gib 8 --output runs/orin-benchmark.json
+
+# Preferred target acceptance command on the Jetson itself
+python3 scripts/orin_acceptance.py dancetrack0020 --tracker runs/person-tracker.pt --min-fps 15 --max-memory-gib 8 --output runs/orin-benchmark.json
 
 # Export the neural perception front-end while preserving tracking feature maps
 .\.venv\Scripts\python.exe scripts/export_perception.py --output runs/perception-640.onnx
