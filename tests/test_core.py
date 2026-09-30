@@ -12,6 +12,16 @@ from tracker.causal import CausalPersonTracker
 from tracker.data import DanceTrackPairs, letterbox, restore_boxes
 from tracker.model import identity_retrieval_loss
 from tracker.runtime import CausalTrackerRuntime
+from tracker.splits import (
+    CALIBRATION,
+    CONSUMED_HOLDOUT,
+    DEV,
+    RESERVED_HOLDOUT,
+    TRAIN,
+    assert_research_eval,
+    assert_train_only,
+    role_of,
+)
 from tracker.system import TrackerConfig
 
 
@@ -156,6 +166,29 @@ class CausalRuntimeTests(unittest.TestCase):
                 with_reid=False,
                 detector_confidence=1.1,
             )
+
+
+class SplitSafetyTests(unittest.TestCase):
+    def test_roles_are_disjoint(self):
+        self.assertFalse(set(TRAIN) & set(DEV))
+        self.assertFalse(set(TRAIN) & set(CALIBRATION))
+        self.assertFalse(set(TRAIN) & set(CONSUMED_HOLDOUT))
+        self.assertFalse(set(DEV) & set(RESERVED_HOLDOUT))
+
+    def test_holdout_cannot_be_used_for_training(self):
+        with self.assertRaises(ValueError):
+            assert_train_only([CONSUMED_HOLDOUT[0]])
+
+    def test_role_labels_are_explicit(self):
+        self.assertEqual(role_of(TRAIN[0]), "train")
+        self.assertEqual(role_of(CALIBRATION[0]), "calibration")
+        self.assertEqual(role_of(DEV[0]), "dev")
+        self.assertEqual(role_of(CONSUMED_HOLDOUT[0]), "consumed_holdout")
+        self.assertEqual(role_of(RESERVED_HOLDOUT[0]), "reserved_holdout")
+
+    def test_research_eval_rejects_holdout(self):
+        with self.assertRaises(ValueError):
+            assert_research_eval([RESERVED_HOLDOUT[0]])
 
 
 class TrackerConfigTests(unittest.TestCase):

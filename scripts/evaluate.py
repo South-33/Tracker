@@ -10,6 +10,13 @@ import shutil
 import numpy as np
 import trackeval
 
+from tracker.splits import (
+    CONSUMED_HOLDOUT,
+    RESERVED_HOLDOUT,
+    assert_research_eval,
+    assert_reserved_holdout,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -23,7 +30,44 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run", help="Folder containing <sequence>.txt MOT predictions")
     parser.add_argument("sequences", nargs="+", help="DanceTrack sequence names")
+    parser.add_argument(
+        "--final-holdout",
+        action="store_true",
+        help="Score only the sealed RESERVED_HOLDOUT after a candidate is frozen.",
+    )
+    parser.add_argument(
+        "--historical-holdout",
+        action="store_true",
+        help="Reproduce already-consumed holdout metrics. Never use for tuning.",
+    )
     args = parser.parse_args()
+
+    if args.final_holdout and args.historical_holdout:
+        raise ValueError("choose only one holdout mode")
+    if args.final_holdout:
+        assert_reserved_holdout(args.sequences)
+    elif args.historical_holdout:
+        invalid = [
+            sequence
+            for sequence in args.sequences
+            if sequence not in CONSUMED_HOLDOUT
+        ]
+        if invalid:
+            raise ValueError(
+                "historical holdout mode only accepts CONSUMED_HOLDOUT: "
+                + ", ".join(invalid)
+            )
+    else:
+        if any(sequence in RESERVED_HOLDOUT for sequence in args.sequences):
+            raise ValueError(
+                "RESERVED_HOLDOUT is sealed; use --final-holdout only after freeze"
+            )
+        if any(sequence in CONSUMED_HOLDOUT for sequence in args.sequences):
+            raise ValueError(
+                "CONSUMED_HOLDOUT cannot guide new research; "
+                "use --historical-holdout only to reproduce old metrics"
+            )
+        assert_research_eval(args.sequences)
 
     run = Path(args.run).resolve()
     run.mkdir(parents=True, exist_ok=True)

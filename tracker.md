@@ -1,5 +1,9 @@
 # Tracker
 
+> Start with `README.md` for the current workflow, split policy, commands, and
+> benchmark interpretation. This file is the detailed research notebook and
+> intentionally preserves older experiments.
+
 ## Goal
 
 Build one small, causal neural person tracker that does detection and tracking in one model.
@@ -316,6 +320,20 @@ Do not spend more development time on detached public-ID remapping, generic crop
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
 
 The protected sequences `0096/0004/0005/0007/0010` are now consumed as final holdout evidence. Do not use them for further tuning.
+
+### Current post-freeze development candidate
+
+After the first protected evaluation, development resumed only on TRAIN/CALIBRATION/DEV. The detector-side question was revisited because the frozen holdout showed that association was stronger than detector coverage.
+
+A larger off-the-shelf **YOLO26s** detector is not the answer. With the same no-ReID lifecycle control on hard dev sequence `0020`, it reaches only **31.15 HOTA / 35.21 IDF1 / 42.76% recall**, below the YOLO26n path despite its larger capacity.
+
+The useful change is simpler: lower the detector/ByteTrack recovery floor from **0.10 to 0.05** while keeping the new-track threshold at **0.45**. Low-score boxes can then recover existing tracks but still cannot freely create births. On `0020`, the guarded tracker improves to **34.61 HOTA / 32.08 AssA / 40.96 IDF1 / 50.14% recall**, with 258 switches and 353 fragments. On combined `0016+0020`, it improves from the frozen candidate's **33.915 HOTA / 34.431 IDF1 / 66.04% recall** to **34.392 HOTA / 35.201 IDF1 / 67.08% recall**. The tradeoff is 337 switches instead of 321 and precision **95.64%** instead of **96.57%**.
+
+The same change also improves the dedicated calibration sequence `0012` from **25.39 to 26.61 HOTA**, **27.78 to 29.16 IDF1**, and **74.82% to 75.78% recall**, while fragments fall from 312 to 299. This is therefore the **current development candidate**, not a one-sequence tweak.
+
+Do not retroactively score this newer candidate on the consumed five-sequence holdout. The next final comparison must use a fresh sealed holdout. `0082/0083` are reserved for that purpose, but the current local copies are incomplete 120-frame slices and must be replaced with the complete official sequences before final scoring.
+
+Repository/data hygiene is now explicit: work only on `main`, use Git commits as checkpoints instead of worktrees/feature branches, and use `src/tracker/splits.py` as the single source of truth for TRAIN, CALIBRATION, DEV, consumed holdout, and reserved holdout. Normal research runners refuse holdout sequences; final/historical scoring requires explicit flags.
 
 ### Reproduction commands
 

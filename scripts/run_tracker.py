@@ -9,6 +9,7 @@ import time
 import cv2
 
 from tracker.system import PersonTracker
+from tracker.splits import CONSUMED_HOLDOUT, RESERVED_HOLDOUT
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,7 +20,20 @@ def main():
     parser.add_argument("--tracker", default="runs/person-tracker.pt")
     parser.add_argument("--output", default="runs/causal-system")
     parser.add_argument("--device", default="cuda")
+    parser.add_argument("--final-holdout", action="store_true")
+    parser.add_argument("--historical-holdout", action="store_true")
     args = parser.parse_args()
+    if args.final_holdout and args.historical_holdout:
+        raise ValueError("choose only one holdout mode")
+    for sequence in args.sequences:
+        if sequence in RESERVED_HOLDOUT and not args.final_holdout:
+            raise ValueError(
+                f"{sequence} is RESERVED_HOLDOUT; use --final-holdout only after freeze"
+            )
+        if sequence in CONSUMED_HOLDOUT and not args.historical_holdout:
+            raise ValueError(
+                f"{sequence} is CONSUMED_HOLDOUT; use --historical-holdout only for reproduction"
+            )
 
     output = ROOT / args.output
     output.mkdir(parents=True, exist_ok=True)

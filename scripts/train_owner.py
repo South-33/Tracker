@@ -20,17 +20,12 @@ from ultralytics.utils.nms import non_max_suppression
 from tracker.association import OwnerContinuityScorer, owner_pair_features
 from tracker.data import letterbox, restore_boxes
 from tracker.model import TrackingYOLO
+from tracker.splits import CALIBRATION, TRAIN, assert_train_only
 from train import label_predictions
 from track import tracker_config
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_TRAIN = [
-    "dancetrack0001",
-    "dancetrack0002",
-    "dancetrack0006",
-    "dancetrack0008",
-    "dancetrack0015",
-]
+DEFAULT_TRAIN = list(TRAIN)
 
 
 def sha256(path: Path) -> str:
@@ -183,7 +178,7 @@ def main():
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--min-detections-for-reid", type=int, default=10)
     parser.add_argument("--train-sequences", nargs="+", default=DEFAULT_TRAIN)
-    parser.add_argument("--validation-sequence", default="dancetrack0012")
+    parser.add_argument("--validation-sequence", default=CALIBRATION[0])
     parser.add_argument(
         "--max-frames",
         type=int,
@@ -191,6 +186,11 @@ def main():
         help="Optional smoke-test limit applied independently to each sequence.",
     )
     args = parser.parse_args()
+    assert_train_only(args.train_sequences)
+    if args.validation_sequence not in CALIBRATION:
+        raise ValueError(
+            "--validation-sequence must be the dedicated CALIBRATION sequence"
+        )
 
     random.seed(0)
     torch.manual_seed(0)

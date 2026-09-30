@@ -17,6 +17,7 @@ from ultralytics.utils.checks import check_yaml
 from tracker.causal import CausalPersonTracker
 from tracker.model import TrackingYOLO
 from tracker.runtime import CausalTrackerRuntime
+from tracker.splits import assert_research_eval
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -209,6 +210,7 @@ def main():
         help="Sparse optical-flow corner budget for the project-owned tracker.",
     )
     args = parser.parse_args()
+    assert_research_eval(args.sequences)
     if args.min_detections_for_reid < 1:
         raise ValueError("--min-detections-for-reid must be at least 1")
     if not 0 <= args.new_track_threshold <= 1:

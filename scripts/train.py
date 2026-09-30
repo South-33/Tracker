@@ -15,6 +15,7 @@ from ultralytics.utils.nms import non_max_suppression
 
 from tracker.data import DanceTrackPairs, PersonPathPairs
 from tracker.model import TrackingYOLO, identity_retrieval_loss
+from tracker.splits import CALIBRATION, TRAIN
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -158,14 +159,8 @@ def main():
     personpath_videos = json.loads(
         (ROOT / "data" / "personpath22" / "starter.json").read_text()
     )["videos"]
-    dancetrack_train = [
-        "dancetrack0001",
-        "dancetrack0002",
-        "dancetrack0006",
-        "dancetrack0008",
-        "dancetrack0015",
-    ]
-    dancetrack_validation = ["dancetrack0012"]
+    dancetrack_train = list(TRAIN)
+    dancetrack_validation = list(CALIBRATION)
     personpath = PersonPathPairs(
         ROOT / "data" / "personpath22",
         personpath_videos,
