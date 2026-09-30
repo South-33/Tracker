@@ -286,7 +286,7 @@ Freeze this development candidate before protected evaluation. Further developme
 
 ### Frozen protected evaluation
 
-Commit `101cbfe` freezes the packaged development candidate. The bundle was rebuilt from that clean commit and then run **once** on the previously untouched protected set `0096/0004/0005/0007/0010`. No tracker parameters were changed after seeing these results.
+Commit `101cbfe` freezes the packaged development candidate. The bundle was rebuilt from that clean commit and then run **once as the frozen candidate** on `0096/0004/0005/0007/0010`. Some older scratch artifacts exist for `0005`, so do not describe the entire set as historically untouched. No tracker parameters were changed after seeing the frozen-candidate results.
 
 ```text
 protected: 0096 + 0004 + 0005 + 0007 + 0010
@@ -304,7 +304,7 @@ The frozen packaged candidate has now been evaluated on the protected set `0096/
 
 Do not tune on these protected results. The remaining acceptance item is deployment: verify **>=15 FPS on Orin Nano Super 8 GB** using the frozen bundle and configuration.
 
-Target-hardware verification uses the frozen bundle directly, not a different export with different features. Run `.\.venv\Scripts\python.exe scripts/benchmark_tracker.py dancetrack0020 --tracker runs/person-tracker.pt --warmup 30 --target-fps 15 --max-memory-gib 8 --output runs/orin-benchmark.json` on the Orin Nano Super. The benchmark measures the frozen packaged pipeline after warmup, records the CUDA device name, checks peak allocated CUDA memory against the 8 GB target, writes a JSON report, and exits nonzero if the FPS target is missed. Do not count a desktop estimate as target verification. Ultralytics recommends TensorRT for Jetson performance, but the current identity head consumes YOLO feature-pyramid tensors, so any TensorRT deployment must export/preserve those same features and be revalidated for tracking equivalence on the target rather than replacing the detector alone.
+Target-hardware verification uses the frozen bundle directly, not a different export with different features. Run `.\.venv\Scripts\python.exe scripts/benchmark_tracker.py dancetrack0020 --tracker runs/person-tracker.pt --warmup 30 --target-fps 15 --max-memory-gib 8 --output runs/orin-benchmark.json` on the Orin Nano Super. The benchmark measures the frozen packaged pipeline after warmup, records CUDA/Jetson hardware metadata, checks peak reserved CUDA memory against the 8 GB target, writes a JSON report, and exits nonzero if the FPS or memory target is missed. Do not count a desktop estimate as target verification. Ultralytics recommends TensorRT for Jetson performance, but the current identity head consumes YOLO feature-pyramid tensors, so any TensorRT deployment must export/preserve those same features and be revalidated for tracking equivalence on the target rather than replacing the detector alone.
 
 The neural perception path is ready for that acceleration step. `scripts/export_perception.py` exports a fixed-640 ONNX graph containing the raw YOLO prediction tensor plus all three feature maps consumed by the ROI identity head. ONNX Runtime validation on the development machine matches PyTorch closely: feature-map max absolute error is about **1e-5**, prediction max absolute error about **6.1e-4**, and the graph is about **9.9 MB**. TensorRT tools are not available in this workspace, so engine build and target-hardware equivalence remain deployment tasks.
 
