@@ -124,15 +124,20 @@ manual no-ReID: HOTA 30.66  AssA 25.38  IDF1 34.05  IDSW 322  Frag 411
 learned 64D:    HOTA 32.79  AssA 27.56  IDF1 37.22  IDSW 452  Frag 496
 ```
 
-On `0016`, learned appearance is almost neutral and slightly reduces switches. This points to online use of appearance in dense/crossing scenes as the next bottleneck, not basic representation quality.
+On `0016`, learned appearance is almost neutral and slightly reduces switches. The hard sequence is therefore the useful discriminator.
+
+A seeded **untrained** 64D projection is an important control. On `0020` it already reaches HOTA **32.56**, AssA **27.30**, IDF1 **37.10**, with 466 switches and 522 fragments. The trained head reaches HOTA **32.79**, AssA **27.56**, IDF1 **37.22**, with 452 switches and 496 fragments. Training is helping identity stability, but only modestly. Most of the current gain comes from giving BoT-SORT a compact detector-derived appearance feature at all, not from the present retrieval objective.
+
+Two focused follow-ups did not earn their place. Raising retrieval temperature from `0.1` to `1.0` spread cosine scores out but reduced held-out retrieval and `0020` tracking (HOTA 32.63 vs 32.79). Restricting appearance to detections overlapping another box at IoU >=0.3 reduced `0020` switches from 452 to 428 and raised AssA from 27.56 to 27.79, but lowered HOTA to 32.66 and hurt DetA/recall/precision. Keep the simpler temperature-`0.1`, dense-frame gate as the active probe.
 
 ### Next research question
 
-Keep the official no-ReID baseline as the incumbent. Keep the simple 64D identity head as the active candidate. The next high-information work is to reduce the switch/fragment penalty while preserving the `0020` HOTA/AssA gain. Prefer focused association/lifecycle experiments over a larger neural matcher. In particular:
+Keep the official no-ReID baseline as the incumbent. Keep the simple 64D identity head as the active candidate, but require future embedding changes to beat a seeded random-projection control as well as no-ReID. The next high-information work is to reduce the switch/fragment penalty while making the learned representation earn a larger margin over random projection. Prefer focused experiments over a larger neural matcher. In particular:
 
-1. isolate where ReID changes BoT-SORT assignments on `0020`;
-2. test confidence/proximity/gating changes that reduce false continuation and duplicate track birth;
-3. only then consider learned assignment, temporal memory, or detector fine-tuning.
+1. isolate where ReID changes BoT-SORT assignments on `0020`, especially the new switches;
+2. train against harder same-frame/crossing impostors and measure the margin over the random projection;
+3. test only conservative association/lifecycle changes justified by those failure cases;
+4. only then consider learned assignment, temporal memory, or detector fine-tuning.
 
 Do not touch the untouched DanceTrack sequences until a dev candidate is clearly better across the full metric set.
 
@@ -148,7 +153,7 @@ Do not touch the untouched DanceTrack sequences until a dev candidate is clearly
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/yolo26n-botsort-reid dancetrack0016 dancetrack0020
 
 # Train the active 64D identity head
-.\.venv\Scripts\python.exe scripts/train.py --steps 500 --output runs/identity-head-v2
+.\.venv\Scripts\python.exe scripts/train.py --steps 500 --temperature 0.1 --output runs/identity-head-v2
 
 # Controlled identical-path baseline
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --disable-reid --output runs/manual-botsort-no-reid

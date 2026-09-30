@@ -118,7 +118,7 @@ def identity_retrieval_loss(
     first_ids: torch.Tensor,
     second_embeddings: torch.Tensor,
     second_ids: torch.Tensor,
-    temperature: float = 1.0,
+    temperature: float = 0.1,
 ):
     """Symmetric identity retrieval over detector-backed boxes."""
     if temperature <= 0:

@@ -37,10 +37,10 @@ class IdentityLossTests(unittest.TestCase):
             first_ids,
             second,
             second_ids,
-            temperature=1.0,
+            temperature=0.1,
         )
 
-        self.assertLess(loss.item(), 0.32)
+        self.assertLess(loss.item(), 0.001)
         self.assertEqual(report["top1_accuracy"], 1.0)
         self.assertEqual(report["positive_cosine"], 1.0)
         self.assertEqual(report["hard_negative_cosine"], 0.0)

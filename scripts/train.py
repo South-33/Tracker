@@ -148,7 +148,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--steps", type=int, default=500)
     parser.add_argument("--lr", type=float, default=1e-3)
-    parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--temperature", type=float, default=0.1)
     parser.add_argument("--validation-samples", type=int, default=100)
     parser.add_argument("--output", default="runs/identity-head-v2")
     parser.add_argument("--device", default="cuda")
