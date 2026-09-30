@@ -4,10 +4,12 @@ from tempfile import TemporaryDirectory
 
 import numpy as np
 import torch
+from types import SimpleNamespace
 
 from tracker.association import choose_guarded_assignment
 from tracker.data import DanceTrackPairs, letterbox, restore_boxes
 from tracker.model import identity_retrieval_loss
+from tracker.runtime import CausalTrackerRuntime
 
 
 class LetterboxTests(unittest.TestCase):
@@ -110,6 +112,37 @@ class GuardedAssignmentTests(unittest.TestCase):
         )
 
         self.assertEqual({tuple(row) for row in matches}, {(0, 0), (1, 1)})
+
+
+class CausalRuntimeTests(unittest.TestCase):
+    def test_rejects_invalid_feature_mode(self):
+        with self.assertRaises(ValueError):
+            CausalTrackerRuntime(
+                SimpleNamespace(),
+                SimpleNamespace(),
+                device=torch.device("cpu"),
+                with_reid=True,
+                feature_mode="invalid",
+            )
+
+    def test_starts_with_empty_causal_counters(self):
+        runtime = CausalTrackerRuntime(
+            SimpleNamespace(),
+            SimpleNamespace(),
+            device=torch.device("cpu"),
+            with_reid=False,
+        )
+        self.assertEqual(
+            runtime.stats(),
+            {
+                "frames": 0,
+                "reid_frames": 0,
+                "reid_detections": 0,
+                "compute_seconds": 0.0,
+                "owner_tiebreak_frames": 0,
+                "owner_changed_frames": 0,
+            },
+        )
 
 
 if __name__ == "__main__":

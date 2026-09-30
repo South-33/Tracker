@@ -276,6 +276,8 @@ The identity-memory search is now saturated enough to stop adding branches. The 
 4. reproduce the guarded incumbent on `0016+0020` before changing any association behavior;
 5. only after equivalence, profile/export that single path for the >=15 FPS Orin Nano target.
 
+The first consolidation step is complete: `src/tracker/runtime.py` now exposes the current perception + online association path through one causal `step(frame)` interface. On `0020`, the refactored runtime reproduces the fresh guarded incumbent **row-for-row** (identical result-file SHA-256) and therefore exactly preserves **34.1009 HOTA / 31.8031 AssA / 40.4251 IDF1 / 239 IDSW**. This is an interface refactor only; BoT-SORT still owns the internal track state and remains the next component to replace behind that boundary.
+
 Do not spend more development time on detached public-ID remapping, generic crop backbones, gap-only metric heads, or always-on secondary ReID unless a new dataset or stronger supervision changes the evidence.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.

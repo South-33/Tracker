@@ -1,4 +1,4 @@
-"""Track people with YOLO26n, a learned 64D feature, and BoT-SORT."""
+"""Track people with YOLO26n and the project-owned causal tracking policy."""
 from __future__ import annotations
 
 import argparse
@@ -10,15 +10,13 @@ import time
 
 import cv2
 import torch
-from ultralytics.engine.results import Boxes
 from ultralytics.trackers.bot_sort import BOTSORT
 from ultralytics.utils import IterableSimpleNamespace, YAML
 from ultralytics.utils.checks import check_yaml
-from ultralytics.utils.nms import non_max_suppression
 
-from tracker.data import letterbox, restore_boxes
-from tracker.association import GuardedOwnerBOTSORT
+from tracker.causal import CausalPersonTracker
 from tracker.model import TrackingYOLO
+from tracker.runtime import CausalTrackerRuntime
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -73,62 +71,28 @@ def run_sequence(
     tracker = (
         BOTSORT(IterableSimpleNamespace(**config))
         if owner_checkpoint is None
-        else GuardedOwnerBOTSORT(
+        else CausalPersonTracker(
             IterableSimpleNamespace(**config),
             owner_checkpoint,
-            alpha=assignment_alpha,
+            owner_alpha=assignment_alpha,
             average_base_cost_budget=assignment_cost_budget,
         )
     )
+    runtime = CausalTrackerRuntime(
+        model,
+        tracker,
+        device=device,
+        with_reid=with_reid,
+        feature_mode=feature_mode,
+        min_detections_for_reid=min_detections_for_reid,
+    )
     rows = []
-    reid_frames = 0
-    reid_detections = 0
-    compute_seconds = 0.0
     total_started = time.perf_counter()
     for frame_number, path in enumerate(image_paths, 1):
         original = cv2.imread(str(path))
         if original is None:
             raise FileNotFoundError(path)
-        image, _ = letterbox(original, [], 640)
-        image = image.unsqueeze(0).to(device)
-
-        started = time.perf_counter()
-        raw, pyramid = model.extract(image)
-        prediction = raw[0] if isinstance(raw, tuple) else raw
-        detections = non_max_suppression(
-            prediction,
-            conf_thres=0.1,
-            iou_thres=0.7,
-            classes=[0],
-            max_det=300,
-        )[0]
-        if len(detections):
-            boxes = detections[:, :4]
-            use_reid = with_reid and len(detections) >= min_detections_for_reid
-            if use_reid and feature_mode == "raw":
-                features = torch.nn.functional.normalize(
-                    model.pool_boxes(pyramid, [boxes]),
-                    dim=1,
-                )
-            else:
-                features = model.embed_boxes(pyramid, [boxes]) if use_reid else None
-            if features is not None:
-                reid_frames += 1
-                reid_detections += len(features)
-            original_boxes = restore_boxes(boxes, original.shape[:2])
-            results = Boxes(
-                torch.cat((original_boxes, detections[:, 4:6]), 1).cpu(),
-                original.shape[:2],
-            ).numpy()
-            tracks = tracker.update(
-                results,
-                original,
-                feats=features.float().cpu().numpy() if features is not None else None,
-            )
-        else:
-            results = Boxes(torch.empty((0, 6)), original.shape[:2]).numpy()
-            tracks = tracker.update(results, original, feats=None)
-        compute_seconds += time.perf_counter() - started
+        tracks = runtime.step(original)
 
         for track in tracks:
             x1, y1, x2, y2, public_id, score, _cls, _index = track.tolist()
@@ -157,16 +121,17 @@ def run_sequence(
                 )
                 + "\n"
             )
+    runtime_stats = runtime.stats()
     return {
         "sequence": sequence,
         "frames": len(image_paths),
         "rows": len(rows),
-        "reid_frames": reid_frames,
-        "reid_detections": reid_detections,
-        "compute_fps": len(image_paths) / compute_seconds,
+        "reid_frames": runtime_stats["reid_frames"],
+        "reid_detections": runtime_stats["reid_detections"],
+        "compute_fps": len(image_paths) / runtime_stats["compute_seconds"],
         "pipeline_fps": len(image_paths) / (time.perf_counter() - total_started),
-        "owner_tiebreak_frames": getattr(tracker, "owner_tiebreak_frames", 0),
-        "owner_changed_frames": getattr(tracker, "owner_changed_frames", 0),
+        "owner_tiebreak_frames": runtime_stats["owner_tiebreak_frames"],
+        "owner_changed_frames": runtime_stats["owner_changed_frames"],
     }
 
 
@@ -187,7 +152,7 @@ def main():
         "--new-track-threshold",
         type=float,
         default=0.45,
-        help="Minimum detection score for starting a new BoT-SORT track.",
+        help="Minimum detection score for starting a new track.",
     )
     parser.add_argument(
         "--feature-mode",
@@ -198,7 +163,7 @@ def main():
     parser.add_argument(
         "--disable-reid",
         action="store_true",
-        help="Use the identical detector/BoT-SORT path without appearance features.",
+        help="Use the identical detector path with the unguarded reference tracker.",
     )
     parser.add_argument(
         "--owner-head",
@@ -276,8 +241,8 @@ def main():
                 f"YOLO26n + {args.feature_mode} appearance feature + Ultralytics BoT-SORT"
                 if owner_path is None
                 else (
-                    f"YOLO26n + {args.feature_mode} appearance feature + Ultralytics "
-                    "BoT-SORT + guarded owner-continuity tie-break"
+                    f"YOLO26n + {args.feature_mode} appearance feature + project-owned "
+                    "causal tracker + guarded owner-continuity tie-break"
                 )
             )
         ),
