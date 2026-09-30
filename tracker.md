@@ -284,6 +284,10 @@ The development candidate is now packaged as one deployable tracker artifact. `s
 
 Freeze this development candidate before protected evaluation. Further development changes require a new evidence-backed reason rather than parameter search.
 
+The frozen packaged candidate has now been evaluated on the protected set `0096/0004/0005/0007/0010` with no post-hoc tuning. Combined protected performance is **24.80 HOTA / 29.65 AssA / 20.76 DetA / 29.74 IDF1 / 135 IDSW / 260 Frag / 24.98% recall / 97.46% precision**. The official YOLO26n + stock BoT-SORT reference on the same five sequences gives **22.88 HOTA / 25.66 AssA / 20.45 DetA / 27.66 IDF1 / 189 IDSW / 289 Frag / 24.59% recall / 96.86% precision**. The frozen tracker therefore generalizes its association gain: about **+1.92 HOTA, +3.98 AssA, +2.09 IDF1, and 54 fewer switches**, while detector recall remains the dominant limitation on the short dense clips. Sequence `0096` itself reaches **38.74 HOTA / 35.55 AssA / 48.23 IDF1**; the four 120-frame clips have very low detector recall for both the candidate and baseline regime.
+
+Do not tune on these protected results. The remaining acceptance item is deployment: verify **>=15 FPS on Orin Nano Super 8 GB** using the frozen bundle and configuration.
+
 Do not spend more development time on detached public-ID remapping, generic crop backbones, gap-only metric heads, or always-on secondary ReID unless a new dataset or stronger supervision changes the evidence.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
