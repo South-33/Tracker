@@ -1,71 +1,54 @@
-This is the project's AGENTS.md.
+# Agent Rules
 
-# Non-negotiable project goal
+Read `tracker.md` before doing research work.
+
+## Goal
 
 Build one small causal neural person tracker by post-training YOLO26n on ordered
-human video sequences.
+human video:
 
     frame + bounded neural memory
-        -> boxes + confidence + anonymous track slots + updated memory
+        -> person boxes + confidence + anonymous track slots + updated memory
 
-The active model itself must own identity continuity.
+The neural model itself must own identity continuity.
 
-## Anti-drift rules
+## Hard boundaries
 
-- No BoT-SORT, ByteTrack, Kalman filter, Hungarian online association, external
-  ReID model, owner scorer, or hand-written ID lifecycle in the active inference
-  path.
-- Those systems may exist only as frozen comparison baselines.
-- If a proposed solution says "YOLO detections -> tracker", stop. That is the
-  legacy direction, not the goal.
-- The slot/memory state must be bounded and causal. No future frames at
-  inference.
-- Train on contiguous ordered clips with track IDs. Do not turn video training
-  into shuffled independent frames.
-- Temporal augmentations must be consistent across each clip.
-- A memory-reset ablation is mandatory for every serious candidate.
-- Prefer one clear temporal architecture over stacks of auxiliary models.
+- No BoT-SORT, ByteTrack, Kalman filter, online Hungarian association,
+  external ReID model, owner scorer, or hand-written ID lifecycle in the active
+  inference path.
+- Classical trackers are comparison baselines only.
+- Training uses contiguous ordered clips with track IDs, never shuffled
+  independent frames pretending to be video.
+- Inference is causal and memory is bounded.
+- Every serious candidate gets a running-memory vs reset-memory ablation.
+- Do not train on benchmark-only data.
 
-## Dataset policy
+## How to work
 
-Active training datasets:
+- Work only on `main`.
+- Before experimenting, read existing code, `tracker.md`, recent commits and
+  relevant existing runs so completed work is not repeated.
+- Use judgment. You are allowed to spend substantial time researching papers,
+  implementations, datasets or related ideas before touching code when that can
+  change the quality of the approach.
+- Take real shots. A good experiment may be a tiny probe, a new architecture, a
+  long training run, a larger dataset pass or a risky intuition-driven idea.
+  Choose the scale that matches the expected information or upside.
+- Do not confuse caution with rigor. Bold changes are welcome when they attack
+  the project goal directly and can teach us something important.
+- Do not confuse activity with progress either. Avoid endless micro-tuning,
+  cosmetic refactors, broad sweeps without a reason, or building infrastructure
+  that does not answer a research question.
+- After an experiment, make a decision: promote, reject, or change direction.
+- Record only durable evidence/decisions in `tracker.md`; do not log speculative
+  hypotheses or per-pass plans there.
+- Delete rejected one-off code and stale generated clutter. Keep only reusable
+  code that serves the active goal.
+- Git history is the archive. The previous tracker is tagged
+  `legacy-botsort-v1`.
+- Use commits as checkpoints. No normal research worktrees or backup branches.
+- Before committing, run `python scripts/check_repo.py`.
 
-- PersonPath22: varied real-world human video.
-- DanceTrack: difficult crossings/crowd association.
-- SportsMOT: running and fast motion.
-
-Benchmark-only:
-
-- held-out DanceTrack/SportsMOT splits
-- MOT17
-- optionally MOT20 for extreme crowds
-
-Do not train on benchmark-only videos.
-
-## Research workflow
-
-1. Start from official pretrained YOLO26n.
-2. Preserve its useful person-detection knowledge.
-3. Add the smallest bounded neural temporal memory that can plausibly maintain
-   anonymous person slots.
-4. Train on ordered clips with boxes + track IDs.
-5. Compare normal memory vs memory reset.
-6. Compare against stock YOLO26n + BoT-SORT.
-7. Only add complexity when a focused experiment proves a missing capability.
-
-The original Jetson Nano Super >=15 FPS target still matters, but architecture
-research happens on the RTX 4060 first. Prefer operations that can later map to
-FP16/TensorRT, but do not weaken the core temporal-learning experiment just to
-optimize deployment early.
-
-## Repository rules
-
-- Work only on main.
-- Use Git commits as checkpoints. Push meaningful checkpoints.
-- No normal research worktrees or backup branches.
-- Keep the active repo small. Git history is the archive.
-- The old tracker is archived at tag legacy-botsort-v1.
-- Do not reintroduce legacy tracker code merely because it already works.
-- Generated data, runs and weights remain untracked.
-- README.md defines the active architecture and dataset plan.
-- tracker.md records only current temporal-model decisions and experiments.
+If the active path becomes "YOLO detections -> external tracker", stop: that is
+the archived direction, not this project.
