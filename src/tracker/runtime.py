@@ -28,17 +28,21 @@ class CausalTrackerRuntime:
         with_reid: bool,
         feature_mode: str = "trained",
         min_detections_for_reid: int = 10,
+        detector_confidence: float = 0.1,
     ):
         if min_detections_for_reid < 1:
             raise ValueError("min_detections_for_reid must be at least 1")
         if feature_mode not in {"trained", "random", "raw"}:
             raise ValueError(f"unsupported feature mode: {feature_mode}")
+        if not 0 <= detector_confidence <= 1:
+            raise ValueError("detector_confidence must be between 0 and 1")
         self.model = model
         self.association = association
         self.device = device
         self.with_reid = bool(with_reid)
         self.feature_mode = feature_mode
         self.min_detections_for_reid = int(min_detections_for_reid)
+        self.detector_confidence = float(detector_confidence)
         self.frames = 0
         self.reid_frames = 0
         self.reid_detections = 0
@@ -58,7 +62,7 @@ class CausalTrackerRuntime:
         prediction = raw[0] if isinstance(raw, tuple) else raw
         detections = non_max_suppression(
             prediction,
-            conf_thres=0.1,
+            conf_thres=self.detector_confidence,
             iou_thres=0.7,
             classes=[0],
             max_det=300,

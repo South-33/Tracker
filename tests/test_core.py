@@ -147,6 +147,16 @@ class CausalRuntimeTests(unittest.TestCase):
             },
         )
 
+    def test_rejects_invalid_detector_confidence(self):
+        with self.assertRaises(ValueError):
+            CausalTrackerRuntime(
+                SimpleNamespace(),
+                SimpleNamespace(),
+                device=torch.device("cpu"),
+                with_reid=False,
+                detector_confidence=1.1,
+            )
+
 
 class TrackerConfigTests(unittest.TestCase):
     def test_current_candidate_defaults_are_explicit(self):

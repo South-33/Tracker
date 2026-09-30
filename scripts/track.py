@@ -31,6 +31,7 @@ def tracker_config(
     appearance_threshold,
     with_reid=True,
     new_track_threshold=0.45,
+    track_low_threshold=0.10,
     gmc_method="sparseOptFlow",
 ):
     config = YAML.load(check_yaml("botsort.yaml"))
@@ -39,6 +40,7 @@ def tracker_config(
     config["device"] = str(device)
     config["appearance_thresh"] = appearance_threshold
     config["new_track_thresh"] = new_track_threshold
+    config["track_low_thresh"] = track_low_threshold
     config["gmc_method"] = gmc_method
     return config
 
@@ -55,6 +57,8 @@ def run_sequence(
     min_detections_for_reid,
     appearance_threshold,
     new_track_threshold,
+    track_low_threshold=0.10,
+    detector_confidence=0.10,
     owner_checkpoint=None,
     assignment_alpha=0.2,
     assignment_cost_budget=0.00025,
@@ -71,6 +75,7 @@ def run_sequence(
         appearance_threshold,
         with_reid=with_reid,
         new_track_threshold=new_track_threshold,
+        track_low_threshold=track_low_threshold,
         gmc_method=gmc_method,
     )
     tracker = (
@@ -91,6 +96,7 @@ def run_sequence(
         with_reid=with_reid,
         feature_mode=feature_mode,
         min_detections_for_reid=min_detections_for_reid,
+        detector_confidence=detector_confidence,
     )
     rows = []
     total_started = time.perf_counter()
@@ -161,6 +167,18 @@ def main():
         help="Minimum detection score for starting a new track.",
     )
     parser.add_argument(
+        "--track-low-threshold",
+        type=float,
+        default=0.10,
+        help="Minimum score for low-confidence recovery detections.",
+    )
+    parser.add_argument(
+        "--detector-confidence",
+        type=float,
+        default=0.10,
+        help="Pre-tracker detector confidence floor.",
+    )
+    parser.add_argument(
         "--feature-mode",
         choices=("trained", "random", "raw"),
         default="trained",
@@ -195,6 +213,14 @@ def main():
         raise ValueError("--min-detections-for-reid must be at least 1")
     if not 0 <= args.new_track_threshold <= 1:
         raise ValueError("--new-track-threshold must be between 0 and 1")
+    if not 0 <= args.track_low_threshold <= 1:
+        raise ValueError("--track-low-threshold must be between 0 and 1")
+    if not 0 <= args.detector_confidence <= 1:
+        raise ValueError("--detector-confidence must be between 0 and 1")
+    if args.detector_confidence > args.track_low_threshold:
+        raise ValueError(
+            "--detector-confidence must be <= --track-low-threshold"
+        )
     if args.assignment_alpha < 0:
         raise ValueError("--assignment-alpha must be non-negative")
     if args.assignment_cost_budget < 0:
@@ -247,6 +273,8 @@ def main():
             min_detections_for_reid=args.min_detections_for_reid,
             appearance_threshold=args.appearance_threshold,
             new_track_threshold=args.new_track_threshold,
+            track_low_threshold=args.track_low_threshold,
+            detector_confidence=args.detector_confidence,
             owner_checkpoint=owner_path,
             assignment_alpha=args.assignment_alpha,
             assignment_cost_budget=args.assignment_cost_budget,
@@ -307,7 +335,7 @@ def main():
         ),
         "detector_settings": {
             "classes": [0],
-            "conf": 0.1,
+            "conf": args.detector_confidence,
             "iou": 0.7,
             "imgsz": 640,
         },
@@ -316,6 +344,7 @@ def main():
             args.appearance_threshold,
             with_reid=not args.disable_reid,
             new_track_threshold=args.new_track_threshold,
+            track_low_threshold=args.track_low_threshold,
             gmc_method=args.gmc_method,
         ),
         "reid_gate": {
