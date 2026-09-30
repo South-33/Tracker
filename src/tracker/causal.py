@@ -18,7 +18,7 @@ class CausalPersonTracker:
     def __init__(
         self,
         args,
-        owner_checkpoint: str | Path,
+        owner_checkpoint: str | Path | dict,
         *,
         owner_alpha: float = 0.2,
         average_base_cost_budget: float = 0.00025,

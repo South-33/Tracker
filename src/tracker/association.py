@@ -22,8 +22,12 @@ class OwnerContinuityScorer(nn.Module):
         return self.net(features).squeeze(-1)
 
 
-def load_owner_scorer(path: str | Path):
-    checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+def load_owner_scorer(source: str | Path | dict):
+    checkpoint = (
+        source
+        if isinstance(source, dict)
+        else torch.load(source, map_location="cpu", weights_only=False)
+    )
     scorer = OwnerContinuityScorer(checkpoint.get("input_dim", 11))
     state = checkpoint["pair"]
     if any(key.startswith("net.") for key in state):

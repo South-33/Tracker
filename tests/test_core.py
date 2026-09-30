@@ -12,6 +12,7 @@ from tracker.causal import CausalPersonTracker
 from tracker.data import DanceTrackPairs, letterbox, restore_boxes
 from tracker.model import identity_retrieval_loss
 from tracker.runtime import CausalTrackerRuntime
+from tracker.system import TrackerConfig
 
 
 class LetterboxTests(unittest.TestCase):
@@ -145,6 +146,17 @@ class CausalRuntimeTests(unittest.TestCase):
                 "owner_changed_frames": 0,
             },
         )
+
+
+class TrackerConfigTests(unittest.TestCase):
+    def test_current_candidate_defaults_are_explicit(self):
+        config = TrackerConfig()
+        self.assertEqual(config.new_track_thresh, 0.45)
+        self.assertEqual(config.track_buffer, 30)
+        self.assertEqual(config.gmc_method, "sparseOptFlow")
+        self.assertEqual(config.gmc_max_corners, 100)
+        self.assertEqual(config.min_detections_for_reid, 10)
+        self.assertEqual(config.owner_average_base_cost_budget, 0.00025)
 
 
 class CausalPersonTrackerTests(unittest.TestCase):

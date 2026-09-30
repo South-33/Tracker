@@ -13,10 +13,18 @@ from ultralytics import YOLO
 class TrackingYOLO(nn.Module):
     """Frozen YOLO26n perception with a trainable 64D tracking embedding."""
 
-    def __init__(self, weights: str | Path, embedding_dim: int = 64):
+    def __init__(
+        self,
+        weights: str | Path | nn.Module,
+        embedding_dim: int = 64,
+    ):
         super().__init__()
         self.embedding_dim = embedding_dim
-        self.detector = YOLO(str(weights)).model
+        self.detector = (
+            weights
+            if isinstance(weights, nn.Module)
+            else YOLO(str(weights)).model
+        )
         detect = self.detector.model[-1]
         channels = [branch[0].conv.in_channels for branch in detect.cv2]
         self.strides = [int(x) for x in detect.stride.tolist()]
