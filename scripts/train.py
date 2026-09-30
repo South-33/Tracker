@@ -144,7 +144,7 @@ def main():
     personpath_videos = json.loads((ROOT / "data" / "personpath22" / "starter.json").read_text())["videos"]
     dancetrack_train = [
         "dancetrack0001", "dancetrack0002", "dancetrack0006", "dancetrack0008",
-        "dancetrack0015", "dancetrack0082", "dancetrack0083",
+        "dancetrack0015",
     ]
     dancetrack_validation = ["dancetrack0012"]
     personpath = PersonPathTriples(ROOT / "data" / "personpath22", personpath_videos)

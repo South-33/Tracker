@@ -145,7 +145,18 @@ class DanceTrackTriples(Dataset):
             config = configparser.ConfigParser()
             config.read(sequence_dir / "seqinfo.ini")
             fps = float(config["Sequence"]["frameRate"])
+            sequence_length = int(config["Sequence"]["seqLength"])
             self.fps[sequence] = fps
+
+            image_frames = {
+                int(path.stem) for path in (sequence_dir / "img1").glob("*.jpg")
+            }
+            missing_images = sorted(set(range(1, sequence_length + 1)) - image_frames)
+            if missing_images:
+                raise RuntimeError(
+                    f"{sequence} is incomplete: missing {len(missing_images)} of "
+                    f"{sequence_length} image frames (first missing: {missing_images[0]})"
+                )
 
             frame_map = {}
             for line in (sequence_dir / "gt" / "gt.txt").read_text().splitlines():

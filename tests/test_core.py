@@ -1,9 +1,11 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
 import torch
 
-from tracker.data import letterbox, restore_boxes
+from tracker.data import DanceTrackTriples, letterbox, restore_boxes
 from tracker.model import pair_geometry
 
 
@@ -41,6 +43,24 @@ class GeometryTests(unittest.TestCase):
         self.assertAlmostEqual(features[0, 0, 8].item(), 1.0, places=6)
         self.assertAlmostEqual(features[0, 0, 6].item(), 0.0, places=6)
         self.assertAlmostEqual(features[0, 0, 7].item(), 0.0, places=6)
+
+
+class DanceTrackDataTests(unittest.TestCase):
+    def test_incomplete_sequence_fails_during_dataset_setup(self):
+        with TemporaryDirectory() as directory:
+            sequence = Path(directory) / "dancetrack0001"
+            (sequence / "img1").mkdir(parents=True)
+            (sequence / "gt").mkdir()
+            (sequence / "img1" / "00000001.jpg").touch()
+            (sequence / "gt" / "gt.txt").write_text(
+                "1,1,0,0,10,10,1,1,1\n", encoding="utf-8"
+            )
+            (sequence / "seqinfo.ini").write_text(
+                "[Sequence]\nframeRate=30\nseqLength=2\n", encoding="utf-8"
+            )
+
+            with self.assertRaisesRegex(RuntimeError, "incomplete"):
+                DanceTrackTriples(directory, ["dancetrack0001"])
 
 
 if __name__ == "__main__":
