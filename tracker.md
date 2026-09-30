@@ -104,6 +104,8 @@ So useful appearance information is not available for free from the raw detector
 
 The active code now trains only the 64D embedding with symmetric identity retrieval on post-NMS detections. Training alternates the five-video PersonPath22 starter slice with complete DanceTrack train sequences `0001/0002/0006/0008/0015`; DanceTrack `0012` is held out. A 500-step probe improved held-out top-1 identity retrieval from **42.63% to 57.67%**.
 
+The final reproducibility rerun was made from clean commit `a094e28` with `repo_dirty: false`. Its checkpoint SHA-256 is `b0fbba5b59cac80c52f584f5328a9c937a9cc184e69a94b47730c1907972c3fc`. The learned embedding tensors are bit-for-bit identical to the earlier head used for the tracking metrics below, so those metrics apply to this clean checkpoint without a second tracking run.
+
 The learned feature is passed to BoT-SORT only when a frame has at least 10 detections. Two comparisons matter:
 
 ```text
