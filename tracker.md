@@ -1,238 +1,285 @@
 # Temporal YOLO Tracker
 
-This file is the stable research operating system for the project. It should
-contain durable context, rules and evidence that a fresh agent will still need
-later. Do not use it as a scratchpad, task list or place to write hypotheses
-before they are tested.
+This file contains the parts of the project that should stay useful over many
+research passes: the goal, data rules, research loop, evidence standards,
+current model, and results that future agents should know.
+
+Do not use this file for brainstorming, todo lists, or ideas that have not been
+tested yet.
 
 ## 1. Project goal
 
-Post-train pretrained YOLO26n on ordered human video so one causal neural model
-learns both person detection and anonymous identity continuity:
+Start from pretrained YOLO26n and post-train it on ordered human video with
+person track IDs.
 
-    current frame + bounded neural memory
-        -> person boxes + confidence + stable track slots + updated memory
+We want YOLO26n to keep doing person detection, but also learn tracking itself:
 
-The core bet is that YOLO26n already has strong visual knowledge of people but
-standard image detection training does not teach persistent temporal state.
-Sequence post-training with boxes + person IDs may teach motion, pose changes,
-crossings, occlusion, disappearance and recovery directly in the network.
+- output a bounding box for each visible person
+- output an anonymous ID for each person
+- keep the same ID for the same person from frame to frame
+- keep that ID through motion, turning, crossings, and partial occlusion
+- recover the same ID after a short disappearance when the video gives enough
+  information to do so
 
-The model, not external tracking code, must decide identity continuity.
+The model may carry a small fixed-size learned state from previous frames so it
+has some context about what it has already seen. The exact form of that state is
+an implementation choice, not part of the project goal.
+
+The main bet is simple:
+
+YOLO26n already knows a lot about what people look like. Standard object
+detection training mostly teaches it from individual images. It is not normally
+trained to understand that frame 2 follows frame 1, that a person moved from one
+place to another, turned around, crossed someone else, disappeared, and came
+back.
+
+If we post-train YOLO26n on ordered video clips with person IDs, while letting it
+carry a small amount of information from previous frames, maybe the model itself
+can learn tracking without needing BoT-SORT or another tracker after it.
+
+That is the project.
 
 ## 2. What counts as the project result
 
-Allowed in the active model:
+The active model may use:
 
-- pretrained YOLO26n visual features
-- bounded learned temporal memory
-- learned neural track slots / recurrent state
-- ordinary tensor post-processing such as confidence filtering
+- pretrained YOLO26n features
+- learned state carried from previous frames
+- learned layers that use current features together with previous-frame state
+- normal tensor post-processing such as confidence filtering
 
-Not allowed to own identity at inference:
+The following may be used for comparison or diagnostics, but they must not
+assign IDs when the active model is running:
 
-- BoT-SORT or ByteTrack
+- BoT-SORT
+- ByteTrack
 - Kalman tracking
-- online Hungarian association
-- external ReID
-- hand-written birth/lost/recovery identity rules
-- a second tracker hidden behind YOLO outputs
+- online Hungarian matching
+- an external ReID model
+- hand-written rules for when an ID starts, disappears, returns, or changes
+- another tracker placed after YOLO detections
 
-Those methods may exist only as frozen comparison baselines.
-
-Training-only target assignment is allowed. For example, matching a ground-truth
-identity to a neural slot when it first appears in a training clip is supervision,
-not inference-time tracking.
+During training, it is fine to use matching code to tell the model which target
+identity it should learn. That is supervision, not inference-time tracking.
 
 ## 3. Data policy
 
-Train on human video that covers complementary motion regimes:
+Training data should cover different kinds of human motion instead of relying on
+one style of video.
 
-- **PersonPath22**: broad real-world people, pose, scale, viewpoint and occlusion.
-- **DanceTrack**: similar-looking people, crossings, deformation and crowds.
-- **SportsMOT**: running, acceleration, rapid direction changes, overlap and
-  camera motion.
+- **PersonPath22**: everyday people, different scales, poses, camera views, and
+  occlusions.
+- **DanceTrack**: people crossing, similar appearances, deformation, and crowds.
+- **SportsMOT**: running, acceleration, fast direction changes, overlap, and
+  moving cameras.
 
-Benchmark-only:
+Benchmark-only data:
 
 - held-out DanceTrack
 - held-out SportsMOT
 - MOT17
-- MOT20 only when an extreme-crowd stress test is useful
+- MOT20 when an extreme-crowd test is useful
 
 Do not train on benchmark-only videos.
 
-Training samples are contiguous ordered clips. Randomize which clip is sampled,
-not the order of frames inside it. Spatial/color augmentation that changes
-geometry or appearance across a clip must be temporally consistent unless the
-experiment explicitly studies otherwise.
+A training sample is an ordered contiguous clip. Keep the frame order inside the
+clip.
+
+If an augmentation changes the scene geometry or appearance, apply it
+consistently across the clip unless an experiment is specifically testing
+something else.
 
 ## 4. Research loop
 
-Use this simple loop indefinitely:
+Use this loop repeatedly.
 
-### 1. Find the weakness
+### 1. Find the biggest weakness in the latest result
 
-Start from the latest meaningful result. Ask what is actually failing or holding
-the model back: detection, identity continuity, occlusion recovery, motion,
-memory usage, speed, data coverage, or something else.
-
-Use diagnostics when needed. Do not start by asking "what can I tweak?"
-
-### 2. Paint it red
-
-Before spending a lot of effort building a solution, test whether the suspected
-capability would matter if we could simply give it to the system.
-
-Use an oracle, forced input, exaggerated intervention, privileged signal or
-temporary cheat when possible. The point is not to build something deployable.
-The point is to answer:
-
-> If this weakness were fixed, would the tracker actually get meaningfully better?
+Start from the latest meaningful result and ask what the model is actually
+failing to do.
 
 Examples:
 
-- give perfect previous-frame position to test whether motion is the bottleneck
-- preserve the correct identity through an occlusion to measure recovery
-  headroom
-- give much longer context to test whether context length is limiting
-- substitute ground-truth detections to separate detection from association
-- force memory on/off to measure whether the model is using temporal state
+- it misses people
+- IDs switch when people cross
+- it forgets people after an occlusion
+- it performs the same even when previous-frame state is removed
+- it handles walking but not running
+- it needs more past context
+- it is too slow
+- the training data does not contain enough of the failure case
 
-If the red-painted/oracle version barely helps, the suspected weakness is
-probably not worth learning properly. Find the next weakness.
+Use diagnostics when the failure is unclear.
 
-If it helps a lot, there is real headroom. Now we know what capability is worth
-building.
+Do not begin with "what parameter can I tweak?" Begin with "what is the model
+failing to do?"
 
-### 3. Take the real shot
+### 2. Test whether fixing that weakness would matter
 
-Build or train a realistic way for the model to learn that capability.
+Before spending a lot of time teaching the model a new capability, temporarily
+give the system that capability in the easiest possible way and measure the
+result.
 
-Use whatever scale makes sense. It can be a quick probe, literature exploration,
-a risky architecture change, substantially more data, or a long training run.
-Good intuition is a valid reason to try something. Do not make an idea artificially
-small just to be cautious.
+This is only a diagnostic. It does not need to be a valid final solution. It may
+use ground truth or information the final model would not be allowed to use.
 
-The requirement is not "small experiment." The requirement is "meaningful
-experiment."
+The purpose is to answer one question:
 
-For temporal candidates, running-memory vs reset-memory remains a required
-control. If memory can be reset without meaningful loss, the model has not
-demonstrated the temporal capability we care about.
+> If this problem were fixed, would the tracker improve enough to make it worth
+> working on?
 
-### 4. Decide, record, clean
+Examples:
 
-End with a decision:
+- use ground-truth person boxes to measure how much missed detections are
+  limiting tracking
+- give the correct previous position to measure how much better motion knowledge
+  could help
+- keep the correct ID through an occlusion to measure how much better recovery
+  could help
+- give much more previous context to test whether the current context is too
+  short
+- compare normal previous-frame state with resetting it every frame to test
+  whether the model is actually using temporal information
 
-- **Promote**: keep it because evidence says it advances the goal.
-- **Reject**: stop pursuing it by default.
-- **Redirect**: the experiment revealed a different bottleneck; attack that
-  instead.
+If this temporary fix barely improves the result, do not spend a large amount of
+time teaching the model that capability. Look for a more important weakness.
 
-Only after the result is known, write durable evidence into **Established
-evidence** when it will matter to a future agent. Record the tested idea,
-important numbers and conclusion, not brainstorming or future plans.
+If it improves the result a lot, then we have evidence that the capability is
+worth learning properly.
 
-Then delete rejected one-off code and stale clutter, keep only reusable active
-code, update tests when needed, run `python scripts/check_repo.py`, checkpoint
-`main`, and continue the loop.
+### 3. Try to make the model learn it for real
 
-Reading all repository context is a bootstrap action for a fresh or confused
-agent, not a mandatory step on every pass.
+Now build or train a realistic solution that gives the model that capability
+without the temporary shortcut.
+
+Use the scale the idea deserves. This may mean:
+
+- a small diagnostic experiment
+- spending time reading papers or source code first
+- changing the architecture
+- training for much longer
+- using more or better-targeted data
+- increasing the amount of previous context
+- trying a risky idea because there is a good technical reason for it
+
+The experiment does not need to be small or safe. It needs to have a clear
+reason and a real chance of teaching us something useful.
+
+For models that carry state between frames, compare normal carried state against
+resetting that state every frame. If resetting it does not meaningfully hurt
+tracking, the model has not shown that it learned useful temporal tracking.
+
+### 4. Decide, record, and clean up
+
+After the result, make a clear decision:
+
+- **Keep it** if it meaningfully advances the project.
+- **Stop pursuing it** if the evidence says it is not helping enough.
+- **Change direction** if the result reveals that a different problem matters
+  more.
+
+Only after the experiment is finished, add a short result to **Established
+evidence** if it will help a future agent avoid repeating work or understand why
+the project changed direction.
+
+Record what was tested, the important numbers, and the conclusion. Do not record
+brainstorming or future plans.
+
+Delete rejected one-off code and stale files, keep only reusable active code,
+update tests when needed, run `python scripts/check_repo.py`, checkpoint `main`,
+and continue.
+
+Reading all repository context is useful when an agent is new or confused. It is
+not a required step before every experiment.
 
 ## 5. Evidence standards
 
-Use the weakest claim supported by the evidence.
+Say only what the evidence supports.
 
-- One-clip overfit proves trainability, not generalization.
-- Lower training loss does not prove tracking.
-- Memory is useful only if running memory beats a reset-memory control on unseen
-  sequences.
-- A development improvement is not a final result until checked on a sealed
-  holdout.
-- Holdout data becomes consumed after evaluation and must not guide later
-  tuning.
-- Speed measured on the RTX 4060 is development evidence, not Jetson
-  verification.
+- Overfitting one clip proves the model can learn that clip. It does not prove
+  generalization.
+- Lower training loss does not prove better tracking.
+- Previous-frame state is useful only if the model performs meaningfully worse
+  when that state is reset on unseen video.
+- A development improvement is not a final result until it is checked on data
+  that was not used to choose the model.
+- Once a holdout result has been seen, do not use that holdout to tune the next
+  model.
+- Speed on the RTX 4060 does not prove speed on Jetson hardware.
 
-Prefer HOTA, DetA, AssA, IDF1, ID switches, recall, precision and FPS for
-tracking evaluation. Also inspect behavior by motion/crowd regime when a single
-aggregate would hide the failure mode.
+For tracking, report HOTA, DetA, AssA, IDF1, ID switches, recall, precision, and
+FPS when they are relevant. Also look at the specific failure type when an
+average score hides what is going wrong.
 
-## 6. Freedom without drift
+## 6. Freedom without going in circles
 
-The project should remain understandable by one agent after reading these two
-Markdown files and the small active source tree.
+Agents have broad research freedom. They may change the model, losses, previous-
+frame state, training method, datasets, context length, or large parts of the
+implementation when there is a good reason.
 
-Agents have broad research freedom. New heads, losses, memory structures,
-training curricula, architectures, datasets and substantial rewrites are all
-allowed when they are plausible ways to attack the goal.
+Do not stay simple just for the sake of being simple. A more complicated idea is
+fine if it is needed to create a useful capability.
 
-The constraint is not "stay simple at all costs." The constraint is "earn the
-complexity." A complicated approach is fine if it creates a capability or gives
-us a real test that a simpler one cannot.
+Also do not keep trying many small versions of the same failed idea when they
+keep failing for the same understood reason. Either make a meaningful change to
+the idea or move to a different weakness.
 
-Likewise, do not give up on a promising direction merely because the first small
-probe fails. If the agent has a concrete reason to believe scale, data, training
-time or a structural change could unlock it, take the larger shot. What should
-stop is blind repetition: many variants that fail for the same understood reason
-without introducing new information.
+Keep the active repository easy to understand. Delete failed machinery instead
+of leaving many unused alternatives in the active tree.
 
-Prefer deleting failed machinery over leaving dormant alternatives in the
-active tree.
+## 7. Current prototype
 
-## 7. Current neural foundation
+The current implementation is only the first way we are trying the idea. It is
+not the definition of the project.
 
-The first implementation is intentionally small:
+Right now it uses:
 
-- official pretrained YOLO26n visual backbone/neck
-- 640 px person-only video
-- 64 persistent neural track slots
-- 128D state per slot
-- 8 contiguous frames during the initial training experiments
-- temporal head attends to current YOLO feature maps and recurrently updates
-  each slot
-- each slot predicts alive/confidence + normalized box
-- slot index is the anonymous identity
-- no external identity association at inference
+- pretrained YOLO26n visual features
+- 640 px input
+- 8 ordered frames during the initial training experiments
+- 64 learned person slots
+- a 128-value learned state for each slot
+- a learned module that looks at current YOLO features and updates those slots
+- each slot predicts whether a person is present and where their box is
+- the slot number acts as the anonymous ID
 
-This architecture is a starting point, not a sacred design. Change it when
-evidence shows a simpler or better structure is needed.
+There is no external tracker assigning IDs when the model runs.
+
+If another learned state design works better, we should replace this one.
 
 ## 8. Established evidence
 
-### 2026-10-01 - Stage-0 temporal smoke test: PROMOTE FOUNDATION
+### 2026-10-01 - First temporal training smoke test: KEEP AS FOUNDATION
 
-One real 8-frame DanceTrack training clip contained 56 visible person targets.
-YOLO26n visual weights were frozen and only the 64-slot / 128D temporal head was
-trained for 100 steps.
+The current 64-slot / 128-state prototype was trained on one real 8-frame
+DanceTrack clip containing 56 visible person targets. YOLO26n visual weights were
+frozen and only the temporal part was trained for 100 steps.
 
     sequence loss:              2.3941 -> 0.2011
-    fitted running-memory loss: 0.2034
-    reset-every-frame loss:     0.2326
-    reset / running:            1.143
+    normal carried-state loss:  0.2034
+    state-reset-every-frame:    0.2326
+    reset / normal:             1.143
 
-Conclusion: the minimal recurrent-slot model can overfit a real ordered clip,
-and its fitted result uses temporal state enough that resetting memory makes the
-loss about 14% worse. This establishes trainability only. It does not establish
-generalization or competitive tracking quality.
+Conclusion: the prototype can learn one ordered clip, and resetting its carried
+state makes the fitted result about 14% worse. This only proves that the current
+prototype can learn and use some previous-frame state on that clip. It does not
+prove that tracking generalizes to unseen video.
 
-### Legacy external-tracker direction: ARCHIVED
+### Previous external-tracker direction: ARCHIVED
 
-The previous YOLO26n + learned appearance + project-owned classical association
-system is preserved at Git tag `legacy-botsort-v1` (commit `a9bed6c`).
+The old YOLO26n + learned appearance + classical association system is preserved
+at Git tag `legacy-botsort-v1` (commit `a9bed6c`).
 
-It was a useful baseline, but it is not the requested architecture. Do not
-reintroduce its association/lifecycle machinery into the active model simply
-because it already works.
+It remains useful as a comparison baseline, but it is not the requested
+architecture. Do not bring its ID-assignment logic back into the active model
+just because it already works.
 
-## 9. Deployment constraint
+## 9. Deployment requirement
 
-The eventual target remains >=15 FPS on Jetson Orin Nano Super 8GB.
+The eventual target is at least 15 FPS on Jetson Orin Nano Super 8GB.
 
-Do architecture research on the RTX 4060 first. Prefer operations that can later
-map cleanly to FP16/TensorRT, but do not distort the temporal-learning experiment
-to optimize Jetson deployment before the model has demonstrated useful tracking.
+Do architecture research on the RTX 4060 first. Keep future deployment in mind,
+but do not weaken the tracking experiment before the model has shown useful
+tracking behavior.
 
-Final Jetson acceptance must be measured on the actual target hardware.
+Final Jetson speed must be measured on the actual Jetson hardware.

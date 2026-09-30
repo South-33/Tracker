@@ -1,59 +1,60 @@
 # Agent Rules
 
-Read `tracker.md` before doing research work.
+Read `tracker.md` when you are new to the project or when the current state is
+unclear.
 
 ## Goal
 
-Build one small causal neural person tracker by post-training YOLO26n on ordered
-human video:
+Post-train YOLO26n on ordered human video so the model itself can:
 
-    frame + bounded neural memory
-        -> person boxes + confidence + anonymous track slots + updated memory
+- detect people with bounding boxes
+- give each person an anonymous tracking ID
+- keep the same ID for the same person across frames
+- recover the same ID after short occlusions or disappearances when possible
 
-The neural model itself must own identity continuity.
+The model may carry a small fixed-size learned state from previous frames. The
+exact form of that state is not part of the goal and may change.
 
 ## Hard boundaries
 
-- No BoT-SORT, ByteTrack, Kalman filter, online Hungarian association,
-  external ReID model, owner scorer, or hand-written ID lifecycle in the active
-  inference path.
+- Do not use BoT-SORT, ByteTrack, Kalman tracking, online Hungarian matching,
+  external ReID, or hand-written tracking rules to assign IDs when the active
+  model runs.
 - Classical trackers are comparison baselines only.
-- Training uses contiguous ordered clips with track IDs, never shuffled
-  independent frames pretending to be video.
-- Inference is causal and memory is bounded.
-- Every serious candidate gets a running-memory vs reset-memory ablation.
+- Train on ordered video clips with person track IDs. Do not treat frames in a
+  clip as unrelated images.
+- When the model runs, use only the current frame and information carried from
+  earlier frames. Never use future frames.
+- Keep carried state fixed-size so memory use does not grow with video length.
+- For serious temporal models, compare normal carried state against resetting
+  the state every frame.
 - Do not train on benchmark-only data.
 
 ## How to work
 
 - Work only on `main`.
-- When starting fresh or when context is unclear, read `tracker.md`, the active
-  code, recent commits and relevant runs. Do not mechanically reread everything
-  before every experiment.
-- Use judgment. You are allowed to spend substantial time researching papers,
-  implementations, datasets or related ideas before touching code when that can
-  change the quality of the approach.
-- Take real shots. A good experiment may be a tiny probe, a new architecture, a
-  long training run, a larger dataset pass or a risky intuition-driven idea.
-  Choose the scale that matches the expected information or upside.
-- When a weakness is suspected, first try to prove that fixing that weakness
-  would matter. Use an oracle, forced capability, exaggerated intervention or
-  other diagnostic when possible. If even the "cheating" version does not help,
-  do not spend weeks learning it properly.
-- Do not confuse caution with rigor. Bold changes are welcome when they attack
-  the project goal directly and can teach us something important.
-- Do not confuse activity with progress either. Avoid endless micro-tuning,
-  cosmetic refactors, broad sweeps without a reason, or building infrastructure
-  that does not answer a research question.
-- After an experiment, make a decision: promote, reject, or change direction.
-- Record only durable evidence/decisions in `tracker.md`; do not log speculative
-  hypotheses or per-pass plans there.
-- Delete rejected one-off code and stale generated clutter. Keep only reusable
-  code that serves the active goal.
-- Git history is the archive. The previous tracker is tagged
-  `legacy-botsort-v1`.
-- Use commits as checkpoints. No normal research worktrees or backup branches.
+- Start from the latest meaningful result and identify the biggest thing the
+  model is failing to do.
+- Before spending a lot of time building a fix, test whether fixing that problem
+  would actually improve tracking. It is fine to use ground truth or a temporary
+  shortcut for this diagnostic.
+- Take real research shots. You may read papers, inspect other implementations,
+  change the architecture, train longer, use more data, or follow a strong
+  technical intuition when it directly serves the goal.
+- Avoid work that only creates activity: repeated tiny parameter changes,
+  cosmetic refactors, large sweeps without a reason, or infrastructure that does
+  not answer a research question.
+- After an experiment, decide whether to keep the idea, stop pursuing it, or
+  change direction.
+- Add only durable results and conclusions to `tracker.md`. Do not put future
+  plans, brainstorming, or per-pass notes there.
+- Delete rejected one-off code and stale generated files. Keep the active repo
+  focused on the current approach.
+- Git history is the archive. The previous external-tracker system is preserved
+  at tag `legacy-botsort-v1`.
+- Use commits as checkpoints. Do not create normal research worktrees or backup
+  branches.
 - Before committing, run `python scripts/check_repo.py`.
 
-If the active path becomes "YOLO detections -> external tracker", stop: that is
-the archived direction, not this project.
+If the active solution becomes "YOLO detections -> another tracker that assigns
+the IDs," stop. That is the archived direction, not this project.
