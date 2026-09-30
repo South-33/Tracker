@@ -31,11 +31,20 @@ CONSUMED_HOLDOUT = (
     "dancetrack0096",
 )
 
-# These local directories are currently only partial 120-frame slices.
-# Keep them sealed until the complete official sequences are installed.
+# Fresh validation videos selected before inference/metrics from the hosted
+# DanceTrack validation subset. None appear in TRAIN/CALIBRATION/DEV or the
+# already-consumed holdout. Keep this set sealed for final reporting only.
 RESERVED_HOLDOUT = (
-    "dancetrack0082",
-    "dancetrack0083",
+    "dancetrack0014",
+    "dancetrack0019",
+    "dancetrack0035",
+    "dancetrack0047",
+    "dancetrack0063",
+    "dancetrack0073",
+    "dancetrack0077",
+    "dancetrack0081",
+    "dancetrack0090",
+    "dancetrack0097",
 )
 
 RESEARCH_EVAL = CALIBRATION + DEV

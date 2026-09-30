@@ -25,7 +25,7 @@ src/tracker/splits.py is the only source of truth.
 | CALIBRATION | 0012 | thresholds and hypothesis selection |
 | DEV | 0016, 0020 | normal online hill-climb |
 | CONSUMED_HOLDOUT | 0004, 0005, 0007, 0010, 0096 | historical evidence only |
-| RESERVED_HOLDOUT | 0082, 0083 | next frozen-candidate final test |
+| RESERVED_HOLDOUT | 0014, 0019, 0035, 0047, 0063, 0073, 0077, 0081, 0090, 0097 | next frozen-candidate final test |
 
 Never tune on either holdout group. The consumed holdout has already been seen.
 The local reserved sequences are only partial 120-frame slices, so do not score

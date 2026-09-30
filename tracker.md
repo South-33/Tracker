@@ -339,7 +339,7 @@ Several nearby detector/lifecycle ideas were rejected rather than accumulated. R
 
 The current development settings are packageable without overwriting the historical protected artifact. `scripts/package_tracker.py` writes `runs/person-tracker-dev.pt` by default with `track_low_thresh=0.05`, `detector_confidence=0.05`, `coast_frames=1`, and `coast_min_active_tracks=10`. Historical `runs/person-tracker.pt` keeps its original 0.10 detector floor and zero-coast behavior when loaded.
 
-Do not retroactively score this newer candidate on the consumed five-sequence holdout. The next final comparison must use a fresh sealed holdout. `0082/0083` are reserved for that purpose, but the current local copies are incomplete 120-frame slices and must be replaced with the complete official sequences before final scoring.
+Do not retroactively score this newer candidate on the consumed five-sequence holdout. The next final comparison uses a fresh sealed set chosen **before inference or metrics** from the hosted DanceTrack validation videos that were never used by this project: `0014/0019/0035/0047/0063/0073/0077/0081/0090/0097`. This 10-sequence set replaces the earlier incomplete `0082/0083` idea because complete public validation videos and annotations are available without choosing sequences by performance.
 
 Repository/data hygiene is now explicit: work only on `main`, use Git commits as checkpoints instead of worktrees/feature branches, and use `src/tracker/splits.py` as the single source of truth for TRAIN, CALIBRATION, DEV, consumed holdout, and reserved holdout. Normal research runners refuse holdout sequences; final/historical scoring requires explicit flags.
 
