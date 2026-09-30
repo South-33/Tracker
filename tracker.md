@@ -189,13 +189,40 @@ Two simpler lifecycle recovery rules were also rejected. Requiring extra observa
 
 Detector-head adaptation was checked after the memory student failed online. A three-epoch Detect-head-only YOLO26n fine-tune on **5,194** training frames improves held-out `0012` raw detection metrics, reaching about mAP50 **0.865**, mAP50-95 **0.533**, and recall **75.14%**. The errors are less tracker-friendly, however. With no-ReID BoT-SORT and the same `0.45` lifecycle rule on `0020`, the adapted detector gives HOTA **28.44**, IDF1 **30.93**, **624** switches, recall **56.26%**, precision **80.40%** at detector confidence 0.10. Raising detector confidence to 0.30 still gives only HOTA **25.55**, IDF1 **29.66**, **539** switches, recall **47.05%**, precision **87.14%**. The original detector at the same lifecycle setting remains HOTA **33.17**, IDF1 **38.89**, **201** switches, recall **46.43%**, precision **95.97%**. Reject this detector adaptation and do not spend more work calibrating the same objective.
 
+### Closed-loop association finding
+
+Training the candidate scorer on real BoT-SORT predicted states rather than oracle memory improves held-out `0012` candidate selection from cosine **68.69%** to **77.22%**. That first live-state metric was still too permissive: about **20%** of queries contained multiple fragmented BoT-SORT tracks for the same GT person, so choosing any same-GT track could count as correct even when it changed the public ID.
+
+Changing the target to **preserve the previous public owner track** makes the continuity problem explicit. On held-out `0012`:
+
+```text
+cosine owner selection        81.07%
+live-state pair scorer        95.02%
+owner-aware 11-cue scorer     95.58%
+```
+
+The owner-aware scorer adds only tracklet length and active/lost state to the existing pair cues. With score margin >=2 it covers **91.8%** of owner queries at **98.35%** accuracy. That strong one-step result still does not transfer directly through closed-loop tracking:
+
+```text
+0020 variant                              HOTA   AssA   IDF1  IDSW  Frag
+incumbent learned64D + BoT-SORT 0.45     33.69  31.21  39.40   236   376
+owner appearance pruning                  33.45  30.97  39.17   236   368
+owner full-cost bonus 0.05                32.81  29.52  38.39   246   375
+```
+
+An exact first-association replay shows why pairwise accuracy is insufficient. The incumbent Hungarian assignment preserves the previous public owner on **90.01%** of held-out `0012` targets. A tiny rank bonus of **0.005**, selected on the five training sequences, improves that frozen-trajectory metric to **90.93%**. Yet the same first-association-only bonus reaches only **32.15 HOTA / 239 IDSW** online on `0020`.
+
+The switch diagnostic confirms that association still matters: among **349** public-owner changes on `0020`, the previous owner remains in the first-association candidate pool in **300** cases, and the owner scorer prefers it in **135** cases versus **60** for cosine. But changing those decisions perturbs later memory and assignment states, so one-step improvements can still reduce end-to-end HOTA.
+
+The conclusion is stronger than “use a larger pair scorer”: **teacher-forced or frozen-trajectory association accuracy is not a reliable promotion metric**. Small assignment changes alter the future memory distribution. Do not spend more time tuning static score blends inside BoT-SORT.
+
 ### Next research question
 
 Freeze the global `new_track_thresh=0.45` learned-feature configuration as the current dev candidate. Do not spend more iterations tuning that scalar. The evidence now says the next capability to learn should be **lifecycle**, especially deciding when a weak unmatched detection deserves to become persistent memory without sacrificing ByteTrack's useful low-score continuation.
 
-Single-frame and pairwise memory cues have now been pushed far enough. The next probe should represent **tracklet history explicitly** while staying causal and bounded: keep the frozen detector and current 64D control, but give each remembered track a tiny recurrent state updated from its matched appearance, geometry, confidence, and time gap. A GRU-sized update or similarly small state-space cell is the right complexity class; do not jump to a full tracking transformer.
+Single-frame and pairwise memory cues have now been pushed far enough. The next probe should be trained on **self-generated rollout states**, not oracle memory or a frozen teacher trajectory. Use the cached detector outputs and 64D features so this is cheap enough to iterate. Scheduled sampling or dataset aggregation is the right complexity class: keep the memory state and scorer small, but expose them during training to the mistakes and duplicate states they create themselves.
 
-Train sequentially with correct KNOWN / NEWBORN / DROP semantics. The history state must improve held-out remembered-ID/lifecycle decisions over the existing pair scorer, then survive an online `0020` rollout and beat the current `0.45` candidate before promotion. Keep state size, update cost, and memory horizon explicit from the start so the path to >=15 FPS on Nano remains credible.
+Only add a recurrent track state if rollout-trained last-state memory is still insufficient. The immediate objective is to close the train/inference state-distribution gap, not to add sequence-model capacity. Promotion requires a full online `0020` rollout that beats the current `0.45` candidate; one-step assignment accuracy alone no longer counts as evidence.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
 
