@@ -6,12 +6,9 @@ import configparser
 import json
 from pathlib import Path
 import shutil
-import sys
 
 import numpy as np
-
-from tracker.data import load_mot
-from tracker.metrics import score_mot_rows
+import trackeval
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -34,7 +31,6 @@ def main():
     if eval_gt.exists():
         shutil.rmtree(eval_gt)
 
-    coverage = {}
     seq_info = {}
     for sequence in args.sequences:
         source = ROOT / "data" / "dancetrack" / sequence
@@ -46,18 +42,9 @@ def main():
             raise FileNotFoundError(prediction)
         frames = frame_count(source)
         seq_info[sequence] = frames
-        truth_rows = load_mot(gt)
-        prediction_rows = load_mot(prediction)
-        coverage[sequence] = score_mot_rows(truth_rows, prediction_rows, frames)
         target = eval_gt / sequence / "gt"
         target.mkdir(parents=True, exist_ok=True)
         shutil.copy2(gt, target / "gt.txt")
-
-    trackeval_root = ROOT / "third_party" / "TrackEval"
-    if not trackeval_root.exists():
-        raise FileNotFoundError("third_party/TrackEval is missing")
-    sys.path.insert(0, str(trackeval_root))
-    import trackeval
 
     evaluator = trackeval.Evaluator({
         "USE_PARALLEL": False,
@@ -99,7 +86,6 @@ def main():
         "Frag": int(combined["CLEAR"]["Frag"]),
         "Recall": float(combined["CLEAR"]["CLR_Re"]) * 100,
         "Precision": float(combined["CLEAR"]["CLR_Pr"]) * 100,
-        "coverage": coverage,
     }
     (run / "metrics.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, indent=2))

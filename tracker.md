@@ -45,6 +45,8 @@ Only add recurrent/transformer memory, longer context, learned association matri
 - **DanceTrack**: hard motion, crossings and similar-looking people.
 - **CrowdHuman and/or COCO person batches**: preserve strong person detection during video fine-tuning.
 
+Local bootstrap data is ready. We have all official PersonPath22 visible annotations/splits plus a CRC-verified 5-video training starter slice chosen for crowding, occlusion and many identities (432 MB). Existing DanceTrack data stays available. Expand PersonPath22 only after the first temporal model shows signal instead of blocking iteration on the full 7.66 GB core-train archive.
+
 ## Baseline to beat
 
 Before training the new model, run **YOLO26n + BoT-SORT** on the same frozen development videos and record exact settings here.
@@ -56,9 +58,29 @@ dancetrack0016
 dancetrack0020
 ```
 
-Record HOTA, AssA, DetA, IDF1, ID switches, detection precision/recall and FPS.
+Frozen baseline, 2026-09-30:
 
-**Baseline status: not run yet.**
+```text
+YOLO26n + Ultralytics BoT-SORT
+Ultralytics 8.4.166
+640 px, person class only, conf=0.1, iou=0.7
+official botsort.yaml defaults, ReID disabled
+dev: dancetrack0016 + dancetrack0020 (2,746 frames)
+
+HOTA       32.20   <-- primary number to beat
+AssA       19.39
+DetA       53.94
+IDF1       30.32
+ID switches 397
+Recall     66.67%
+Precision  96.03%
+
+Laptop RTX 4060:
+model + tracker             ~31.3 FPS
+including JPEG frame reads  ~22.6 FPS
+```
+
+The baseline is much weaker at association than detection, which directly supports testing temporal embeddings/context. Do not celebrate a tiny HOTA win; report the full metric set. If our simple model clears this default baseline, run BoT-SORT with ReID enabled as a stronger second reference.
 
 ## First experiment
 
