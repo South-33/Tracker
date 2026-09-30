@@ -27,6 +27,16 @@ def git_commit() -> str:
     return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
 
 
+def git_dirty() -> bool:
+    return bool(
+        subprocess.check_output(
+            ["git", "status", "--porcelain"],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+    )
+
+
 def detector_weights() -> Path:
     target = ROOT / "weights" / "yolo26n.pt"
     if target.exists():
@@ -137,6 +147,7 @@ def main():
         "torch": torch.__version__,
         "cuda": torch.version.cuda,
         "repo_commit": git_commit(),
+        "repo_dirty": git_dirty(),
         "model": str(weight.relative_to(ROOT)),
         "model_sha256": sha256(weight),
         "tracker": tracker_path.name,

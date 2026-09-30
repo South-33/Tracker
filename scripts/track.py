@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 import time
 
 import cv2
@@ -26,6 +27,22 @@ def sha256(path: Path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def overlap_mask(boxes: torch.Tensor, iou_threshold: float) -> torch.Tensor:
+    """Mark detections that overlap another detection enough to be ambiguous."""
+    if len(boxes) < 2:
+        return torch.zeros(len(boxes), dtype=torch.bool, device=boxes.device)
+    top_left = torch.maximum(boxes[:, None, :2], boxes[None, :, :2])
+    bottom_right = torch.minimum(boxes[:, None, 2:], boxes[None, :, 2:])
+    wh = (bottom_right - top_left).clamp_min(0)
+    intersection = wh[..., 0] * wh[..., 1]
+    area = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
+    iou = intersection / (
+        area[:, None] + area[None, :] - intersection
+    ).clamp_min(1e-6)
+    iou.fill_diagonal_(0)
+    return iou.max(dim=1).values >= iou_threshold
+
+
 def tracker_config(device, appearance_threshold, with_reid=True):
     config = YAML.load(check_yaml("botsort.yaml"))
     config["with_reid"] = with_reid
@@ -44,6 +61,7 @@ def run_sequence(
     device,
     with_reid,
     min_detections_for_reid,
+    overlap_iou,
     appearance_threshold,
 ):
     sequence_dir = ROOT / "data" / "dancetrack" / sequence
@@ -80,8 +98,14 @@ def run_sequence(
             use_reid = with_reid and len(detections) >= min_detections_for_reid
             features = model.embed_boxes(pyramid, [boxes]) if use_reid else None
             if features is not None:
+                if overlap_iou is not None:
+                    features = features * overlap_mask(boxes, overlap_iou)[:, None]
                 reid_frames += 1
-                reid_detections += len(features)
+                reid_detections += (
+                    int((features.norm(dim=1) > 0).sum())
+                    if overlap_iou is not None
+                    else len(features)
+                )
             original_boxes = restore_boxes(boxes, original.shape[:2])
             results = Boxes(
                 torch.cat((original_boxes, detections[:, 4:6]), 1).cpu(),
@@ -149,6 +173,11 @@ def main():
     )
     parser.add_argument("--appearance-threshold", type=float, default=0.8)
     parser.add_argument(
+        "--overlap-iou",
+        type=float,
+        help="Only give appearance features to detections overlapping another box by this IoU.",
+    )
+    parser.add_argument(
         "--disable-reid",
         action="store_true",
         help="Use the identical detector/BoT-SORT path without appearance features.",
@@ -156,6 +185,8 @@ def main():
     args = parser.parse_args()
     if args.min_detections_for_reid < 1:
         raise ValueError("--min-detections-for-reid must be at least 1")
+    if args.overlap_iou is not None and not 0 <= args.overlap_iou <= 1:
+        raise ValueError("--overlap-iou must be between 0 and 1")
 
     device = torch.device(args.device)
     checkpoint = None
@@ -189,6 +220,7 @@ def main():
             device=device,
             with_reid=not args.disable_reid,
             min_detections_for_reid=args.min_detections_for_reid,
+            overlap_iou=args.overlap_iou,
             appearance_threshold=args.appearance_threshold,
         )
         for sequence in args.sequences
@@ -202,6 +234,18 @@ def main():
         "head": None if head_path is None else args.head,
         "head_sha256": None if head_path is None else sha256(head_path),
         "detector_sha256": actual_detector_sha,
+        "repo_commit": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            text=True,
+        ).strip(),
+        "repo_dirty": bool(
+            subprocess.check_output(
+                ["git", "status", "--porcelain"],
+                cwd=ROOT,
+                text=True,
+            ).strip()
+        ),
         "head_training": (
             None
             if checkpoint is None
@@ -235,6 +279,7 @@ def main():
         ),
         "reid_gate": {
             "min_detections": args.min_detections_for_reid,
+            "overlap_iou": args.overlap_iou,
         },
         "sequences": stats,
     }
