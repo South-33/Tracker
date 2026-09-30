@@ -304,6 +304,8 @@ The frozen packaged candidate has now been evaluated on the protected set `0096/
 
 Do not tune on these protected results. The remaining acceptance item is deployment: verify **>=15 FPS on Orin Nano Super 8 GB** using the frozen bundle and configuration.
 
+Target-hardware verification uses the frozen bundle directly, not a different export with different features. Run `.\.venv\Scripts\python.exe scripts/benchmark_tracker.py dancetrack0020 --tracker runs/person-tracker.pt --warmup 30 --target-fps 15 --max-memory-gib 8 --output runs/orin-benchmark.json` on the Orin Nano Super. The benchmark measures the frozen packaged pipeline after warmup, records the CUDA device name, checks peak allocated CUDA memory against the 8 GB target, writes a JSON report, and exits nonzero if the FPS target is missed. Do not count a desktop estimate as target verification. Ultralytics recommends TensorRT for Jetson performance, but the current identity head consumes YOLO feature-pyramid tensors, so any TensorRT deployment must export/preserve those same features and be revalidated for tracking equivalence on the target rather than replacing the detector alone.
+
 Do not spend more development time on detached public-ID remapping, generic crop backbones, gap-only metric heads, or always-on secondary ReID unless a new dataset or stronger supervision changes the evidence.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
@@ -346,6 +348,9 @@ Keep `0096` and `0004/0005/0007/0010` untouched while the lifecycle module is be
 # Freeze/package the current candidate into one deployable artifact
 .\.venv\Scripts\python.exe scripts/package_tracker.py --output runs/person-tracker.pt
 .\.venv\Scripts\python.exe scripts/run_tracker.py dancetrack0016 dancetrack0020 --tracker runs/person-tracker.pt --output runs/packaged-dev
+
+# Deployment-hardware benchmark (use this unchanged on Orin Nano Super)
+.\.venv\Scripts\python.exe scripts/benchmark_tracker.py dancetrack0020 --tracker runs/person-tracker.pt --warmup 30 --target-fps 15 --max-memory-gib 8 --output runs/orin-benchmark.json
 
 # Lifecycle-only control
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --disable-reid --new-track-threshold 0.45 --output runs/manual-no-reid-new045
