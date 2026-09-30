@@ -8,8 +8,13 @@ version = "0.1.0"
 description = "Small research repo for a one-network person detector and tracker"
 requires-python = ">=3.12"
 dependencies = [
-  "torch==2.8.0", "torchvision==0.23.0",
-  "ultralytics==8.4.166", "trackeval==1.3.0"
+  "numpy==2.5.1",
+  "opencv-python==4.13.0.92",
+  "scipy==1.18.0",
+  "torch==2.8.0",
+  "torchvision==0.23.0",
+  "trackeval==1.3.0",
+  "ultralytics==8.4.166",
 ]
 
 [tool.setuptools.packages.find]
