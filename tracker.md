@@ -181,13 +181,15 @@ Using sequential oracle memory with a 30-frame / roughly 1.5-second horizon fixe
 
 A deliberately tiny two-stage classifier on six sequential-memory cues (confidence, max appearance similarity, max IoU, nearest normalized center distance, current-frame crowding, and age of the best appearance match) reaches **85.48%** semantic accuracy on held-out `0012`: KNOWN **89.38%**, NEWBORN **35.29%**, DROP **74.75%**. Conditional NEWBORN-vs-DROP accuracy is **92.77%** when the example is already known to be non-KNOWN. The remaining hard decision is therefore KNOWN-vs-NEWBORN, not false-positive rejection.
 
+Preserving candidate alignment fixes much of that ambiguity. A tiny pair scorer trained on four sequential PersonPath videos from appearance cosine, relative box geometry, IoU, memory age, detector confidence, and current-frame crowding improves held-out `0012` remembered-ID selection from **88.33%** for cosine alone to **94.37%**. Calibrating its max match score on the fifth PersonPath video raises true NEWBORN recognition to **58.82%** and KNOWN recognition to **91.66%**, but DROP recognition falls to **44.18%**. This is useful evidence: candidate-aligned memory is worth keeping, while a single match threshold is not sufficient lifecycle logic.
+
 ### Next research question
 
 Freeze the global `new_track_thresh=0.45` learned-feature configuration as the current dev candidate. Do not spend more iterations tuning that scalar. The evidence now says the next capability to learn should be **lifecycle**, especially deciding when a weak unmatched detection deserves to become persistent memory without sacrificing ByteTrack's useful low-score continuation.
 
 The next probe should follow the useful part of MOTIP's framing without importing a tracking transformer: process training video **sequentially**, maintain a bounded recent memory, and let each current detection decide KNOWN / NEWBORN / DROP before selecting a remembered anonymous ID. This is materially different from the rejected matcher, which made each remembered track choose a detection or ABSENT and left births to a fixed threshold. Do not return to arbitrary frame-pair lifecycle labels.
 
-Keep the lifecycle module small. The next useful representation question is whether the KNOWN-vs-NEWBORN boundary improves when the model can see candidate-aligned trajectory context (for example the same memory slot's appearance, geometry and age) rather than only independent maxima. Only after that held-out probe improves should it be integrated into an online bounded-memory tracker and compared with the current BoT-SORT harness.
+Keep the lifecycle module small. Candidate-aligned trajectory context has now earned its place. The next probe should keep that pair scorer fixed and train a tiny semantic gate that combines its best-match evidence with detector confidence/crowding to decide KNOWN / NEWBORN / DROP; if KNOWN, the pair scorer's argmax supplies the remembered ID. Only after that held-out semantic gate improves should the system be integrated into an online bounded-memory tracker and compared with the current BoT-SORT harness.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
 
