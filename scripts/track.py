@@ -27,28 +27,18 @@ def sha256(path: Path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def overlap_mask(boxes: torch.Tensor, iou_threshold: float) -> torch.Tensor:
-    """Mark detections that overlap another detection enough to be ambiguous."""
-    if len(boxes) < 2:
-        return torch.zeros(len(boxes), dtype=torch.bool, device=boxes.device)
-    top_left = torch.maximum(boxes[:, None, :2], boxes[None, :, :2])
-    bottom_right = torch.minimum(boxes[:, None, 2:], boxes[None, :, 2:])
-    wh = (bottom_right - top_left).clamp_min(0)
-    intersection = wh[..., 0] * wh[..., 1]
-    area = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
-    iou = intersection / (
-        area[:, None] + area[None, :] - intersection
-    ).clamp_min(1e-6)
-    iou.fill_diagonal_(0)
-    return iou.max(dim=1).values >= iou_threshold
-
-
-def tracker_config(device, appearance_threshold, with_reid=True):
+def tracker_config(
+    device,
+    appearance_threshold,
+    with_reid=True,
+    new_track_threshold=0.45,
+):
     config = YAML.load(check_yaml("botsort.yaml"))
     config["with_reid"] = with_reid
     config["model"] = "auto"
     config["device"] = str(device)
     config["appearance_thresh"] = appearance_threshold
+    config["new_track_thresh"] = new_track_threshold
     return config
 
 
@@ -62,15 +52,20 @@ def run_sequence(
     with_reid,
     feature_mode,
     min_detections_for_reid,
-    overlap_iou,
     appearance_threshold,
+    new_track_threshold,
 ):
     sequence_dir = ROOT / "data" / "dancetrack" / sequence
     image_paths = sorted((sequence_dir / "img1").glob("*.jpg"))
     if not image_paths:
         raise FileNotFoundError(f"No frames found for {sequence}")
 
-    config = tracker_config(device, appearance_threshold, with_reid=with_reid)
+    config = tracker_config(
+        device,
+        appearance_threshold,
+        with_reid=with_reid,
+        new_track_threshold=new_track_threshold,
+    )
     tracker = BOTSORT(IterableSimpleNamespace(**config))
     rows = []
     reid_frames = 0
@@ -105,14 +100,8 @@ def run_sequence(
             else:
                 features = model.embed_boxes(pyramid, [boxes]) if use_reid else None
             if features is not None:
-                if overlap_iou is not None:
-                    features = features * overlap_mask(boxes, overlap_iou)[:, None]
                 reid_frames += 1
-                reid_detections += (
-                    int((features.norm(dim=1) > 0).sum())
-                    if overlap_iou is not None
-                    else len(features)
-                )
+                reid_detections += len(features)
             original_boxes = restore_boxes(boxes, original.shape[:2])
             results = Boxes(
                 torch.cat((original_boxes, detections[:, 4:6]), 1).cpu(),
@@ -180,15 +169,16 @@ def main():
     )
     parser.add_argument("--appearance-threshold", type=float, default=0.8)
     parser.add_argument(
+        "--new-track-threshold",
+        type=float,
+        default=0.45,
+        help="Minimum detection score for starting a new BoT-SORT track.",
+    )
+    parser.add_argument(
         "--feature-mode",
         choices=("trained", "random", "raw"),
         default="trained",
         help="Appearance representation: trained 64D head, seeded untrained 64D head, or raw pooled YOLO features.",
-    )
-    parser.add_argument(
-        "--overlap-iou",
-        type=float,
-        help="Only give appearance features to detections overlapping another box by this IoU.",
     )
     parser.add_argument(
         "--disable-reid",
@@ -198,8 +188,8 @@ def main():
     args = parser.parse_args()
     if args.min_detections_for_reid < 1:
         raise ValueError("--min-detections-for-reid must be at least 1")
-    if args.overlap_iou is not None and not 0 <= args.overlap_iou <= 1:
-        raise ValueError("--overlap-iou must be between 0 and 1")
+    if not 0 <= args.new_track_threshold <= 1:
+        raise ValueError("--new-track-threshold must be between 0 and 1")
 
     device = torch.device(args.device)
     checkpoint = None
@@ -236,8 +226,8 @@ def main():
             with_reid=not args.disable_reid,
             feature_mode=args.feature_mode,
             min_detections_for_reid=args.min_detections_for_reid,
-            overlap_iou=args.overlap_iou,
             appearance_threshold=args.appearance_threshold,
+            new_track_threshold=args.new_track_threshold,
         )
         for sequence in args.sequences
     ]
@@ -294,10 +284,10 @@ def main():
             device,
             args.appearance_threshold,
             with_reid=not args.disable_reid,
+            new_track_threshold=args.new_track_threshold,
         ),
         "reid_gate": {
             "min_detections": args.min_detections_for_reid,
-            "overlap_iou": args.overlap_iou,
         },
         "sequences": stats,
     }
