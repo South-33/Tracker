@@ -173,11 +173,13 @@ The lifecycle rule is doing most of the work. At the same `0.45` threshold, lear
 
 Three follow-ups were rejected rather than accumulated: confidence-gating appearance at 0.35/0.40/0.45 lowered `0020` HOTA versus the ungated 0.45 candidate; applying the stricter birth threshold only on dense/ReID-active frames produced 33.69 HOTA but worse IDF1 and more switches than the global rule; and a short explicit hard-negative-margin training probe behaved almost identically to the existing low-temperature retrieval loss.
 
+TrackTrack (CVPR 2025) was also checked because its track-aware initialization explicitly targets spurious births. Stock Ultralytics defaults were too conservative for this detector on the two-sequence dev set (HOTA **26.23**, recall **48.66%**). A fair `0020` control with only its confidence thresholds aligned to our validated regime (`high=0.25`, `low=0.10`, `new=0.45`) reached HOTA **31.37**, AssA **26.95**, IDF1 **37.04**, IDSW **201**, recall **48.00%**. That is still clearly below the learned-64D + global-0.45 candidate on the same sequence, so do not spend more time tuning TrackTrack here.
+
 ### Next research question
 
 Freeze the global `new_track_thresh=0.45` learned-feature configuration as the current dev candidate. Do not spend more iterations tuning that scalar. The evidence now says the next capability to learn should be **lifecycle**, especially deciding when a weak unmatched detection deserves to become persistent memory without sacrificing ByteTrack's useful low-score continuation.
 
-Prefer a tiny causal birth/continuation module using frozen YOLO features, detector confidence, and bounded recent track state over another full learned assignment system. Its job is narrow: recover true low-confidence track births/re-entries that the fixed 0.45 rule suppresses while retaining the large switch/fragment reduction. Keep IoU/motion association fixed during this probe so the lifecycle signal is attributable.
+The next probe should follow the useful part of MOTIP's framing without importing a tracking transformer: make each **current detection** predict one remembered anonymous ID or an explicit **NEWBORN** class from bounded recent track state. This is materially different from the rejected matcher, which made each remembered track choose a detection or ABSENT and left births to a fixed threshold. Start with the smallest scorer over frozen 64D appearance plus relative geometry/confidence. If this detection-centric objective cannot beat simple retrieval/lifecycle controls on held-out data, reject it before building an online tracker around it.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
 
