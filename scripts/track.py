@@ -60,6 +60,7 @@ def run_sequence(
     *,
     device,
     with_reid,
+    feature_mode,
     min_detections_for_reid,
     overlap_iou,
     appearance_threshold,
@@ -96,7 +97,13 @@ def run_sequence(
         if len(detections):
             boxes = detections[:, :4]
             use_reid = with_reid and len(detections) >= min_detections_for_reid
-            features = model.embed_boxes(pyramid, [boxes]) if use_reid else None
+            if use_reid and feature_mode == "raw":
+                features = torch.nn.functional.normalize(
+                    model.pool_boxes(pyramid, [boxes]),
+                    dim=1,
+                )
+            else:
+                features = model.embed_boxes(pyramid, [boxes]) if use_reid else None
             if features is not None:
                 if overlap_iou is not None:
                     features = features * overlap_mask(boxes, overlap_iou)[:, None]
@@ -173,6 +180,12 @@ def main():
     )
     parser.add_argument("--appearance-threshold", type=float, default=0.8)
     parser.add_argument(
+        "--feature-mode",
+        choices=("trained", "random", "raw"),
+        default="trained",
+        help="Appearance representation: trained 64D head, seeded untrained 64D head, or raw pooled YOLO features.",
+    )
+    parser.add_argument(
         "--overlap-iou",
         type=float,
         help="Only give appearance features to detections overlapping another box by this IoU.",
@@ -191,8 +204,10 @@ def main():
     device = torch.device(args.device)
     checkpoint = None
     head_path = None
-    if args.disable_reid:
+    if args.disable_reid or args.feature_mode in {"random", "raw"}:
         detector_path = ROOT / "weights" / "yolo26n.pt"
+        if args.feature_mode == "random":
+            torch.manual_seed(0)
         model = TrackingYOLO(detector_path).to(device).eval()
     else:
         head_path = ROOT / args.head
@@ -219,6 +234,7 @@ def main():
             output,
             device=device,
             with_reid=not args.disable_reid,
+            feature_mode=args.feature_mode,
             min_detections_for_reid=args.min_detections_for_reid,
             overlap_iou=args.overlap_iou,
             appearance_threshold=args.appearance_threshold,
@@ -229,8 +245,10 @@ def main():
         "system": (
             "YOLO26n manual detector path + Ultralytics BoT-SORT"
             if args.disable_reid
-            else "YOLO26n + learned 64D shared feature + Ultralytics BoT-SORT"
+            else f"YOLO26n + {args.feature_mode} appearance feature + Ultralytics BoT-SORT"
         ),
+        "feature_mode": "none" if args.disable_reid else args.feature_mode,
+        "feature_seed": 0 if args.feature_mode == "random" and not args.disable_reid else None,
         "head": None if head_path is None else args.head,
         "head_sha256": None if head_path is None else sha256(head_path),
         "detector_sha256": actual_detector_sha,

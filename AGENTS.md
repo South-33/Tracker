@@ -11,6 +11,8 @@ This is the project's AGENTS.md
 - Prefer simple direct code and few files.
 - Heavy/generated data, weights and runs stay untracked.
 - A result is only real when its settings, data and metrics are reproducible.
+- Housekeeping is part of the research loop: keep the tree tidy, make meaningful Git checkpoint commits, and push useful checkpoints/results to the current remote branch instead of letting validated work live only locally.
 - For learned appearance experiments, compare against both the official frozen baseline and the identical manual detector + BoT-SORT path with ReID disabled. Do not attribute detector-preprocessing differences to the embedding.
+- Before attributing a gain to appearance training, also compare against raw ROI-pooled YOLO features and the seeded untrained 64D projection exposed by `scripts/track.py --feature-mode`.
 - Local DanceTrack `0082` and `0083` are partial 120-frame slices; the strict sequence loader rejects them until the full sequences are downloaded.
 - Use exposed DanceTrack `0016` and `0020` for development. Keep `0096` and `0004/0005/0007/0010` untouched until a model is frozen.

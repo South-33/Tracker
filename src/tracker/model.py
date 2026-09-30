@@ -49,10 +49,11 @@ class TrackingYOLO(nn.Module):
             raise RuntimeError("YOLO feature hook did not run")
         return predictions, self._pyramid
 
-    def embed_boxes(self, pyramid, boxes_per_image: list[torch.Tensor]) -> torch.Tensor:
+    def pool_boxes(self, pyramid, boxes_per_image: list[torch.Tensor]) -> torch.Tensor:
         count = sum(len(boxes) for boxes in boxes_per_image)
         if count == 0:
-            return pyramid[0].new_empty((0, self.embedding_dim))
+            channels = sum(feature.shape[1] for feature in pyramid)
+            return pyramid[0].new_empty((0, channels))
         pooled = []
         for feature, stride in zip(pyramid, self.strides):
             x = roi_align(
@@ -63,7 +64,13 @@ class TrackingYOLO(nn.Module):
                 aligned=True,
             )
             pooled.append(x.flatten(1))
-        return F.normalize(self.embedding(torch.cat(pooled, dim=1)), dim=1)
+        return torch.cat(pooled, dim=1)
+
+    def embed_boxes(self, pyramid, boxes_per_image: list[torch.Tensor]) -> torch.Tensor:
+        pooled = self.pool_boxes(pyramid, boxes_per_image)
+        if not len(pooled):
+            return pooled.new_empty((0, self.embedding_dim))
+        return F.normalize(self.embedding(pooled), dim=1)
 
 
 def _retrieval_direction(

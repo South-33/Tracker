@@ -17,17 +17,20 @@ Target: one camera at **>=15 FPS on Orin Nano Super 8 GB**.
 
 Start from official pretrained **YOLO26n**. Do not retrain basic vision from scratch yet.
 
-The current diagnostic model freezes YOLO26n and trains only a small identity embedding from detector features:
+The current diagnostic path freezes YOLO26n, ROI-pools its multi-scale detector features at each person box, and optionally compresses them through a small 64D identity head:
 
 ```text
-YOLO26n
+YOLO26n frozen pyramid
   -> person box + confidence
-  -> 64D tracking embedding
+  -> ROI-pooled appearance
+  -> optional 64D tracking embedding
 ```
 
 BoT-SORT is currently the online association harness, not the intended final architecture. It lets us test whether the learned feature contains useful tracking signal without confounding that question with a new lifecycle, motion model, or assignment algorithm.
 
 Sequence identity labels train front/side/back/partial views of the same person to stay compatible while different people separate. The head is trained directly on post-NMS detector boxes with symmetric identity retrieval. Appearance is only computed on dense frames by default.
+
+The controls now show that ROI-pooled pretrained appearance is already strong before identity training. Treat the 64D training as an incremental refinement, not the source of the whole appearance gain.
 
 Do not add recurrent/transformer memory, learned association matrices, or full-detector fine-tuning until this simpler representation/association split is understood.
 
@@ -117,7 +120,7 @@ manual path, no ReID          31.77  18.87  54.01  30.30   427   523   67.25    
 manual path, learned 64D      33.12  20.06  55.20  32.14   554   608   69.03     94.45
 ```
 
-The manual no-ReID row is the causal ablation for the learned feature because it uses the identical square-letterbox detector path and direct BoT-SORT API. Relative to that controlled baseline, the 64D feature adds **+1.35 HOTA, +1.19 AssA, and +1.84 IDF1**. The representation is therefore useful.
+The manual no-ReID row is the causal ablation for the full appearance path because it uses the identical square-letterbox detector path and direct BoT-SORT API. Relative to that controlled baseline, the trained 64D feature adds **+1.35 HOTA, +1.19 AssA, and +1.84 IDF1**.
 
 It is **not promoted as the incumbent yet**. ID switches rise from 427 to 554 and fragments from 523 to 608. The hard `0020` sequence shows the tradeoff most clearly:
 
@@ -128,18 +131,29 @@ learned 64D:    HOTA 32.79  AssA 27.56  IDF1 37.22  IDSW 452  Frag 496
 
 On `0016`, learned appearance is almost neutral and slightly reduces switches. The hard sequence is therefore the useful discriminator.
 
-A seeded **untrained** 64D projection is an important control. On `0020` it already reaches HOTA **32.56**, AssA **27.30**, IDF1 **37.10**, with 466 switches and 522 fragments. The trained head reaches HOTA **32.79**, AssA **27.56**, IDF1 **37.22**, with 452 switches and 496 fragments. Training is helping identity stability, but only modestly. Most of the current gain comes from giving BoT-SORT a compact detector-derived appearance feature at all, not from the present retrieval objective.
+A raw-feature control makes that conclusion sharper. On the hard `0020` sequence:
 
-Two focused follow-ups did not earn their place. Raising retrieval temperature from `0.1` to `1.0` spread cosine scores out but reduced held-out retrieval and `0020` tracking (HOTA 32.63 vs 32.79). Restricting appearance to detections overlapping another box at IoU >=0.3 reduced `0020` switches from 452 to 428 and raised AssA from 27.56 to 27.79, but lowered HOTA to 32.66 and hurt DetA/recall/precision. Keep the simpler temperature-`0.1`, dense-frame gate as the active probe.
+```text
+                              HOTA   AssA   IDF1  IDSW  Frag
+manual path, no ReID          30.66  25.38  34.05   322   411
+raw normalized ROI-pooled     32.43  27.04  35.56   434   494
+seeded random 64D projection  32.56  27.30  37.10   466   522
+trained 64D projection        32.79  27.56  37.22   452   496
+```
+
+Most of the capability jump comes from exposing ROI-pooled YOLO appearance features to BoT-SORT. A seeded **untrained** 64D projection improves them a little further. Training the 64D head adds a smaller but repeatable gain over that random projection, about **+0.23 HOTA and +0.27 AssA**, while reducing switches from 466 to 452 and fragments from 522 to 496. Keep the trained head because it is the best of these simple variants, but do not attribute the entire appearance gain to the retrieval objective.
+
+Two focused follow-ups did not earn their place. Raising retrieval temperature from `0.1` to `1.0` reduced held-out top-1 retrieval from **57.67% to 49.68%** and reduced `0020` tracking HOTA from 32.79 to 32.63. Restricting appearance to detections overlapping another box at IoU >=0.3 reduced `0020` switches from 452 to 428 and raised AssA from 27.56 to 27.79, but lowered HOTA to 32.66 and hurt DetA/recall/precision. Keep the simpler temperature-`0.1`, dense-frame gate as the active probe.
 
 ### Next research question
 
-Keep the official no-ReID baseline as the incumbent. Keep the simple 64D identity head as the active candidate, but require future embedding changes to beat a seeded random-projection control as well as no-ReID. The next high-information work is to reduce the switch/fragment penalty while making the learned representation earn a larger margin over random projection. Prefer focused experiments over a larger neural matcher. In particular:
+Keep the official no-ReID baseline as the incumbent. Keep the simple 64D identity head as the active candidate, but require future embedding changes to beat raw pooled features and the seeded random-projection control as well as no-ReID. The next high-information work is to reduce the switch/fragment penalty while making learned representation earn a larger margin over those cheap controls. Prefer focused experiments over a larger neural matcher. In particular:
 
-1. isolate where ReID changes BoT-SORT assignments on `0020`, especially the new switches;
-2. train against harder same-frame/crossing impostors and measure the margin over the random projection;
-3. test only conservative association/lifecycle changes justified by those failure cases;
-4. only then consider learned assignment, temporal memory, or detector fine-tuning.
+1. isolate where ROI-pooled appearance changes BoT-SORT assignments on `0020`, especially the new switches;
+2. separate genuine re-identification wins from extra low-confidence track births and false continuation;
+3. train against harder same-frame/crossing impostors and measure the margin over raw/random controls;
+4. test only conservative association/lifecycle changes justified by those failure cases;
+5. only then consider learned assignment, temporal memory, or detector fine-tuning.
 
 Do not touch the untouched DanceTrack sequences until a dev candidate is clearly better across the full metric set.
 
@@ -161,6 +175,12 @@ Do not touch the untouched DanceTrack sequences until a dev candidate is clearly
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --disable-reid --output runs/manual-botsort-no-reid
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/manual-botsort-no-reid dancetrack0016 dancetrack0020
 
+# Cheap appearance controls on the hard development sequence
+.\.venv\Scripts\python.exe scripts/track.py dancetrack0020 --feature-mode raw --output runs/raw-pooled-feature-0020
+.\.venv\Scripts\python.exe scripts/track.py dancetrack0020 --feature-mode random --output runs/random-identity-track
+.\.venv\Scripts\python.exe scripts/evaluate.py runs/raw-pooled-feature-0020 dancetrack0020
+.\.venv\Scripts\python.exe scripts/evaluate.py runs/random-identity-track dancetrack0020
+
 # Learned feature candidate
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --head runs/identity-head-v2/head.pt --output runs/identity-v2-track
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/identity-v2-track dancetrack0016 dancetrack0020
@@ -177,7 +197,8 @@ The agent has broad freedom to investigate. It may read literature and implement
 3. **Run the cheapest discriminating experiment.** Prefer an ablation or narrow change that can prove/disprove the idea. Research papers/implementations when the mechanism is unclear. Do not add complexity because it sounds plausible.
 4. **Promote only meaningful wins.** A candidate must improve the relevant tracking capability without hiding a material detection/runtime regression. Tiny metric noise is not enough. If it is not clearly better, keep the incumbent and remove the candidate machinery.
 5. **Check that the new capability is real.** Ablate the added memory/context. If removing it barely changes tracking, the model did not learn the intended behavior. Once a candidate is frozen on development, compare against the stronger BoT-SORT+ReID reference and then evaluate the untouched sequences exactly once.
-6. **Repeat only when evidence gives a reason.** New data, a reproducible failure family, or a credible research insight can justify another change. If there is no evidence-backed improvement to make, do not touch the model.
+6. **Housekeep and checkpoint.** Remove dead scratch paths, keep generated artifacts untracked, commit coherent evidence-backed changes, and push useful checkpoints/results so the remote branch stays a recoverable handoff.
+7. **Repeat when evidence gives a reason.** New data, a reproducible failure family, or a credible research insight can justify another change.
 
 The goal is not continuous code churn. It is to preserve the strongest known tracker while taking high-information shots at real capability jumps. Success means the one-network model approaches or beats strong tracking references while keeping useful detection quality and a credible path to >=15 FPS on Nano.
 
