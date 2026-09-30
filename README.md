@@ -81,14 +81,15 @@ Current broad research picture:
 | Density | New DEV candidate | Frozen tracker | Stock YOLO + BoT-SORT |
 |---|---:|---:|---:|
 | Sparse | **33.75** | 33.33 | 32.79 |
-| Medium | **26.61** | 25.39 | 23.61 |
-| Dense | **34.61** | 34.11 | 31.71 |
-| Macro | **31.66** | 30.94 | 29.37 |
+| Medium | **26.63** | 25.39 | 23.61 |
+| Dense | **34.74** | 34.11 | 31.71 |
+| Macro | **31.71** | 30.94 | 29.37 |
 
-The new DEV candidate lowers the detector/recovery floor from 0.10 to 0.05. It
-improves all three research density levels and raises recall while remaining
-above 20 FPS in the direct 4060 research path. It is packaged separately as
-`runs/person-tracker-dev.pt`; the historical frozen artifact is not overwritten.
+The new DEV candidate lowers the detector/recovery floor from 0.10 to 0.05 and
+adds one frame of Kalman coast only when at least 10 tracks are active. Sparse
+behavior stays unchanged while medium/dense dropout recovery improves. Both DEV
+sequences remain above 15 FPS on the direct 4060 path. It is packaged separately
+as `runs/person-tracker-dev.pt`; the historical frozen artifact is not overwritten.
 
 The consumed historical holdout improves in macro HOTA (**13.11 vs 12.24**) for
 the old frozen model, but its sparse/medium clips are dominated by very low

@@ -23,9 +23,15 @@ class CausalPersonTracker:
         owner_alpha: float = 0.2,
         average_base_cost_budget: float = 0.00025,
         gmc_max_corners: int = 100,
+        coast_frames: int = 0,
+        coast_min_active_tracks: int = 0,
     ):
         if gmc_max_corners < 5:
             raise ValueError("gmc_max_corners must be at least 5")
+        if coast_frames < 0:
+            raise ValueError("coast_frames must be non-negative")
+        if coast_min_active_tracks < 0:
+            raise ValueError("coast_min_active_tracks must be non-negative")
         self.args = args
         self.max_frames_lost = args.track_buffer
         self.gmc = GMC(method=args.gmc_method)
@@ -38,6 +44,8 @@ class CausalPersonTracker:
         self.owner_scorer, self.owner_mean, self.owner_std, _ = load_owner_scorer(owner_checkpoint)
         self.owner_alpha = owner_alpha
         self.owner_average_base_cost_budget = average_base_cost_budget
+        self.coast_frames = int(coast_frames)
+        self.coast_min_active_tracks = int(coast_min_active_tracks)
         self.reset()
 
     def reset(self) -> None:
@@ -212,7 +220,16 @@ class CausalPersonTracker:
                 removed.append(track)
 
         merge_track_pools(self, activated, refind, lost, removed)
-        return np.asarray(
-            [track.result for track in self.tracked_stracks if track.is_activated],
-            dtype=np.float32,
-        )
+        output_tracks = [
+            track for track in self.tracked_stracks if track.is_activated
+        ]
+        if (
+            self.coast_frames
+            and len(output_tracks) >= self.coast_min_active_tracks
+        ):
+            output_tracks.extend(
+                track
+                for track in self.lost_stracks
+                if self.frame_id - track.end_frame <= self.coast_frames
+            )
+        return np.asarray([track.result for track in output_tracks], dtype=np.float32)

@@ -65,6 +65,8 @@ def run_sequence(
     assignment_cost_budget=0.00025,
     gmc_method="sparseOptFlow",
     gmc_max_corners=100,
+    coast_frames=0,
+    coast_min_active_tracks=0,
 ):
     sequence_dir = ROOT / "data" / "dancetrack" / sequence
     image_paths = sorted((sequence_dir / "img1").glob("*.jpg"))
@@ -88,6 +90,8 @@ def run_sequence(
             owner_alpha=assignment_alpha,
             average_base_cost_budget=assignment_cost_budget,
             gmc_max_corners=gmc_max_corners,
+            coast_frames=coast_frames,
+            coast_min_active_tracks=coast_min_active_tracks,
         )
     )
     runtime = CausalTrackerRuntime(
@@ -209,6 +213,8 @@ def main():
         default=100,
         help="Sparse optical-flow corner budget for the project-owned tracker.",
     )
+    parser.add_argument("--coast-frames", type=int, default=0)
+    parser.add_argument("--coast-min-active-tracks", type=int, default=0)
     args = parser.parse_args()
     assert_research_eval(args.sequences)
     if args.min_detections_for_reid < 1:
@@ -229,6 +235,10 @@ def main():
         raise ValueError("--assignment-cost-budget must be non-negative")
     if args.gmc_max_corners < 5:
         raise ValueError("--gmc-max-corners must be at least 5")
+    if args.coast_frames < 0:
+        raise ValueError("--coast-frames must be non-negative")
+    if args.coast_min_active_tracks < 0:
+        raise ValueError("--coast-min-active-tracks must be non-negative")
     if args.owner_head and args.disable_reid:
         raise ValueError("--owner-head requires appearance features")
 
@@ -282,6 +292,8 @@ def main():
             assignment_cost_budget=args.assignment_cost_budget,
             gmc_method=args.gmc_method,
             gmc_max_corners=args.gmc_max_corners,
+            coast_frames=args.coast_frames,
+            coast_min_active_tracks=args.coast_min_active_tracks,
         )
         for sequence in args.sequences
     ]
@@ -351,6 +363,10 @@ def main():
         ),
         "reid_gate": {
             "min_detections": args.min_detections_for_reid,
+        },
+        "coast": {
+            "frames": args.coast_frames,
+            "min_active_tracks": args.coast_min_active_tracks,
         },
         "owner_continuity": (
             None

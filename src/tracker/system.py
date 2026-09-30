@@ -33,6 +33,8 @@ class TrackerConfig:
     detector_confidence: float = 0.05
     owner_alpha: float = 0.20
     owner_average_base_cost_budget: float = 0.00025
+    coast_frames: int = 1
+    coast_min_active_tracks: int = 10
 
     def association_args(self, device: torch.device) -> IterableSimpleNamespace:
         return IterableSimpleNamespace(
@@ -140,9 +142,11 @@ class PersonTracker:
                 f"unsupported tracker bundle format: {checkpoint.get('format')!r}"
             )
         config_values = dict(checkpoint["config"])
-        # Historical v1 bundles predate an explicit detector floor. Their
-        # runtime used 0.10, so preserve that value when loading them.
+        # Historical v1 bundles predate the explicit detector floor and
+        # crowded one-frame coast. Preserve their original runtime behavior.
         config_values.setdefault("detector_confidence", 0.10)
+        config_values.setdefault("coast_frames", 0)
+        config_values.setdefault("coast_min_active_tracks", 0)
         bundled_config = TrackerConfig(**config_values)
         self.config = config or bundled_config
 
@@ -158,6 +162,8 @@ class PersonTracker:
             owner_alpha=self.config.owner_alpha,
             average_base_cost_budget=self.config.owner_average_base_cost_budget,
             gmc_max_corners=self.config.gmc_max_corners,
+            coast_frames=self.config.coast_frames,
+            coast_min_active_tracks=self.config.coast_min_active_tracks,
         )
         self.runtime = CausalTrackerRuntime(
             self.model,

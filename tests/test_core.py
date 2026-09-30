@@ -202,6 +202,8 @@ class TrackerConfigTests(unittest.TestCase):
         self.assertEqual(config.gmc_max_corners, 100)
         self.assertEqual(config.min_detections_for_reid, 10)
         self.assertEqual(config.owner_average_base_cost_budget, 0.00025)
+        self.assertEqual(config.coast_frames, 1)
+        self.assertEqual(config.coast_min_active_tracks, 10)
 
 
 class CausalPersonTrackerTests(unittest.TestCase):
@@ -280,6 +282,18 @@ class CausalPersonTrackerTests(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 CausalPersonTracker(config, owner_path, gmc_max_corners=4)
+
+            coast_tracker = CausalPersonTracker(
+                config,
+                owner_path,
+                coast_frames=1,
+                coast_min_active_tracks=10,
+            )
+            self.assertEqual(coast_tracker.coast_frames, 1)
+            self.assertEqual(coast_tracker.coast_min_active_tracks, 10)
+
+            with self.assertRaises(ValueError):
+                CausalPersonTracker(config, owner_path, coast_frames=-1)
 
 
 if __name__ == "__main__":
