@@ -69,92 +69,77 @@ experiment explicitly studies otherwise.
 
 ## 4. Research loop
 
-This is the default loop for every agent.
+Use this simple loop indefinitely:
 
-### Reassess
+### 1. Find the weakness
 
-Read `AGENTS.md`, this file, the active source, recent commits and relevant
-existing run artifacts. Work out what is already known and what uncertainty is
-actually blocking progress.
+Start from the latest meaningful result. Ask what is actually failing or holding
+the model back: detection, identity continuity, occlusion recovery, motion,
+memory usage, speed, data coverage, or something else.
 
-Do not write the hypothesis or plan into this file before running it.
+Use diagnostics when needed. Do not start by asking "what can I tweak?"
 
-### Search before building
+### 2. Paint it red
 
-Check Git history, active code and existing runs before creating a new
-experiment. If essentially the same idea has already been tested, reuse the
-evidence instead of repeating it.
+Before spending a lot of effort building a solution, test whether the suspected
+capability would matter if we could simply give it to the system.
 
-### Choose a meaningful shot
+Use an oracle, forced input, exaggerated intervention, privileged signal or
+temporary cheat when possible. The point is not to build something deployable.
+The point is to answer:
 
-Use judgment about scale. The best next move is the one with the highest
-expected value for understanding or advancing the model, not automatically the
-smallest or safest one.
+> If this weakness were fixed, would the tracker actually get meaningfully better?
 
-It is valid to:
+Examples:
 
-- spend a long stretch reading papers, source code, benchmark protocols or
-  dataset documentation before implementing anything
-- follow a strong technical intuition even when it is risky
-- replace an architecture instead of patching it
-- run a long training job or use substantially more data when a short probe
-  would not answer the real question
-- build a focused prototype that looks very different from the current model
+- give perfect previous-frame position to test whether motion is the bottleneck
+- preserve the correct identity through an occlusion to measure recovery
+  headroom
+- give much longer context to test whether context length is limiting
+- substitute ground-truth detections to separate detection from association
+- force memory on/off to measure whether the model is using temporal state
 
-Small probes are valuable when they can cheaply answer the real uncertainty.
-They are not a requirement. Do not break a serious idea into so many tiny safe
-steps that the project never actually tests the idea.
+If the red-painted/oracle version barely helps, the suspected weakness is
+probably not worth learning properly. Find the next weakness.
 
-The discipline is that a shot should have a reason: it should test a capability,
-challenge an assumption, explore a promising direction, or meaningfully raise
-the ceiling. Avoid motion that only makes the repository busier.
+If it helps a lot, there is real headroom. Now we know what capability is worth
+building.
 
-For temporal candidates, the running-memory vs reset-memory comparison is a
-required control. A model that performs similarly with memory reset has not
-demonstrated the capability this project is trying to learn.
+### 3. Take the real shot
 
-### Decide
+Build or train a realistic way for the model to learn that capability.
 
-Every experiment ends with one of three decisions:
+Use whatever scale makes sense. It can be a quick probe, literature exploration,
+a risky architecture change, substantially more data, or a long training run.
+Good intuition is a valid reason to try something. Do not make an idea artificially
+small just to be cautious.
 
-- **Promote**: evidence is strong enough to become part of the active design.
-- **Reject**: the idea did not help enough; do not keep tuning it by default.
-- **Redirect**: the result exposed a different bottleneck, so change the
-  approach rather than patching the failed idea.
+The requirement is not "small experiment." The requirement is "meaningful
+experiment."
 
-"Interesting" without a decision is not a completed experiment.
+For temporal candidates, running-memory vs reset-memory remains a required
+control. If memory can be reset without meaningful loss, the model has not
+demonstrated the temporal capability we care about.
 
-### Record only durable evidence
+### 4. Decide, record, clean
 
-After the result is known, add a compact entry to **Established evidence** only
-if it will prevent future agents from repeating work or materially changes what
-the project believes.
+End with a decision:
 
-A durable entry should include:
+- **Promote**: keep it because evidence says it advances the goal.
+- **Reject**: stop pursuing it by default.
+- **Redirect**: the experiment revealed a different bottleneck; attack that
+  instead.
 
-- what was actually tested
-- the minimum configuration needed to reproduce the conclusion
-- the important numbers
-- the decision
+Only after the result is known, write durable evidence into **Established
+evidence** when it will matter to a future agent. Record the tested idea,
+important numbers and conclusion, not brainstorming or future plans.
 
-Do not copy raw logs, brainstorming, future plans, or every failed parameter
-value into this file. Generated run folders hold detail; Git history holds old
-implementations.
+Then delete rejected one-off code and stale clutter, keep only reusable active
+code, update tests when needed, run `python scripts/check_repo.py`, checkpoint
+`main`, and continue the loop.
 
-### Housekeep immediately
-
-After deciding:
-
-- delete rejected one-off code
-- keep reusable code only when it serves the active path
-- remove stale caches and obsolete scripts
-- keep generated data/weights/runs untracked
-- update tests when a promoted invariant changes
-- run `python scripts/check_repo.py`
-- make a meaningful checkpoint commit on `main`
-
-The active tree should describe the current project, not every project it has
-ever been.
+Reading all repository context is a bootstrap action for a fresh or confused
+agent, not a mandatory step on every pass.
 
 ## 5. Evidence standards
 

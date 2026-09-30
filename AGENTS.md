@@ -27,14 +27,19 @@ The neural model itself must own identity continuity.
 ## How to work
 
 - Work only on `main`.
-- Before experimenting, read existing code, `tracker.md`, recent commits and
-  relevant existing runs so completed work is not repeated.
+- When starting fresh or when context is unclear, read `tracker.md`, the active
+  code, recent commits and relevant runs. Do not mechanically reread everything
+  before every experiment.
 - Use judgment. You are allowed to spend substantial time researching papers,
   implementations, datasets or related ideas before touching code when that can
   change the quality of the approach.
 - Take real shots. A good experiment may be a tiny probe, a new architecture, a
   long training run, a larger dataset pass or a risky intuition-driven idea.
   Choose the scale that matches the expected information or upside.
+- When a weakness is suspected, first try to prove that fixing that weakness
+  would matter. Use an oracle, forced capability, exaggerated intervention or
+  other diagnostic when possible. If even the "cheating" version does not help,
+  do not spend weeks learning it properly.
 - Do not confuse caution with rigor. Bold changes are welcome when they attack
   the project goal directly and can teach us something important.
 - Do not confuse activity with progress either. Avoid endless micro-tuning,
