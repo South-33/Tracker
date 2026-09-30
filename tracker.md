@@ -284,6 +284,22 @@ The development candidate is now packaged as one deployable tracker artifact. `s
 
 Freeze this development candidate before protected evaluation. Further development changes require a new evidence-backed reason rather than parameter search.
 
+### Frozen protected evaluation
+
+Commit `101cbfe` freezes the packaged development candidate. The bundle was rebuilt from that clean commit and then run **once** on the previously untouched protected set `0096/0004/0005/0007/0010`. No tracker parameters were changed after seeing these results.
+
+```text
+protected: 0096 + 0004 + 0005 + 0007 + 0010
+
+                                  HOTA   AssA   DetA   IDF1  IDSW  Frag  Recall  Precision
+official YOLO26n + BoT-SORT      22.88  25.66  20.45  27.66   189   289   24.59      96.86
+frozen packaged causal tracker   24.80  29.65  20.76  29.74   135   260   24.98      97.46
+```
+
+The frozen tracker therefore improves protected HOTA by **+1.92**, AssA by **+3.98**, IDF1 by **+2.09**, and reduces identity switches by **54** without materially changing detector recall. The low aggregate detection score is not caused by the learned continuity policy: both systems are near **25% recall** on this protected mixture. Sequence `0096` is the dense identity stress case and reaches **38.74 HOTA / 35.55 AssA / 48.23 IDF1** with the frozen tracker. The four 120-frame clips have only **6-9% recall** but **92-99% precision**, confirming that their main limitation is detector coverage rather than association.
+
+Treat these protected results as final holdout evidence, not a new development set. Do not tune against them.
+
 The frozen packaged candidate has now been evaluated on the protected set `0096/0004/0005/0007/0010` with no post-hoc tuning. Combined protected performance is **24.80 HOTA / 29.65 AssA / 20.76 DetA / 29.74 IDF1 / 135 IDSW / 260 Frag / 24.98% recall / 97.46% precision**. The official YOLO26n + stock BoT-SORT reference on the same five sequences gives **22.88 HOTA / 25.66 AssA / 20.45 DetA / 27.66 IDF1 / 189 IDSW / 289 Frag / 24.59% recall / 96.86% precision**. The frozen tracker therefore generalizes its association gain: about **+1.92 HOTA, +3.98 AssA, +2.09 IDF1, and 54 fewer switches**, while detector recall remains the dominant limitation on the short dense clips. Sequence `0096` itself reaches **38.74 HOTA / 35.55 AssA / 48.23 IDF1**; the four 120-frame clips have very low detector recall for both the candidate and baseline regime.
 
 Do not tune on these protected results. The remaining acceptance item is deployment: verify **>=15 FPS on Orin Nano Super 8 GB** using the frozen bundle and configuration.
@@ -326,6 +342,10 @@ Keep `0096` and `0004/0005/0007/0010` untouched while the lifecycle module is be
 .\.venv\Scripts\python.exe scripts/train_owner.py --output runs/owner-head-v1/head.pt
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --head runs/identity-head-v2/head.pt --owner-head runs/owner-head-v1/head.pt --new-track-threshold 0.45 --output runs/identity-v2-guarded
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/identity-v2-guarded dancetrack0016 dancetrack0020
+
+# Freeze/package the current candidate into one deployable artifact
+.\.venv\Scripts\python.exe scripts/package_tracker.py --output runs/person-tracker.pt
+.\.venv\Scripts\python.exe scripts/run_tracker.py dancetrack0016 dancetrack0020 --tracker runs/person-tracker.pt --output runs/packaged-dev
 
 # Lifecycle-only control
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --disable-reid --new-track-threshold 0.45 --output runs/manual-no-reid-new045
