@@ -194,7 +194,9 @@ class SplitSafetyTests(unittest.TestCase):
 class TrackerConfigTests(unittest.TestCase):
     def test_current_candidate_defaults_are_explicit(self):
         config = TrackerConfig()
+        self.assertEqual(config.track_low_thresh, 0.05)
         self.assertEqual(config.new_track_thresh, 0.45)
+        self.assertEqual(config.detector_confidence, 0.05)
         self.assertEqual(config.track_buffer, 30)
         self.assertEqual(config.gmc_method, "sparseOptFlow")
         self.assertEqual(config.gmc_max_corners, 100)

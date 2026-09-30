@@ -20,7 +20,7 @@ class TrackerConfig:
     """Validated runtime configuration for the current tracking candidate."""
 
     track_high_thresh: float = 0.25
-    track_low_thresh: float = 0.10
+    track_low_thresh: float = 0.05
     new_track_thresh: float = 0.45
     track_buffer: int = 30
     match_thresh: float = 0.80
@@ -30,6 +30,7 @@ class TrackerConfig:
     proximity_thresh: float = 0.50
     appearance_thresh: float = 0.80
     min_detections_for_reid: int = 10
+    detector_confidence: float = 0.05
     owner_alpha: float = 0.20
     owner_average_base_cost_budget: float = 0.00025
 
@@ -138,7 +139,11 @@ class PersonTracker:
             raise ValueError(
                 f"unsupported tracker bundle format: {checkpoint.get('format')!r}"
             )
-        bundled_config = TrackerConfig(**checkpoint["config"])
+        config_values = dict(checkpoint["config"])
+        # Historical v1 bundles predate an explicit detector floor. Their
+        # runtime used 0.10, so preserve that value when loading them.
+        config_values.setdefault("detector_confidence", 0.10)
+        bundled_config = TrackerConfig(**config_values)
         self.config = config or bundled_config
 
         self.model = TrackingYOLO(
@@ -161,6 +166,7 @@ class PersonTracker:
             with_reid=True,
             feature_mode="trained",
             min_detections_for_reid=self.config.min_detections_for_reid,
+            detector_confidence=self.config.detector_confidence,
         )
 
     @torch.inference_mode()

@@ -14,7 +14,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--identity-head", default="runs/identity-head-v2/head.pt")
     parser.add_argument("--owner-head", default="runs/owner-head-v1/head.pt")
-    parser.add_argument("--output", default="runs/person-tracker.pt")
+    parser.add_argument(
+        "--output",
+        default="runs/person-tracker-dev.pt",
+        help="Current development bundle. Promote/rename only after final holdout.",
+    )
     args = parser.parse_args()
 
     bundle = build_tracker_bundle(

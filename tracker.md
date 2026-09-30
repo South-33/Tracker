@@ -331,6 +331,8 @@ The useful change is simpler: lower the detector/ByteTrack recovery floor from *
 
 The same change also improves the dedicated calibration sequence `0012` from **25.39 to 26.61 HOTA**, **27.78 to 29.16 IDF1**, and **74.82% to 75.78% recall**, while fragments fall from 312 to 299. This is therefore the **current development candidate**, not a one-sequence tweak.
 
+The current development settings are now packageable without overwriting the historical protected artifact. `scripts/package_tracker.py` writes `runs/person-tracker-dev.pt` by default with `track_low_thresh=0.05` and `detector_confidence=0.05`. On `0020`, the packaged DEV output is **byte-for-byte identical** to the direct research run (same SHA-256 result file) and reproduces **34.6116 HOTA / 40.9616 IDF1 / 258 IDSW**. Historical `runs/person-tracker.pt` keeps its original 0.10 detector floor when loaded.
+
 Do not retroactively score this newer candidate on the consumed five-sequence holdout. The next final comparison must use a fresh sealed holdout. `0082/0083` are reserved for that purpose, but the current local copies are incomplete 120-frame slices and must be replaced with the complete official sequences before final scoring.
 
 Repository/data hygiene is now explicit: work only on `main`, use Git commits as checkpoints instead of worktrees/feature branches, and use `src/tracker/splits.py` as the single source of truth for TRAIN, CALIBRATION, DEV, consumed holdout, and reserved holdout. Normal research runners refuse holdout sequences; final/historical scoring requires explicit flags.

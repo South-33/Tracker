@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("sequences", nargs="+")
-    parser.add_argument("--tracker", default="runs/person-tracker.pt")
+    parser.add_argument("--tracker", required=True)
     parser.add_argument("--output", default="runs/causal-system")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--final-holdout", action="store_true")

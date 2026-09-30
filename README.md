@@ -78,17 +78,21 @@ until they beat the frozen model on DEV without using holdout feedback.
 
 Current broad research picture:
 
-| Density | Frozen tracker HOTA | Stock YOLO + BoT-SORT |
-|---|---:|---:|
-| Sparse | **33.33** | 32.79 |
-| Medium | **25.39** | 23.61 |
-| Dense | **34.11** | 31.71 |
-| Macro | **30.94** | 29.37 |
+| Density | New DEV candidate | Frozen tracker | Stock YOLO + BoT-SORT |
+|---|---:|---:|---:|
+| Sparse | **33.75** | 33.33 | 32.79 |
+| Medium | **26.61** | 25.39 | 23.61 |
+| Dense | **34.61** | 34.11 | 31.71 |
+| Macro | **31.66** | 30.94 | 29.37 |
 
-So the tracker is better across all three research density levels, with the
-largest gain in dense crowds. The consumed historical holdout also improves in
-macro HOTA (**13.11 vs 12.24**), but its sparse/medium clips are dominated by
-very low detector recall and must not guide new tuning.
+The new DEV candidate lowers the detector/recovery floor from 0.10 to 0.05. It
+improves all three research density levels and raises recall while remaining
+above 20 FPS in the direct 4060 research path. It is packaged separately as
+`runs/person-tracker-dev.pt`; the historical frozen artifact is not overwritten.
+
+The consumed historical holdout improves in macro HOTA (**13.11 vs 12.24**) for
+the old frozen model, but its sparse/medium clips are dominated by very low
+detector recall and must not guide new tuning.
 
 Next benchmark expansion should stay separate from training:
 
@@ -99,6 +103,15 @@ Next benchmark expansion should stay separate from training:
 
 runs/person-tracker.pt is the previous frozen artifact. Its old five-sequence
 holdout result is historical evidence only.
+
+Package the current development candidate separately:
+
+~~~powershell
+.\.venv\Scripts\python.exe scripts/package_tracker.py
+~~~
+
+That writes runs/person-tracker-dev.pt. Do not replace runs/person-tracker.pt
+until the reserved final holdout has been completed and passed.
 
 For the next candidate, complete RESERVED_HOLDOUT first, freeze the candidate,
 then score it with:
