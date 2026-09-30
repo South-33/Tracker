@@ -16,8 +16,8 @@ def main():
     parser.add_argument("--owner-head", default="runs/owner-head-v1/head.pt")
     parser.add_argument(
         "--output",
-        default="runs/person-tracker-dev.pt",
-        help="Current development bundle. Promote/rename only after final holdout.",
+        default="runs/person-tracker.pt",
+        help="Packaged tracker artifact.",
     )
     args = parser.parse_args()
 

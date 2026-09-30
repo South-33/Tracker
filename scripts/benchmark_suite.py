@@ -16,7 +16,8 @@ import sys
 
 from tracker.splits import (
     CALIBRATION,
-    CONSUMED_HOLDOUT,
+    CONSUMED_HOLDOUT_2026_10_01,
+    CONSUMED_HOLDOUT_LEGACY,
     DEV,
     RESEARCH_EVAL,
     RESERVED_HOLDOUT,
@@ -55,7 +56,7 @@ def evaluate(run: Path, sequences: list[str], mode: str) -> dict:
         str(run),
         *sequences,
     ]
-    if mode == "historical":
+    if mode.startswith("historical-"):
         command.append("--historical-holdout")
     elif mode == "final":
         command.append("--final-holdout")
@@ -100,7 +101,14 @@ def main():
     parser.add_argument("run", help="Folder containing <sequence>.txt predictions")
     parser.add_argument(
         "--split",
-        choices=("calibration", "dev", "research", "historical", "final"),
+        choices=(
+            "calibration",
+            "dev",
+            "research",
+            "historical-legacy",
+            "historical-final",
+            "final",
+        ),
         default="research",
         help="Data role to summarize. Default is calibration + development.",
     )
@@ -112,7 +120,7 @@ def main():
     parser.add_argument(
         "--confirm-historical",
         action="store_true",
-        help="Required with --split historical. Reproduction only, never tuning.",
+        help="Required with historical splits. Reproduction only, never tuning.",
     )
     parser.add_argument("--output", default=None, help="Optional report JSON path")
     args = parser.parse_args()
@@ -121,7 +129,8 @@ def main():
         "calibration": list(CALIBRATION),
         "dev": list(DEV),
         "research": list(RESEARCH_EVAL),
-        "historical": list(CONSUMED_HOLDOUT),
+        "historical-legacy": list(CONSUMED_HOLDOUT_LEGACY),
+        "historical-final": list(CONSUMED_HOLDOUT_2026_10_01),
         "final": list(RESERVED_HOLDOUT),
     }
     if args.split == "final" and not args.confirm_final:
@@ -129,7 +138,12 @@ def main():
             "FINAL_HOLDOUT is evaluation-only. Re-run with --confirm-final "
             "only for a frozen model or an already-consumed final result."
         )
-    if args.split == "historical" and not args.confirm_historical:
+    if args.split == "final" and not RESERVED_HOLDOUT:
+        raise SystemExit(
+            "No RESERVED_HOLDOUT is currently defined. Choose and seal a new "
+            "holdout in src/tracker/splits.py before running final inference."
+        )
+    if args.split.startswith("historical-") and not args.confirm_historical:
         raise SystemExit(
             "CONSUMED_HOLDOUT is historical evidence only. Re-run with "
             "--confirm-historical only to reproduce an old report."
@@ -169,7 +183,7 @@ def main():
     report = {
         "run": str(run.relative_to(ROOT)) if run.is_relative_to(ROOT) else str(run),
         "split": args.split,
-        "holdout": args.split in {"historical", "final"},
+        "holdout": args.split.startswith("historical-") or args.split == "final",
         "headline": "macro_per_sequence",
         "macro_per_sequence": macro(rows),
         "micro_combined": {

@@ -343,6 +343,12 @@ Do not retroactively score this newer candidate on the consumed five-sequence ho
 
 Repository/data hygiene is now explicit: work only on `main`, use Git commits as checkpoints instead of worktrees/feature branches, and use `src/tracker/splits.py` as the single source of truth for TRAIN, CALIBRATION, DEV, consumed holdout, and reserved holdout. Normal research runners refuse holdout sequences; final/historical scoring requires explicit flags.
 
+The frozen candidate passed that fresh 10-sequence final comparison on 2026-10-01. Against stock YOLO26n + Ultralytics BoT-SORT on the exact same videos, macro HOTA is **31.843 vs 29.207**, macro AssA **18.508 vs 15.651**, macro IDF1 **31.793 vs 28.110**, recall **74.970% vs 73.758%**, and ID switches per 1k frames **140.6 vs 158.3**. Precision trades slightly from **90.255% to 89.651%**. HOTA improves in every density bucket: sparse **35.01 vs 34.38**, medium **31.43 vs 28.22**, dense **28.41 vs 25.77**. Sparse IDF1 is not uniformly better, so the tracker is improved rather than solved. This 10-sequence set is now consumed and must not guide future tuning; `RESERVED_HOLDOUT` is intentionally empty until a new sealed set is chosen before the next final comparison.
+
+Fresh 4060 throughput across those 10 videos ranges from about **12.9 to 21.9 pipeline FPS**. Most clips exceed 15 FPS, but `0014` (~12.9) and `0063` (~14.0) do not, so runtime optimization is still a real deployment gap even on the development GPU. Do not infer the Orin requirement from the faster clips.
+
+The validated candidate is promoted to the canonical `runs/person-tracker.pt`. Its runtime-critical detector weights, 64D embedding weights, owner scorer weights/statistics, and tracker config exactly match the validated development bundle. A fresh canonical `0016` run is byte-for-byte identical to the validated crowded-coast output (SHA256 **FE66AE4CC7F335D14853DD284CC52263B917B11EBC936F013080B6776716B31C**). The former canonical artifact is preserved locally as `runs/person-tracker-historical.pt`.
+
 ### Reproduction commands
 
 ```powershell
@@ -371,14 +377,15 @@ Repository/data hygiene is now explicit: work only on `main`, use Git commits as
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --head runs/identity-head-v2/head.pt --new-track-threshold 0.45 --output runs/identity-v2-new045
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/identity-v2-new045 dancetrack0016 dancetrack0020
 
-# Current guarded dev candidate
+# Train/reproduce the learned owner scorer
 .\.venv\Scripts\python.exe scripts/train_owner.py --output runs/owner-head-v1/head.pt
-.\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --head runs/identity-head-v2/head.pt --owner-head runs/owner-head-v1/head.pt --new-track-threshold 0.45 --output runs/identity-v2-guarded
-.\.venv\Scripts\python.exe scripts/evaluate.py runs/identity-v2-guarded dancetrack0016 dancetrack0020
 
-# Freeze/package the current candidate into one deployable artifact
-.\.venv\Scripts\python.exe scripts/package_tracker.py --output runs/person-tracker.pt
+# Rebuild and run the promoted canonical tracker
+.\.venv\Scripts\python.exe scripts/package_tracker.py
 .\.venv\Scripts\python.exe scripts/run_tracker.py dancetrack0016 dancetrack0020 --tracker runs/person-tracker.pt --output runs/packaged-dev
+
+# Reproduce the consumed 2026-10-01 final report without reopening it for tuning
+.\.venv\Scripts\python.exe scripts/benchmark_suite.py runs/final-fresh-current-complete --split historical-final --confirm-historical
 
 # Deployment-hardware benchmark (use this unchanged on Orin Nano Super)
 .\.venv\Scripts\python.exe scripts/benchmark_tracker.py dancetrack0020 --tracker runs/person-tracker.pt --warmup 30 --target-fps 15 --max-memory-gib 8 --output runs/orin-benchmark.json

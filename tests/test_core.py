@@ -15,6 +15,8 @@ from tracker.runtime import CausalTrackerRuntime
 from tracker.splits import (
     CALIBRATION,
     CONSUMED_HOLDOUT,
+    CONSUMED_HOLDOUT_2026_10_01,
+    CONSUMED_HOLDOUT_LEGACY,
     DEV,
     RESERVED_HOLDOUT,
     TRAIN,
@@ -174,6 +176,14 @@ class SplitSafetyTests(unittest.TestCase):
         self.assertFalse(set(TRAIN) & set(CALIBRATION))
         self.assertFalse(set(TRAIN) & set(CONSUMED_HOLDOUT))
         self.assertFalse(set(DEV) & set(RESERVED_HOLDOUT))
+        self.assertFalse(
+            set(CONSUMED_HOLDOUT_LEGACY)
+            & set(CONSUMED_HOLDOUT_2026_10_01)
+        )
+        self.assertEqual(
+            CONSUMED_HOLDOUT,
+            CONSUMED_HOLDOUT_LEGACY + CONSUMED_HOLDOUT_2026_10_01,
+        )
 
     def test_holdout_cannot_be_used_for_training(self):
         with self.assertRaises(ValueError):
@@ -184,11 +194,11 @@ class SplitSafetyTests(unittest.TestCase):
         self.assertEqual(role_of(CALIBRATION[0]), "calibration")
         self.assertEqual(role_of(DEV[0]), "dev")
         self.assertEqual(role_of(CONSUMED_HOLDOUT[0]), "consumed_holdout")
-        self.assertEqual(role_of(RESERVED_HOLDOUT[0]), "reserved_holdout")
+        self.assertFalse(RESERVED_HOLDOUT)
 
     def test_research_eval_rejects_holdout(self):
         with self.assertRaises(ValueError):
-            assert_research_eval([RESERVED_HOLDOUT[0]])
+            assert_research_eval([CONSUMED_HOLDOUT[0]])
 
 
 class TrackerConfigTests(unittest.TestCase):

@@ -24,12 +24,11 @@ src/tracker/splits.py is the only source of truth.
 | TRAIN | 0001, 0002, 0006, 0008, 0015 | update learned weights |
 | CALIBRATION | 0012 | thresholds and hypothesis selection |
 | DEV | 0016, 0020 | normal online hill-climb |
-| CONSUMED_HOLDOUT | 0004, 0005, 0007, 0010, 0096 | historical evidence only |
-| RESERVED_HOLDOUT | 0014, 0019, 0035, 0047, 0063, 0073, 0077, 0081, 0090, 0097 | next frozen-candidate final test |
+| CONSUMED_HOLDOUT | 0004, 0005, 0007, 0010, 0096, 0014, 0019, 0035, 0047, 0063, 0073, 0077, 0081, 0090, 0097 | historical/final evidence only |
+| RESERVED_HOLDOUT | none | define a new sealed set before the next final comparison |
 
-Never tune on either holdout group. The consumed holdout has already been seen.
-The local reserved sequences are only partial 120-frame slices, so do not score
-them until the complete official sequences are installed.
+Never tune on consumed holdout data. The 10-sequence final set was evaluated on
+2026-10-01 and is now permanently consumed.
 
 ## 1. Train
 
@@ -72,28 +71,25 @@ very dense), put all three prediction files in one run folder and use:
 This is useful for understanding behavior across scene types, but it is not a
 fresh final score.
 
-Detector threshold changes such as `--detector-confidence 0.05` or
-`--track-low-threshold 0.05` are experiments. Do not call them the incumbent
-until they beat the frozen model on DEV without using holdout feedback.
+Current tracker settings use a 0.05 detector/recovery floor, 0.45 birth
+threshold, 100-corner GMC, guarded learned association, and one frame of
+output-only Kalman coast only when at least 10 tracks are active.
 
-Current broad research picture:
+Fresh 10-sequence final comparison:
 
-| Density | New DEV candidate | Frozen tracker | Stock YOLO + BoT-SORT |
-|---|---:|---:|---:|
-| Sparse | **33.75** | 33.33 | 32.79 |
-| Medium | **26.63** | 25.39 | 23.61 |
-| Dense | **34.74** | 34.11 | 31.71 |
-| Macro | **31.71** | 30.94 | 29.37 |
+| Metric | Current tracker | Stock YOLO + BoT-SORT |
+|---|---:|---:|
+| Macro HOTA | **31.84** | 29.21 |
+| Macro AssA | **18.51** | 15.65 |
+| Macro IDF1 | **31.79** | 28.11 |
+| Macro recall | **74.97%** | 73.76% |
+| Macro precision | 89.65% | **90.25%** |
+| ID switches / 1k frames | **140.6** | 158.3 |
 
-The new DEV candidate lowers the detector/recovery floor from 0.10 to 0.05 and
-adds one frame of Kalman coast only when at least 10 tracks are active. Sparse
-behavior stays unchanged while medium/dense dropout recovery improves. Both DEV
-sequences remain above 15 FPS on the direct 4060 path. It is packaged separately
-as `runs/person-tracker-dev.pt`; the historical frozen artifact is not overwritten.
-
-The consumed historical holdout improves in macro HOTA (**13.11 vs 12.24**) for
-the old frozen model, but its sparse/medium clips are dominated by very low
-detector recall and must not guide new tuning.
+The gain survives all density buckets: HOTA is **35.01 vs 34.38** sparse,
+**31.43 vs 28.22** medium, and **28.41 vs 25.77** dense. Sparse identity is not
+uniformly better, so do not treat the model as solved; the strongest
+generalization gain is still association in medium/dense scenes.
 
 Next benchmark expansion should stay separate from training:
 
@@ -102,32 +98,35 @@ Next benchmark expansion should stay separate from training:
 
 ## 3. Freeze and final
 
-runs/person-tracker.pt is the previous frozen artifact. Its old five-sequence
-holdout result is historical evidence only.
+`runs/person-tracker.pt` is the promoted canonical artifact.
 
-Package the current development candidate separately:
+Rebuild it from the current validated heads/config:
 
 ~~~powershell
 .\.venv\Scripts\python.exe scripts/package_tracker.py
 ~~~
 
-That writes runs/person-tracker-dev.pt. Do not replace runs/person-tracker.pt
-until the reserved final holdout has been completed and passed.
-
-For the next candidate, complete RESERVED_HOLDOUT first, freeze the candidate,
-then score it with:
+Before the **next** final comparison, define a new RESERVED_HOLDOUT in
+`src/tracker/splits.py` before running inference or metrics. Then freeze the
+candidate and score it once with:
 
 ~~~powershell
 .\.venv\Scripts\python.exe scripts/benchmark_suite.py RUN_FOLDER --split final --confirm-final
 ~~~
 
-Historical reproduction only:
+The current 10-sequence final outputs live under
+`runs/final-fresh-current-complete` and
+`runs/final-fresh-baseline-complete`. They are consumed evidence and must not
+guide new tuning.
+
+Reproduce that report with:
 
 ~~~powershell
-.\.venv\Scripts\python.exe scripts/benchmark_suite.py runs/protected-final --split historical --confirm-historical
+.\.venv\Scripts\python.exe scripts/benchmark_suite.py runs/final-fresh-current-complete --split historical-final --confirm-historical
 ~~~
 
-Never use that historical report to choose a new change.
+The older five-sequence holdout is separately reproducible with
+`--split historical-legacy --confirm-historical`.
 
 ## 4. Deployment benchmark
 

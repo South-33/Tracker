@@ -23,7 +23,7 @@ DEV = (
     "dancetrack0020",
 )
 
-CONSUMED_HOLDOUT = (
+CONSUMED_HOLDOUT_LEGACY = (
     "dancetrack0004",
     "dancetrack0005",
     "dancetrack0007",
@@ -31,10 +31,7 @@ CONSUMED_HOLDOUT = (
     "dancetrack0096",
 )
 
-# Fresh validation videos selected before inference/metrics from the hosted
-# DanceTrack validation subset. None appear in TRAIN/CALIBRATION/DEV or the
-# already-consumed holdout. Keep this set sealed for final reporting only.
-RESERVED_HOLDOUT = (
+CONSUMED_HOLDOUT_2026_10_01 = (
     "dancetrack0014",
     "dancetrack0019",
     "dancetrack0035",
@@ -46,6 +43,12 @@ RESERVED_HOLDOUT = (
     "dancetrack0090",
     "dancetrack0097",
 )
+
+CONSUMED_HOLDOUT = CONSUMED_HOLDOUT_LEGACY + CONSUMED_HOLDOUT_2026_10_01
+
+# Empty after the 2026-10-01 frozen-candidate evaluation. Define a new sealed
+# set before the next final comparison, before running inference or metrics.
+RESERVED_HOLDOUT = ()
 
 RESEARCH_EVAL = CALIBRATION + DEV
 ALL_KNOWN = (
