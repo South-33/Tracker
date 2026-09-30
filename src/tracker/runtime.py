@@ -14,10 +14,9 @@ from tracker.data import letterbox, restore_boxes
 class CausalTrackerRuntime:
     """Compose perception and bounded online association behind one step call.
 
-    The association object is intentionally injected. The current production
-    candidate uses GuardedOwnerBOTSORT, but callers do not depend on that
-    implementation detail. This gives the project one causal frame interface
-    before the BoT-SORT state machine itself is replaced.
+    The association object is intentionally injected. The guarded candidate uses
+    CausalPersonTracker, so callers depend only on this causal frame interface
+    rather than on a framework-owned tracking policy.
     """
 
     def __init__(

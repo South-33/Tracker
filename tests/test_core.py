@@ -5,8 +5,10 @@ from tempfile import TemporaryDirectory
 import numpy as np
 import torch
 from types import SimpleNamespace
+from ultralytics.engine.results import Boxes
 
-from tracker.association import choose_guarded_assignment
+from tracker.association import OwnerContinuityScorer, choose_guarded_assignment
+from tracker.causal import CausalPersonTracker
 from tracker.data import DanceTrackPairs, letterbox, restore_boxes
 from tracker.model import identity_retrieval_loss
 from tracker.runtime import CausalTrackerRuntime
@@ -143,6 +145,52 @@ class CausalRuntimeTests(unittest.TestCase):
                 "owner_changed_frames": 0,
             },
         )
+
+
+class CausalPersonTrackerTests(unittest.TestCase):
+    def test_keeps_identity_across_simple_two_frame_track(self):
+        with TemporaryDirectory() as directory:
+            owner_path = Path(directory) / "owner.pt"
+            scorer = OwnerContinuityScorer()
+            torch.save(
+                {
+                    "pair": scorer.state_dict(),
+                    "mean": torch.zeros(11),
+                    "std": torch.ones(11),
+                },
+                owner_path,
+            )
+            config = SimpleNamespace(
+                track_buffer=30,
+                gmc_method=None,
+                proximity_thresh=0.5,
+                appearance_thresh=0.8,
+                with_reid=False,
+                model="auto",
+                device="cpu",
+                track_high_thresh=0.25,
+                track_low_thresh=0.1,
+                fuse_score=True,
+                match_thresh=0.8,
+                new_track_thresh=0.45,
+            )
+            tracker = CausalPersonTracker(config, owner_path)
+
+            first = Boxes(
+                torch.tensor([[10.0, 10.0, 30.0, 40.0, 0.9, 0.0]]),
+                (100, 100),
+            ).numpy()
+            second = Boxes(
+                torch.tensor([[11.0, 10.0, 31.0, 40.0, 0.9, 0.0]]),
+                (100, 100),
+            ).numpy()
+
+            first_output = tracker.update(first)
+            second_output = tracker.update(second)
+
+            self.assertEqual(first_output.shape, (1, 8))
+            self.assertEqual(second_output.shape, (1, 8))
+            self.assertEqual(int(first_output[0, 4]), int(second_output[0, 4]))
 
 
 if __name__ == "__main__":

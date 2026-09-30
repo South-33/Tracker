@@ -6,7 +6,6 @@ import numpy as np
 import torch
 from torch import nn
 from ultralytics.trackers.basetrack import TrackState
-from ultralytics.trackers.bot_sort import BOTSORT
 from ultralytics.trackers.utils import matching
 
 
@@ -174,52 +173,3 @@ def choose_guarded_assignment(
         learned_unmatched_detections,
         changed,
     )
-
-
-class GuardedOwnerBOTSORT(BOTSORT):
-    def __init__(
-        self,
-        args,
-        owner_checkpoint: str | Path,
-        *,
-        alpha: float = 0.2,
-        average_base_cost_budget: float = 0.00025,
-    ):
-        super().__init__(args)
-        self.owner_scorer, self.owner_mean, self.owner_std, _ = load_owner_scorer(
-            owner_checkpoint
-        )
-        self.owner_alpha = alpha
-        self.owner_average_base_cost_budget = average_base_cost_budget
-        self.owner_tiebreak_frames = 0
-        self.owner_changed_frames = 0
-
-    def _first_association(self, strack_pool, detections, activated, refind):
-        base_costs = BOTSORT.get_dists(self, strack_pool, detections)
-        features = owner_pair_features(strack_pool, detections, self.frame_id)
-        if features is None:
-            matches, unmatched_tracks, unmatched_detections = matching.linear_assignment(
-                base_costs,
-                thresh=self.args.match_thresh,
-            )
-        else:
-            normalized = (features - self.owner_mean) / self.owner_std
-            with torch.no_grad():
-                owner_logits = self.owner_scorer(normalized).numpy()
-            (
-                matches,
-                unmatched_tracks,
-                unmatched_detections,
-                changed,
-            ) = choose_guarded_assignment(
-                base_costs,
-                owner_logits,
-                match_threshold=self.args.match_thresh,
-                alpha=self.owner_alpha,
-                average_base_cost_budget=self.owner_average_base_cost_budget,
-            )
-            self.owner_tiebreak_frames += 1
-            self.owner_changed_frames += int(changed)
-
-        self._apply_matches(matches, strack_pool, detections, activated, refind)
-        return unmatched_tracks, unmatched_detections
