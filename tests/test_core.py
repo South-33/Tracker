@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 import numpy as np
 import torch
 
+from tracker.association import choose_guarded_assignment
 from tracker.data import DanceTrackPairs, letterbox, restore_boxes
 from tracker.model import identity_retrieval_loss
 
@@ -71,6 +72,44 @@ class DanceTrackDataTests(unittest.TestCase):
 
             with self.assertRaisesRegex(RuntimeError, "incomplete"):
                 DanceTrackPairs(directory, ["dancetrack0001"])
+
+
+class GuardedAssignmentTests(unittest.TestCase):
+    def test_tiebreak_respects_base_cost_budget(self):
+        base = np.array([[0.20, 0.21], [0.21, 0.20]], dtype=np.float32)
+        logits = np.array([[0.0, 2.0], [2.0, 0.0]], dtype=np.float32)
+
+        strict, *_ = choose_guarded_assignment(
+            base,
+            logits,
+            match_threshold=0.8,
+            alpha=0.2,
+            average_base_cost_budget=0.005,
+        )
+        relaxed, *_ = choose_guarded_assignment(
+            base,
+            logits,
+            match_threshold=0.8,
+            alpha=0.2,
+            average_base_cost_budget=0.02,
+        )
+
+        self.assertEqual({tuple(row) for row in strict}, {(0, 0), (1, 1)})
+        self.assertEqual({tuple(row) for row in relaxed}, {(0, 1), (1, 0)})
+
+    def test_tiebreak_cannot_introduce_invalid_edge(self):
+        base = np.array([[0.20, 0.81], [0.81, 0.20]], dtype=np.float32)
+        logits = np.array([[0.0, 10.0], [10.0, 0.0]], dtype=np.float32)
+
+        matches, *_ = choose_guarded_assignment(
+            base,
+            logits,
+            match_threshold=0.8,
+            alpha=1.0,
+            average_base_cost_budget=1.0,
+        )
+
+        self.assertEqual({tuple(row) for row in matches}, {(0, 0), (1, 1)})
 
 
 if __name__ == "__main__":

@@ -17,6 +17,7 @@ from ultralytics.utils.checks import check_yaml
 from ultralytics.utils.nms import non_max_suppression
 
 from tracker.data import letterbox, restore_boxes
+from tracker.association import GuardedOwnerBOTSORT
 from tracker.model import TrackingYOLO
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,6 +55,9 @@ def run_sequence(
     min_detections_for_reid,
     appearance_threshold,
     new_track_threshold,
+    owner_checkpoint=None,
+    assignment_alpha=0.2,
+    assignment_cost_budget=0.00025,
 ):
     sequence_dir = ROOT / "data" / "dancetrack" / sequence
     image_paths = sorted((sequence_dir / "img1").glob("*.jpg"))
@@ -66,7 +70,16 @@ def run_sequence(
         with_reid=with_reid,
         new_track_threshold=new_track_threshold,
     )
-    tracker = BOTSORT(IterableSimpleNamespace(**config))
+    tracker = (
+        BOTSORT(IterableSimpleNamespace(**config))
+        if owner_checkpoint is None
+        else GuardedOwnerBOTSORT(
+            IterableSimpleNamespace(**config),
+            owner_checkpoint,
+            alpha=assignment_alpha,
+            average_base_cost_budget=assignment_cost_budget,
+        )
+    )
     rows = []
     reid_frames = 0
     reid_detections = 0
@@ -152,6 +165,8 @@ def run_sequence(
         "reid_detections": reid_detections,
         "compute_fps": len(image_paths) / compute_seconds,
         "pipeline_fps": len(image_paths) / (time.perf_counter() - total_started),
+        "owner_tiebreak_frames": getattr(tracker, "owner_tiebreak_frames", 0),
+        "owner_changed_frames": getattr(tracker, "owner_changed_frames", 0),
     }
 
 
@@ -185,11 +200,24 @@ def main():
         action="store_true",
         help="Use the identical detector/BoT-SORT path without appearance features.",
     )
+    parser.add_argument(
+        "--owner-head",
+        default=None,
+        help="Optional owner-continuity checkpoint for guarded first-association tie-breaking.",
+    )
+    parser.add_argument("--assignment-alpha", type=float, default=0.2)
+    parser.add_argument("--assignment-cost-budget", type=float, default=0.00025)
     args = parser.parse_args()
     if args.min_detections_for_reid < 1:
         raise ValueError("--min-detections-for-reid must be at least 1")
     if not 0 <= args.new_track_threshold <= 1:
         raise ValueError("--new-track-threshold must be between 0 and 1")
+    if args.assignment_alpha < 0:
+        raise ValueError("--assignment-alpha must be non-negative")
+    if args.assignment_cost_budget < 0:
+        raise ValueError("--assignment-cost-budget must be non-negative")
+    if args.owner_head and args.disable_reid:
+        raise ValueError("--owner-head requires appearance features")
 
     device = torch.device(args.device)
     checkpoint = None
@@ -217,6 +245,12 @@ def main():
     actual_detector_sha = sha256(detector_path)
 
     output = ROOT / args.output
+    owner_path = None if args.owner_head is None else ROOT / args.owner_head
+    owner_checkpoint = (
+        None
+        if owner_path is None
+        else torch.load(owner_path, map_location="cpu", weights_only=False)
+    )
     stats = [
         run_sequence(
             model,
@@ -228,6 +262,9 @@ def main():
             min_detections_for_reid=args.min_detections_for_reid,
             appearance_threshold=args.appearance_threshold,
             new_track_threshold=args.new_track_threshold,
+            owner_checkpoint=owner_path,
+            assignment_alpha=args.assignment_alpha,
+            assignment_cost_budget=args.assignment_cost_budget,
         )
         for sequence in args.sequences
     ]
@@ -235,7 +272,14 @@ def main():
         "system": (
             "YOLO26n manual detector path + Ultralytics BoT-SORT"
             if args.disable_reid
-            else f"YOLO26n + {args.feature_mode} appearance feature + Ultralytics BoT-SORT"
+            else (
+                f"YOLO26n + {args.feature_mode} appearance feature + Ultralytics BoT-SORT"
+                if owner_path is None
+                else (
+                    f"YOLO26n + {args.feature_mode} appearance feature + Ultralytics "
+                    "BoT-SORT + guarded owner-continuity tie-break"
+                )
+            )
         ),
         "feature_mode": "none" if args.disable_reid else args.feature_mode,
         "feature_seed": 0 if args.feature_mode == "random" and not args.disable_reid else None,
@@ -289,6 +333,35 @@ def main():
         "reid_gate": {
             "min_detections": args.min_detections_for_reid,
         },
+        "owner_continuity": (
+            None
+            if owner_path is None
+            else {
+                "checkpoint": args.owner_head,
+                "checkpoint_sha256": sha256(owner_path),
+                "alpha": args.assignment_alpha,
+                "average_base_cost_budget": args.assignment_cost_budget,
+                "training": {
+                    key: owner_checkpoint.get(key)
+                    for key in (
+                        "objective",
+                        "epochs",
+                        "lr",
+                        "repo_commit",
+                        "repo_dirty",
+                        "identity_head",
+                        "identity_head_sha256",
+                        "train_sequences",
+                        "validation_sequence",
+                        "train_queries",
+                        "validation_queries",
+                        "before",
+                        "validation",
+                    )
+                    if owner_checkpoint.get(key) is not None
+                },
+            }
+        ),
         "sequences": stats,
     }
     output.mkdir(parents=True, exist_ok=True)

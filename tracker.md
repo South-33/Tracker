@@ -160,7 +160,7 @@ new_track_thresh   HOTA   AssA   IDF1  IDSW  Frag  Recall
 0.50               33.17  31.19  39.36   219   353   47.02
 ```
 
-Across both development sequences, the global `0.45` rule gives the strongest current dev candidate:
+Across both development sequences, the global `0.45` rule was the strongest dev candidate before guarded assignment learning:
 
 ```text
                                       HOTA   AssA   DetA   IDF1  IDSW  Frag  Recall  Precision
@@ -226,15 +226,35 @@ Trying to preserve BoT-SORT's matchable-edge set does not help: the candidate-gr
 
 The switch diagnostic confirms that association still matters: among **349** public-owner changes on `0020`, the previous owner remains in the first-association candidate pool in **300** cases, and the owner scorer prefers it in **135** cases versus **60** for cosine. But changing those decisions perturbs later memory and assignment states, so one-step improvements can still reduce end-to-end HOTA.
 
-The conclusion is stronger than "use a larger pair scorer": **teacher-forced or frozen-trajectory association accuracy is not a reliable promotion metric**. Small assignment changes alter the future memory distribution, and the semantic KNOWN/NEWBORN/DROP decision remains entangled with assignment. Do not spend more time tuning static score blends inside BoT-SORT.
+The conclusion is stronger than "use a larger pair scorer": **teacher-forced or frozen-trajectory association accuracy is not a reliable promotion metric**. Small assignment changes alter the future memory distribution, and the semantic KNOWN/NEWBORN/DROP decision remains entangled with assignment. Do not spend more time tuning unconstrained static score blends inside BoT-SORT.
+
+The useful exception is a **guarded assignment tie-break**, which keeps BoT-SORT as the primary policy. The learned owner scorer may propose a different first-association Hungarian solution, but that proposal is accepted only when all of the following hold:
+
+- every learned edge was already below BoT-SORT's normal match threshold,
+- the learned assignment has exactly the same number of matches as the incumbent assignment,
+- the learned assignment raises the *original BoT-SORT cost* by at most **0.00025 per match on average**.
+
+This tiny ambiguity budget was checked on held-out `0012`: owner preservation improves from **90.01%** to **90.61%** while changing only **11.3%** of first-association frames. Unlike the larger residual policies, this conservative rule survives online rollout.
+
+A fresh reproducible owner-continuity head trained by `scripts/train_owner.py` on the five DanceTrack training sequences reaches **95.98%** owner-selection accuracy on held-out `0012` using **18,904** training queries and **7,951** validation queries. With that freshly generated checkpoint, the guarded tracker gives:
+
+```text
+development result                         HOTA   AssA   DetA   IDF1  IDSW  Frag  Recall  Precision
+learned64D + birth 0.45                  33.58  21.19  53.44  33.60   323   486   66.14      96.44
++ guarded owner-continuity tie-break      33.83  21.47  53.54  34.17   326   483   66.15      96.53
+```
+
+On the hard `0020` sequence alone, the fresh guarded candidate reaches **34.10 HOTA / 31.80 AssA / 40.43 IDF1 / 239 IDSW / 373 Frag**, versus **33.69 / 31.21 / 39.40 / 236 / 376** for the previous candidate. The gain is therefore not switch-count optimization: it trades three extra switches for better overall association quality and IDF1 while holding recall effectively flat.
+
+The tracked implementation reproduces the scratch result through `scripts/track.py`. On the laptop manual path it runs at about **22.1 FPS** on `0020` and **18.4 FPS** on `0016`. This keeps a credible runtime path, but the >=15 FPS Orin Nano target is still unverified.
 
 ### Next research question
 
-Freeze the global `new_track_thresh=0.45` learned-feature configuration as the current dev candidate. Do not spend more iterations tuning that scalar. The evidence now says the next capability to learn should be **lifecycle**, especially deciding when a weak unmatched detection deserves to become persistent memory without sacrificing ByteTrack's useful low-score continuation.
+Promote the **learned64D + global birth 0.45 + guarded owner-continuity tie-break** as the current development candidate. The guard matters: unconstrained learned assignment remains rejected.
 
-Single-frame and pairwise memory cues have now been pushed far enough. One explicit on-policy retraining iteration did not stabilize the pairwise assignment policy, and simple appearance-history aggregation/EMA does not improve the candidate scorer. The next probe should therefore change the **memory state**, not keep retuning the same score.
+The next gap is architectural rather than another BoT-SORT tuning opportunity. The current system still relies on BoT-SORT for Kalman state, lifecycle, bounded memory, and Hungarian assignment, so it does not yet satisfy the original goal of one small causal neural tracker. The evidence now supports learning **only the part BoT-SORT cannot express safely with one-step cues**: a compact bounded track state that carries history across occlusion/recovery and can jointly support KNOWN / NEWBORN / DROP plus identity assignment.
 
-Use the cached detector outputs and 64D features to train the smallest causal track-state model that can jointly carry appearance stability, motion/history, and lifecycle evidence. A tiny recurrent cell or similarly compact state-space update is now justified, but keep it narrow: bounded per-track state, current detection query, explicit KNOWN / NEWBORN / DROP semantics, and one-to-one assignment at the output. Train it on sequential rollouts rather than arbitrary pairs, and require an online `0020` rollout plus the `0016` regression check before promotion.
+Use the cached detector outputs and 64D features to build the smallest causal track-state model that can replace the hand-engineered owner scorer without discarding the guardrail lesson. Start with a tiny recurrent/state-space update per remembered track and train on sequential rollouts. Keep one-to-one assignment explicit and retain a conservative fallback to the incumbent cost while the learned state is uncertain. Require the new state to beat the guarded candidate on online `0020` plus the `0016` regression check before promotion.
 
 The learned appearance head remains an auxiliary input/control, not proof that a larger ReID model is needed. Any new representation work must still beat raw pooled features and the seeded random projection.
 
@@ -264,9 +284,14 @@ Keep `0096` and `0004/0005/0007/0010` untouched while the lifecycle module is be
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/raw-pooled-feature-0020 dancetrack0020
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/random-identity-track dancetrack0020
 
-# Current dev candidate
+# Previous dev candidate
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --head runs/identity-head-v2/head.pt --new-track-threshold 0.45 --output runs/identity-v2-new045
 .\.venv\Scripts\python.exe scripts/evaluate.py runs/identity-v2-new045 dancetrack0016 dancetrack0020
+
+# Current guarded dev candidate
+.\.venv\Scripts\python.exe scripts/train_owner.py --output runs/owner-head-v1/head.pt
+.\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --head runs/identity-head-v2/head.pt --owner-head runs/owner-head-v1/head.pt --new-track-threshold 0.45 --output runs/identity-v2-guarded
+.\.venv\Scripts\python.exe scripts/evaluate.py runs/identity-v2-guarded dancetrack0016 dancetrack0020
 
 # Lifecycle-only control
 .\.venv\Scripts\python.exe scripts/track.py dancetrack0016 dancetrack0020 --disable-reid --new-track-threshold 0.45 --output runs/manual-no-reid-new045
