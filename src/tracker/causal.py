@@ -22,10 +22,16 @@ class CausalPersonTracker:
         *,
         owner_alpha: float = 0.2,
         average_base_cost_budget: float = 0.00025,
+        gmc_max_corners: int = 100,
     ):
+        if gmc_max_corners < 5:
+            raise ValueError("gmc_max_corners must be at least 5")
         self.args = args
         self.max_frames_lost = args.track_buffer
         self.gmc = GMC(method=args.gmc_method)
+        if self.gmc.method == "sparseOptFlow":
+            self.gmc.feature_params["maxCorners"] = int(gmc_max_corners)
+        self.gmc_max_corners = int(gmc_max_corners)
         self.proximity_thresh = args.proximity_thresh
         self.appearance_thresh = args.appearance_thresh
         self.encoder = build_encoder(args.with_reid, args.model, getattr(args, "device", None))

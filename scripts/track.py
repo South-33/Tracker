@@ -31,6 +31,7 @@ def tracker_config(
     appearance_threshold,
     with_reid=True,
     new_track_threshold=0.45,
+    gmc_method="sparseOptFlow",
 ):
     config = YAML.load(check_yaml("botsort.yaml"))
     config["with_reid"] = with_reid
@@ -38,6 +39,7 @@ def tracker_config(
     config["device"] = str(device)
     config["appearance_thresh"] = appearance_threshold
     config["new_track_thresh"] = new_track_threshold
+    config["gmc_method"] = gmc_method
     return config
 
 
@@ -56,6 +58,8 @@ def run_sequence(
     owner_checkpoint=None,
     assignment_alpha=0.2,
     assignment_cost_budget=0.00025,
+    gmc_method="sparseOptFlow",
+    gmc_max_corners=100,
 ):
     sequence_dir = ROOT / "data" / "dancetrack" / sequence
     image_paths = sorted((sequence_dir / "img1").glob("*.jpg"))
@@ -67,6 +71,7 @@ def run_sequence(
         appearance_threshold,
         with_reid=with_reid,
         new_track_threshold=new_track_threshold,
+        gmc_method=gmc_method,
     )
     tracker = (
         BOTSORT(IterableSimpleNamespace(**config))
@@ -76,6 +81,7 @@ def run_sequence(
             owner_checkpoint,
             owner_alpha=assignment_alpha,
             average_base_cost_budget=assignment_cost_budget,
+            gmc_max_corners=gmc_max_corners,
         )
     )
     runtime = CausalTrackerRuntime(
@@ -172,6 +178,18 @@ def main():
     )
     parser.add_argument("--assignment-alpha", type=float, default=0.2)
     parser.add_argument("--assignment-cost-budget", type=float, default=0.00025)
+    parser.add_argument(
+        "--gmc-method",
+        choices=("sparseOptFlow", "none"),
+        default="sparseOptFlow",
+        help="Camera-motion compensation method.",
+    )
+    parser.add_argument(
+        "--gmc-max-corners",
+        type=int,
+        default=100,
+        help="Sparse optical-flow corner budget for the project-owned tracker.",
+    )
     args = parser.parse_args()
     if args.min_detections_for_reid < 1:
         raise ValueError("--min-detections-for-reid must be at least 1")
@@ -181,6 +199,8 @@ def main():
         raise ValueError("--assignment-alpha must be non-negative")
     if args.assignment_cost_budget < 0:
         raise ValueError("--assignment-cost-budget must be non-negative")
+    if args.gmc_max_corners < 5:
+        raise ValueError("--gmc-max-corners must be at least 5")
     if args.owner_head and args.disable_reid:
         raise ValueError("--owner-head requires appearance features")
 
@@ -230,6 +250,8 @@ def main():
             owner_checkpoint=owner_path,
             assignment_alpha=args.assignment_alpha,
             assignment_cost_budget=args.assignment_cost_budget,
+            gmc_method=args.gmc_method,
+            gmc_max_corners=args.gmc_max_corners,
         )
         for sequence in args.sequences
     ]
@@ -294,6 +316,7 @@ def main():
             args.appearance_threshold,
             with_reid=not args.disable_reid,
             new_track_threshold=args.new_track_threshold,
+            gmc_method=args.gmc_method,
         ),
         "reid_gate": {
             "min_detections": args.min_detections_for_reid,
@@ -306,6 +329,7 @@ def main():
                 "checkpoint_sha256": sha256(owner_path),
                 "alpha": args.assignment_alpha,
                 "average_base_cost_budget": args.assignment_cost_budget,
+                "gmc_max_corners": args.gmc_max_corners,
                 "training": {
                     key: owner_checkpoint.get(key)
                     for key in (

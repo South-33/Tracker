@@ -192,6 +192,38 @@ class CausalPersonTrackerTests(unittest.TestCase):
             self.assertEqual(second_output.shape, (1, 8))
             self.assertEqual(int(first_output[0, 4]), int(second_output[0, 4]))
 
+    def test_sparse_flow_uses_reduced_corner_budget(self):
+        with TemporaryDirectory() as directory:
+            owner_path = Path(directory) / "owner.pt"
+            scorer = OwnerContinuityScorer()
+            torch.save(
+                {
+                    "pair": scorer.state_dict(),
+                    "mean": torch.zeros(11),
+                    "std": torch.ones(11),
+                },
+                owner_path,
+            )
+            config = SimpleNamespace(
+                track_buffer=30,
+                gmc_method="sparseOptFlow",
+                proximity_thresh=0.5,
+                appearance_thresh=0.8,
+                with_reid=False,
+                model="auto",
+                device="cpu",
+                track_high_thresh=0.25,
+                track_low_thresh=0.1,
+                fuse_score=True,
+                match_thresh=0.8,
+                new_track_thresh=0.45,
+            )
+            tracker = CausalPersonTracker(config, owner_path)
+            self.assertEqual(tracker.gmc.feature_params["maxCorners"], 100)
+
+            with self.assertRaises(ValueError):
+                CausalPersonTracker(config, owner_path, gmc_max_corners=4)
+
 
 if __name__ == "__main__":
     unittest.main()
